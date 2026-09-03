@@ -1,0 +1,933 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <meta name="description" content="SatQuery AI — Satellite Image Visual Question Answering powered by Remote Sensing VLM">
+    <title>SatQuery AI — Satellite Visual Intelligence</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🛰️</text></svg>">
+    <link rel="stylesheet" href="style.css?v=material_orange_cream">
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+        /* ── Light Mode (Default Cream & Earthy Orange) ── */
+        :root, [data-theme="light"] {
+            --bg-base: #FAF6EE;
+            --bg-surface: #FFFFFF;
+            --bg-surface-variant: #F3EBDD;
+            --bg-input: #FFFFFF;
+            
+            --primary: #C85A17;
+            --primary-hover: #AF4C0F;
+            --primary-active: #943F0A;
+            --on-primary: #FFFFFF;
+            --primary-container: #FCECE0;
+            --on-primary-container: #662B05;
+            
+            --text-primary: #26211C;
+            --text-secondary: #5C5248;
+            --text-muted: #87786B;
+            
+            --border-color: #DDD1BF;
+            --border-focused: #C85A17;
+            
+            --status-success: #2E6930;
+            --status-success-bg: #EDF7ED;
+            --status-success-border: #A3CFA6;
+            
+            --status-warning: #C85A17;
+            --status-warning-bg: #FBECE2;
+            --status-warning-border: #F3C3A5;
+            
+            --status-error: #B71C1C;
+            --status-error-bg: #FDECEA;
+            --status-error-border: #F4B3AE;
+
+            --badge-bg: #F3EBDD;
+            --badge-text: #662B05;
+            --badge-border: #DDD1BF;
+
+            --shadow-card: 0 1px 3px rgba(38, 33, 28, 0.08);
+        }
+
+        /* ── Dark Mode (Warm Espresso & Terracotta Orange) ── */
+        [data-theme="dark"] {
+            --bg-base: #141210;
+            --bg-surface: #1E1A17;
+            --bg-surface-variant: #29241F;
+            --bg-input: #181512;
+            
+            --primary: #D96B27;
+            --primary-hover: #E67E3D;
+            --primary-active: #B55416;
+            --on-primary: #141210;
+            --primary-container: #3D2211;
+            --on-primary-container: #FAC8A5;
+            
+            --text-primary: #F7EFE4;
+            --text-secondary: #B8ABA0;
+            --text-muted: #7E7266;
+            
+            --border-color: #383029;
+            --border-focused: #D96B27;
+            
+            --status-success: #81C784;
+            --status-success-bg: #1B2E1C;
+            --status-success-border: #2E5C31;
+            
+            --status-warning: #D96B27;
+            --status-warning-bg: #331D10;
+            --status-warning-border: #5E331B;
+            
+            --status-error: #E57373;
+            --status-error-bg: #331313;
+            --status-error-border: #632222;
+
+            --badge-bg: #29241F;
+            --badge-text: #FAC8A5;
+            --badge-border: #383029;
+
+            --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.4);
+        }
+
+        :root {
+            --radius-sm: 6px;
+            --radius-md: 10px;
+            --radius-lg: 14px;
+            --radius-full: 9999px;
+            --transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+        }
+
+        *, *::before, *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: var(--bg-base);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.5;
+            transition: var(--transition);
+        }
+
+        .app-container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 24px 20px 48px;
+        }
+
+        /* ── Material Header ── */
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 20px;
+            background: var(--bg-surface);
+            border: 1.5px solid var(--border-color);
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-card);
+            margin-bottom: 24px;
+            transition: var(--transition);
+        }
+
+        .header-brand {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .header-logo {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--primary-container);
+            border: 1.5px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            font-size: 20px;
+        }
+
+        .header-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-primary);
+            letter-spacing: -0.01em;
+        }
+
+        .header-subtitle {
+            font-size: 12px;
+            color: var(--text-secondary);
+            font-weight: 400;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .header-badge {
+            padding: 5px 12px;
+            background: var(--badge-bg);
+            border: 1.5px solid var(--badge-border);
+            border-radius: var(--radius-full);
+            font-size: 11px;
+            font-weight: 500;
+            color: var(--badge-text);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        /* ── Material Theme Toggle Switch ── */
+        .theme-toggle {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 14px;
+            background: var(--bg-surface-variant);
+            border: 1.5px solid var(--border-color);
+            border-radius: var(--radius-full);
+            color: var(--text-primary);
+            font-family: inherit;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            user-select: none;
+        }
+
+        .theme-toggle:hover {
+            border-color: var(--primary);
+            background: var(--primary-container);
+            color: var(--on-primary-container);
+        }
+
+        .theme-toggle:active {
+            transform: scale(0.98);
+        }
+
+        .theme-toggle-icon {
+            font-size: 14px;
+        }
+
+        /* ── Main Grid ── */
+        .main-grid {
+            display: grid;
+            grid-template-columns: 460px 1fr;
+            gap: 24px;
+            align-items: start;
+        }
+
+        @media (max-width: 960px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* ── Material Cards (Hard Borders, No Glow, No Gradients) ── */
+        .glass-card {
+            background: var(--bg-surface);
+            border: 1.5px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 24px;
+            box-shadow: var(--shadow-card);
+            transition: var(--transition);
+        }
+
+        .card-title {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 18px;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+
+        .card-title .icon {
+            font-size: 16px;
+            color: var(--primary);
+        }
+
+        /* ── Material Upload Zone ── */
+        .upload-zone {
+            position: relative;
+            border: 2px dashed var(--border-color);
+            border-radius: var(--radius-sm);
+            padding: 36px 20px;
+            text-align: center;
+            background: var(--bg-surface-variant);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .upload-zone:hover {
+            border-color: var(--primary);
+            background: var(--primary-container);
+        }
+
+        .upload-zone.drag-over {
+            border-color: var(--primary);
+            border-style: solid;
+            background: var(--primary-container);
+        }
+
+        .upload-zone.has-files {
+            border-color: var(--status-success-border);
+            border-style: solid;
+            background: var(--status-success-bg);
+        }
+
+        .upload-icon {
+            font-size: 32px;
+            display: block;
+            margin-bottom: 10px;
+            color: var(--primary);
+        }
+
+        .upload-text {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-bottom: 4px;
+        }
+
+        .upload-text strong {
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        .upload-hint {
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        .upload-input {
+            display: none;
+        }
+
+        /* ── File Chips ── */
+        .file-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 14px;
+        }
+
+        .file-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 5px 12px;
+            background: var(--bg-surface-variant);
+            border: 1.5px solid var(--border-color);
+            border-radius: var(--radius-full);
+            font-size: 12px;
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+
+        .file-chip .remove-file {
+            cursor: pointer;
+            font-size: 14px;
+            color: var(--text-muted);
+            transition: color 0.15s;
+        }
+
+        .file-chip .remove-file:hover {
+            color: var(--status-error);
+        }
+
+        /* ── Error Display ── */
+        .error-display {
+            display: none;
+            margin-top: 14px;
+            padding: 12px 14px;
+            background: var(--status-error-bg);
+            border: 1.5px solid var(--status-error-border);
+            border-radius: var(--radius-sm);
+            font-size: 12px;
+            color: var(--status-error);
+            line-height: 1.4;
+        }
+
+        .error-display.visible {
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+        }
+
+        .error-icon {
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+
+        /* ── Query Input ── */
+        .query-section {
+            margin-top: 20px;
+        }
+
+        .query-label {
+            display: block;
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--text-secondary);
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .query-input-wrapper {
+            position: relative;
+        }
+
+        .query-input {
+            width: 100%;
+            padding: 12px 14px;
+            background: var(--bg-input);
+            border: 1.5px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            color: var(--text-primary);
+            font-family: inherit;
+            font-size: 13.5px;
+            line-height: 1.5;
+            resize: none;
+            outline: none;
+            transition: var(--transition);
+        }
+
+        .query-input:focus {
+            border-color: var(--border-focused);
+            background: var(--bg-surface);
+        }
+
+        .query-input::placeholder {
+            color: var(--text-muted);
+        }
+
+        /* ── Material Solid Submit Button (No Gradients, No Glows) ── */
+        .submit-btn {
+            width: 100%;
+            margin-top: 18px;
+            padding: 12px 20px;
+            background: var(--primary);
+            border: 1.5px solid var(--primary);
+            border-radius: var(--radius-sm);
+            color: var(--on-primary);
+            font-family: inherit;
+            font-size: 13px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            cursor: pointer;
+            box-shadow: var(--shadow-card);
+            transition: var(--transition);
+        }
+
+        .submit-btn:hover:not(:disabled) {
+            background: var(--primary-hover);
+            border-color: var(--primary-hover);
+        }
+
+        .submit-btn:active:not(:disabled) {
+            background: var(--primary-active);
+        }
+
+        .submit-btn:disabled {
+            background: var(--bg-surface-variant);
+            border-color: var(--border-color);
+            color: var(--text-muted);
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        /* ── Results Panel: States ── */
+        .empty-state {
+            padding: 64px 20px;
+            text-align: center;
+        }
+
+        .empty-icon {
+            font-size: 36px;
+            display: block;
+            margin-bottom: 12px;
+            color: var(--primary);
+        }
+
+        .empty-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .empty-text {
+            font-size: 13px;
+            color: var(--text-secondary);
+            max-width: 360px;
+            margin: 0 auto;
+        }
+
+        /* ── Loading Animation ── */
+        .loading-container {
+            display: none;
+            padding: 44px 20px;
+            text-align: center;
+        }
+
+        .loading-container.visible {
+            display: block;
+        }
+
+        .loading-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .loading-subtitle {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-bottom: 28px;
+        }
+
+        .loading-stages {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            flex-wrap: wrap;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .loading-stage {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .stage-indicator {
+            width: 22px;
+            height: 22px;
+            border-radius: var(--radius-full);
+            border: 1.5px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: 700;
+            background: var(--bg-surface-variant);
+            color: var(--text-secondary);
+        }
+
+        .loading-stage.active {
+            color: var(--primary);
+        }
+
+        .loading-stage.active .stage-indicator {
+            border-color: var(--primary);
+            background: var(--primary-container);
+            color: var(--primary);
+        }
+
+        .loading-stage.completed {
+            color: var(--status-success);
+        }
+
+        .loading-stage.completed .stage-indicator {
+            border-color: var(--status-success-border);
+            background: var(--status-success-bg);
+            color: var(--status-success);
+        }
+
+        /* ── Results View ── */
+        .results-container {
+            display: none;
+        }
+
+        .results-container.visible {
+            display: block;
+        }
+
+        .evidence-section {
+            padding: 20px;
+        }
+
+        .evidence-image-wrapper {
+            position: relative;
+            border-radius: var(--radius-sm);
+            overflow: hidden;
+            background: var(--bg-surface-variant);
+            border: 1.5px solid var(--border-color);
+            max-height: 460px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .evidence-image {
+            width: 100%;
+            height: auto;
+            max-height: 460px;
+            object-fit: contain;
+            display: block;
+        }
+
+        .evidence-type-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            padding: 4px 10px;
+            background: var(--bg-surface);
+            border: 1.5px solid var(--border-color);
+            border-radius: var(--radius-full);
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            color: var(--primary);
+        }
+
+        .answer-section {
+            position: relative;
+            padding: 20px;
+        }
+
+        .confidence-section {
+            margin-bottom: 12px;
+        }
+
+        .confidence-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 10px;
+            border-radius: var(--radius-full);
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+
+        .confidence-badge.high {
+            background: var(--status-success-bg);
+            border: 1.5px solid var(--status-success-border);
+            color: var(--status-success);
+        }
+
+        .confidence-badge.medium {
+            background: var(--status-warning-bg);
+            border: 1.5px solid var(--status-warning-border);
+            color: var(--status-warning);
+        }
+
+        .confidence-badge.low {
+            background: var(--status-error-bg);
+            border: 1.5px solid var(--status-error-border);
+            color: var(--status-error);
+        }
+
+        .confidence-score {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+        }
+
+        .answer-text {
+            font-size: 14px;
+            line-height: 1.6;
+            color: var(--text-primary);
+        }
+
+        /* ── Execution Trace ── */
+        .trace-section {
+            padding: 16px 20px;
+        }
+
+        .trace-toggle {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            user-select: none;
+            transition: var(--transition);
+        }
+
+        .trace-toggle:hover {
+            color: var(--primary);
+        }
+
+        .trace-toggle .toggle-arrow {
+            font-size: 10px;
+            transition: transform 0.2s ease;
+            color: var(--text-muted);
+        }
+
+        .trace-toggle.expanded .toggle-arrow {
+            transform: rotate(180deg);
+        }
+
+        .trace-list {
+            display: none;
+            margin-top: 14px;
+            border-top: 1.5px solid var(--border-color);
+            padding-top: 12px;
+        }
+
+        .trace-list.visible {
+            display: block;
+        }
+
+        .trace-item {
+            display: grid;
+            grid-template-columns: 8px 140px 1fr 60px;
+            align-items: center;
+            gap: 12px;
+            padding: 8px 0;
+            font-size: 12px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .trace-status {
+            width: 6px;
+            height: 6px;
+            border-radius: var(--radius-full);
+        }
+
+        .trace-status.ok {
+            background: var(--status-success);
+        }
+
+        .trace-status.failed {
+            background: var(--status-error);
+        }
+
+        .trace-stage {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .trace-detail {
+            color: var(--text-secondary);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+        }
+
+        .trace-duration {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            color: var(--primary);
+            text-align: right;
+            font-weight: 600;
+        }
+
+        /* ── Download Button (Material Outlined) ── */
+        .download-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            background: var(--bg-surface);
+            border: 1.5px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            color: var(--text-primary);
+            font-family: inherit;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .download-btn:hover {
+            border-color: var(--primary);
+            background: var(--primary-container);
+            color: var(--on-primary-container);
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- ── Header ── -->
+        <header class="header">
+            <div class="header-brand">
+                <div class="header-logo">🛰️</div>
+                <div>
+                    <div class="header-title">SatQuery AI</div>
+                    <div class="header-subtitle">Remote Sensing Visual Intelligence</div>
+                </div>
+            </div>
+            <div class="header-actions">
+                <button class="theme-toggle" id="themeToggle" type="button" aria-label="Toggle Light and Dark Mode">
+                    <span class="theme-toggle-icon" id="themeIcon">🌙</span>
+                    <span class="theme-toggle-label" id="themeLabel">Dark</span>
+                </button>
+                <div class="header-badge">Prototype v0.1</div>
+            </div>
+        </header>
+
+        <!-- ── Main Grid ── -->
+        <div class="main-grid">
+            <!-- ── Left Panel: Input ── -->
+            <div class="input-panel">
+                <div class="glass-card">
+                    <div class="card-title">
+                        <span class="icon">📡</span>
+                        Upload Satellite Image
+                    </div>
+
+                    <!-- Upload Zone -->
+                    <div class="upload-zone" id="uploadZone">
+                        <span class="upload-icon">🌍</span>
+                        <div class="upload-text">
+                            <strong>Click or drag & drop</strong> satellite imagery
+                        </div>
+                        <div class="upload-hint">
+                            Supports GeoTIFF (.tif), JPEG, PNG • Max 50 MB
+                        </div>
+                        <input type="file" class="upload-input" id="fileInput" 
+                               accept=".tif,.tiff,.jpg,.jpeg,.png" multiple>
+                    </div>
+
+                    <!-- File chips -->
+                    <div class="file-chips" id="fileChips"></div>
+
+                    <!-- Error Display -->
+                    <div class="error-display" id="errorDisplay">
+                        <span class="error-icon">⚠️</span>
+                        <span id="errorText"></span>
+                    </div>
+
+                    <!-- Query Input -->
+                    <div class="query-section">
+                        <label class="query-label" for="queryInput">Question</label>
+                        <div class="query-input-wrapper">
+                            <textarea class="query-input" id="queryInput" 
+                                      placeholder="Ask a question about this satellite scene..."
+                                      rows="3"></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <button class="submit-btn" id="submitBtn" disabled>
+                        <span>Analyze Satellite Scene</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- ── Right Panel: Results ── -->
+            <div class="results-panel">
+                <!-- Empty State -->
+                <div class="glass-card" id="emptyState">
+                    <div class="empty-state">
+                        <span class="empty-icon">🛰️</span>
+                        <div class="empty-title">Ready to Analyze</div>
+                        <div class="empty-text">
+                            Upload a satellite image and query to receive visual evidence, detection grounding, and execution trace.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Loading State -->
+                <div class="glass-card loading-container" id="loadingState">
+                    <div class="loading-title">Analyzing Image...</div>
+                    <div class="loading-subtitle">Processing through the SatQuery pipeline</div>
+                    <div class="loading-stages">
+                        <div class="loading-stage" id="stage-compatibility" data-stage="0">
+                            <div class="stage-indicator">1</div>
+                            <span>Compatibility Check</span>
+                        </div>
+                        <div class="loading-stage" id="stage-routing" data-stage="1">
+                            <div class="stage-indicator">2</div>
+                            <span>Routing Query</span>
+                        </div>
+                        <div class="loading-stage" id="stage-analyzing" data-stage="2">
+                            <div class="stage-indicator">3</div>
+                            <span>Specialist Analysis</span>
+                        </div>
+                        <div class="loading-stage" id="stage-evidence" data-stage="3">
+                            <div class="stage-indicator">4</div>
+                            <span>Building Evidence</span>
+                        </div>
+                        <div class="loading-stage" id="stage-report" data-stage="4">
+                            <div class="stage-indicator">5</div>
+                            <span>Generating Report</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Results -->
+                <div class="results-container" id="resultsContainer">
+                    <!-- Evidence Image -->
+                    <div class="glass-card evidence-section">
+                        <div class="card-title">
+                            <span class="icon">🗺️</span>
+                            Visual Evidence
+                        </div>
+                        <div class="evidence-image-wrapper">
+                            <img class="evidence-image" id="evidenceImage" alt="Evidence overlay">
+                            <div class="evidence-type-badge" id="evidenceTypeBadge">BBOX</div>
+                        </div>
+                    </div>
+
+                    <!-- Answer -->
+                    <div class="glass-card answer-section" style="margin-top: 20px;">
+                        <div class="card-title">
+                            <span class="icon">🧠</span>
+                            Analysis Result
+                        </div>
+                        <!-- Confidence Badge -->
+                        <div class="confidence-section">
+                            <div class="confidence-badge" id="confidenceBadge">
+                                <span id="confidenceLabel">High</span>
+                                <span class="confidence-score" id="confidenceScore">0.92</span>
+                            </div>
+                        </div>
+                        <div class="answer-text" id="answerText"></div>
+                    </div>
+
+                    <!-- Execution Trace -->
+                    <div class="glass-card trace-section" style="margin-top: 20px;">
+                        <div class="trace-toggle" id="traceToggle" onclick="toggleTrace()">
+                            <span>
+                                <span class="icon">📋</span>
+                                Execution Trace
+                                <span id="traceDuration" style="margin-left:8px; font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--primary);"></span>
+                            </span>
+                            <span class="toggle-arrow">▼</span>
+                        </div>
+                        <div class="trace-list" id="traceList"></div>
+                    </div>
+
+                    <!-- Download Report -->
+                    <div style="margin-top: 20px; text-align: center;">
+                        <button class="download-btn" id="downloadBtn" onclick="downloadReport()">
+                            📥 Download Report (JSON)
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

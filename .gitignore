@@ -1,0 +1,54 @@
+# Environment variables & API keys
+.env
+.env.*
+!.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Machine Learning, Model Weights & Large Checkpoints
+backend/weights/
+*.safetensors
+*.bin
+*.pt
+*.pth
+*.zip
+*.tar.gz
+*.onnx
+rsvlm_adapter/
+satquery_rsvlm_lora/
+
+# Generated Runtime Artifacts
+backend/static/overlays/*.png
+!backend/static/overlays/.gitkeep
+backend/reports/*.json
+!backend/reports/.gitkeep
+
+# Datasets & Temporary Training Files
+training/data/*.json
+!training/data/.gitkeep
+
+# IDEs & System Files
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Testing & Logs
+*.log
+.pytest_cache/
+.coverage
+htmlcov/
