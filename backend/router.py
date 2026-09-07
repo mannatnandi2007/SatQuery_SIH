@@ -34,6 +34,10 @@ FUSION_PATTERNS = [
     r"\boptical\s*[\+&]\s*sar\b",
     r"\bfus[eion]+\b.*\b(sar|radar)\b",
     r"\bmulti[\-\s]?sensor\b",
+    r"\bbackscatter\b",
+    r"\bsentinel[\-\s]?1\b",
+    r"\bpolarimetr\w*\b",
+    r"\bc[\-\s]?band\b",
 ]
 
 VQA_PATTERNS = [

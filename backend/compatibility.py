@@ -28,18 +28,17 @@ MAX_IMAGE_SIZE_MB = 50  # Max upload size in MB
 class CompatibilityResult:
     valid: bool
     reason: Optional[str]
-    detected_intent: str  # "single_image_vqa" | "change_detection" | "unsupported"
+    detected_intent: str  # "single_image_vqa" | "change_detection" | "fusion" | "unsupported"
 
 
-def detect_query_intent(query: str) -> str:
-    """Classify query intent based on keywords/regex patterns."""
-    query_lower = query.lower().strip()
-
-    for pattern in CHANGE_DETECTION_KEYWORDS:
-        if re.search(pattern, query_lower):
-            return "change_detection"
-
-    return "single_image_vqa"
+def detect_query_intent(query: str, image_count: int = 1) -> str:
+    """Classify query intent based on router patterns and image count."""
+    from router import classify_intent
+    intent = classify_intent(query)
+    # If user uploads 2 images and intent was single_image_vqa, upgrade to change detection
+    if image_count >= 2 and intent == "single_image_vqa":
+        return "change_detection"
+    return intent
 
 
 def check_file_extension(filename: str) -> Tuple[bool, Optional[str]]:
@@ -96,7 +95,7 @@ def run_compatibility_check(
         )
 
     # Detect query intent
-    detected_intent = detect_query_intent(query)
+    detected_intent = detect_query_intent(query, len(filenames))
 
     # Check: image count matches intent
     if detected_intent == "change_detection" and len(filenames) < 2:

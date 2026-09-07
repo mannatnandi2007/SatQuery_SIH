@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="light">
+<html lang="en" data-theme="cobalt">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,772 +7,1087 @@
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
     <meta name="description" content="SatQuery AI — Satellite Image Visual Question Answering powered by Remote Sensing VLM">
-    <title>SatQuery AI — Satellite Visual Intelligence</title>
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🛰️</text></svg>">
-    <link rel="stylesheet" href="style.css?v=material_orange_cream">
-
+    <title>SatQuery AI — Remote Sensing Telemetry Workbench</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='45' fill='%230284c7'/><text y='.68em' x='.22em' font-size='50' font-family='sans-serif' font-weight='bold' fill='white'>SQ</text></svg>">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=JetBrains+Mono:wght@400;500&display=swap');
-
-        /* ── Light Mode (Default Cream & Earthy Orange) ── */
-        :root, [data-theme="light"] {
-            --bg-base: #FAF6EE;
-            --bg-surface: #FFFFFF;
-            --bg-surface-variant: #F3EBDD;
-            --bg-input: #FFFFFF;
-            
-            --primary: #C85A17;
-            --primary-hover: #AF4C0F;
-            --primary-active: #943F0A;
-            --on-primary: #FFFFFF;
-            --primary-container: #FCECE0;
-            --on-primary-container: #662B05;
-            
-            --text-primary: #26211C;
-            --text-secondary: #5C5248;
-            --text-muted: #87786B;
-            
-            --border-color: #DDD1BF;
-            --border-focused: #C85A17;
-            
-            --status-success: #2E6930;
-            --status-success-bg: #EDF7ED;
-            --status-success-border: #A3CFA6;
-            
-            --status-warning: #C85A17;
-            --status-warning-bg: #FBECE2;
-            --status-warning-border: #F3C3A5;
-            
-            --status-error: #B71C1C;
-            --status-error-bg: #FDECEA;
-            --status-error-border: #F4B3AE;
-
-            --badge-bg: #F3EBDD;
-            --badge-text: #662B05;
-            --badge-border: #DDD1BF;
-
-            --shadow-card: 0 1px 3px rgba(38, 33, 28, 0.08);
-        }
-
-        /* ── Dark Mode (Warm Espresso & Terracotta Orange) ── */
-        [data-theme="dark"] {
-            --bg-base: #141210;
-            --bg-surface: #1E1A17;
-            --bg-surface-variant: #29241F;
-            --bg-input: #181512;
-            
-            --primary: #D96B27;
-            --primary-hover: #E67E3D;
-            --primary-active: #B55416;
-            --on-primary: #141210;
-            --primary-container: #3D2211;
-            --on-primary-container: #FAC8A5;
-            
-            --text-primary: #F7EFE4;
-            --text-secondary: #B8ABA0;
-            --text-muted: #7E7266;
-            
-            --border-color: #383029;
-            --border-focused: #D96B27;
-            
-            --status-success: #81C784;
-            --status-success-bg: #1B2E1C;
-            --status-success-border: #2E5C31;
-            
-            --status-warning: #D96B27;
-            --status-warning-bg: #331D10;
-            --status-warning-border: #5E331B;
-            
-            --status-error: #E57373;
-            --status-error-bg: #331313;
-            --status-error-border: #632222;
-
-            --badge-bg: #29241F;
-            --badge-text: #FAC8A5;
-            --badge-border: #383029;
-
-            --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.4);
-        }
-
-        :root {
-            --radius-sm: 6px;
-            --radius-md: 10px;
-            --radius-lg: 14px;
-            --radius-full: 9999px;
-            --transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
-        }
-
-        *, *::before, *::after {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Roboto', -apple-system, BlinkMacSystemFont, sans-serif;
-            background-color: var(--bg-base);
-            color: var(--text-primary);
-            min-height: 100vh;
-            line-height: 1.5;
-            transition: var(--transition);
-        }
-
-        .app-container {
-            max-width: 1280px;
-            margin: 0 auto;
-            padding: 24px 20px 48px;
-        }
-
-        /* ── Material Header ── */
-        .header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 16px 20px;
-            background: var(--bg-surface);
-            border: 1.5px solid var(--border-color);
-            border-radius: var(--radius-md);
-            box-shadow: var(--shadow-card);
-            margin-bottom: 24px;
-            transition: var(--transition);
-        }
-
-        .header-brand {
-            display: flex;
-            align-items: center;
-            gap: 14px;
-        }
-
-        .header-logo {
-            width: 40px;
-            height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: var(--primary-container);
-            border: 1.5px solid var(--border-color);
-            border-radius: var(--radius-sm);
-            font-size: 20px;
-        }
-
-        .header-title {
-            font-size: 18px;
-            font-weight: 700;
-            color: var(--text-primary);
-            letter-spacing: -0.01em;
-        }
-
-        .header-subtitle {
-            font-size: 12px;
-            color: var(--text-secondary);
-            font-weight: 400;
-        }
-
-        .header-actions {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .header-badge {
-            padding: 5px 12px;
-            background: var(--badge-bg);
-            border: 1.5px solid var(--badge-border);
-            border-radius: var(--radius-full);
-            font-size: 11px;
-            font-weight: 500;
-            color: var(--badge-text);
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-        }
-
-        /* ── Material Theme Toggle Switch ── */
-        .theme-toggle {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            padding: 6px 14px;
-            background: var(--bg-surface-variant);
-            border: 1.5px solid var(--border-color);
-            border-radius: var(--radius-full);
-            color: var(--text-primary);
-            font-family: inherit;
-            font-size: 12px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: var(--transition);
-            user-select: none;
-        }
-
-        .theme-toggle:hover {
-            border-color: var(--primary);
-            background: var(--primary-container);
-            color: var(--on-primary-container);
-        }
-
-        .theme-toggle:active {
-            transform: scale(0.98);
-        }
-
-        .theme-toggle-icon {
-            font-size: 14px;
-        }
-
-        /* ── Main Grid ── */
-        .main-grid {
-            display: grid;
-            grid-template-columns: 460px 1fr;
-            gap: 24px;
-            align-items: start;
-        }
-
-        @media (max-width: 960px) {
-            .main-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        /* ── Material Cards (Hard Borders, No Glow, No Gradients) ── */
-        .glass-card {
-            background: var(--bg-surface);
-            border: 1.5px solid var(--border-color);
-            border-radius: var(--radius-md);
-            padding: 24px;
-            box-shadow: var(--shadow-card);
-            transition: var(--transition);
-        }
-
-        .card-title {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 14px;
-            font-weight: 700;
-            color: var(--text-primary);
-            margin-bottom: 18px;
-            text-transform: uppercase;
-            letter-spacing: 0.04em;
-        }
-
-        .card-title .icon {
-            font-size: 16px;
-            color: var(--primary);
-        }
-
-        /* ── Material Upload Zone ── */
-        .upload-zone {
-            position: relative;
-            border: 2px dashed var(--border-color);
-            border-radius: var(--radius-sm);
-            padding: 36px 20px;
-            text-align: center;
-            background: var(--bg-surface-variant);
-            cursor: pointer;
-            transition: var(--transition);
-        }
-
-        .upload-zone:hover {
-            border-color: var(--primary);
-            background: var(--primary-container);
-        }
-
-        .upload-zone.drag-over {
-            border-color: var(--primary);
-            border-style: solid;
-            background: var(--primary-container);
-        }
-
-        .upload-zone.has-files {
-            border-color: var(--status-success-border);
-            border-style: solid;
-            background: var(--status-success-bg);
-        }
-
-        .upload-icon {
-            font-size: 32px;
-            display: block;
-            margin-bottom: 10px;
-            color: var(--primary);
-        }
-
-        .upload-text {
-            font-size: 13px;
-            color: var(--text-secondary);
-            margin-bottom: 4px;
-        }
-
-        .upload-text strong {
-            color: var(--text-primary);
-            font-weight: 600;
-        }
-
-        .upload-hint {
-            font-size: 11px;
-            color: var(--text-muted);
-        }
-
-        .upload-input {
-            display: none;
-        }
-
-        /* ── File Chips ── */
-        .file-chips {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            margin-top: 14px;
-        }
-
-        .file-chip {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            padding: 5px 12px;
-            background: var(--bg-surface-variant);
-            border: 1.5px solid var(--border-color);
-            border-radius: var(--radius-full);
-            font-size: 12px;
-            color: var(--text-primary);
-            font-weight: 500;
-        }
-
-        .file-chip .remove-file {
-            cursor: pointer;
-            font-size: 14px;
-            color: var(--text-muted);
-            transition: color 0.15s;
-        }
-
-        .file-chip .remove-file:hover {
-            color: var(--status-error);
-        }
-
-        /* ── Error Display ── */
-        .error-display {
-            display: none;
-            margin-top: 14px;
-            padding: 12px 14px;
-            background: var(--status-error-bg);
-            border: 1.5px solid var(--status-error-border);
-            border-radius: var(--radius-sm);
-            font-size: 12px;
-            color: var(--status-error);
-            line-height: 1.4;
-        }
-
-        .error-display.visible {
-            display: flex;
-            align-items: flex-start;
-            gap: 8px;
-        }
-
-        .error-icon {
-            font-size: 14px;
-            flex-shrink: 0;
-        }
-
-        /* ── Query Input ── */
-        .query-section {
-            margin-top: 20px;
-        }
-
-        .query-label {
-            display: block;
-            font-size: 11px;
-            font-weight: 700;
-            color: var(--text-secondary);
-            margin-bottom: 6px;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-        }
-
-        .query-input-wrapper {
-            position: relative;
-        }
-
-        .query-input {
-            width: 100%;
-            padding: 12px 14px;
-            background: var(--bg-input);
-            border: 1.5px solid var(--border-color);
-            border-radius: var(--radius-sm);
-            color: var(--text-primary);
-            font-family: inherit;
-            font-size: 13.5px;
-            line-height: 1.5;
-            resize: none;
-            outline: none;
-            transition: var(--transition);
-        }
-
-        .query-input:focus {
-            border-color: var(--border-focused);
-            background: var(--bg-surface);
-        }
-
-        .query-input::placeholder {
-            color: var(--text-muted);
-        }
-
-        /* ── Material Solid Submit Button (No Gradients, No Glows) ── */
-        .submit-btn {
-            width: 100%;
-            margin-top: 18px;
-            padding: 12px 20px;
-            background: var(--primary);
-            border: 1.5px solid var(--primary);
-            border-radius: var(--radius-sm);
-            color: var(--on-primary);
-            font-family: inherit;
-            font-size: 13px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            cursor: pointer;
-            box-shadow: var(--shadow-card);
-            transition: var(--transition);
-        }
-
-        .submit-btn:hover:not(:disabled) {
-            background: var(--primary-hover);
-            border-color: var(--primary-hover);
-        }
-
-        .submit-btn:active:not(:disabled) {
-            background: var(--primary-active);
-        }
-
-        .submit-btn:disabled {
-            background: var(--bg-surface-variant);
-            border-color: var(--border-color);
-            color: var(--text-muted);
-            cursor: not-allowed;
-            box-shadow: none;
-        }
-
-        /* ── Results Panel: States ── */
-        .empty-state {
-            padding: 64px 20px;
-            text-align: center;
-        }
-
-        .empty-icon {
-            font-size: 36px;
-            display: block;
-            margin-bottom: 12px;
-            color: var(--primary);
-        }
-
-        .empty-title {
-            font-size: 15px;
-            font-weight: 700;
-            color: var(--text-primary);
-            margin-bottom: 4px;
-        }
-
-        .empty-text {
-            font-size: 13px;
-            color: var(--text-secondary);
-            max-width: 360px;
-            margin: 0 auto;
-        }
-
-        /* ── Loading Animation ── */
-        .loading-container {
-            display: none;
-            padding: 44px 20px;
-            text-align: center;
-        }
-
-        .loading-container.visible {
-            display: block;
-        }
-
-        .loading-title {
-            font-size: 15px;
-            font-weight: 700;
-            color: var(--text-primary);
-            margin-bottom: 4px;
-        }
-
-        .loading-subtitle {
-            font-size: 12px;
-            color: var(--text-secondary);
-            margin-bottom: 28px;
-        }
-
-        .loading-stages {
-            display: flex;
-            justify-content: center;
-            gap: 16px;
-            flex-wrap: wrap;
-            max-width: 600px;
-            margin: 0 auto;
-        }
-
-        .loading-stage {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 12px;
-            color: var(--text-muted);
-            font-weight: 500;
-        }
-
-        .stage-indicator {
-            width: 22px;
-            height: 22px;
-            border-radius: var(--radius-full);
-            border: 1.5px solid var(--border-color);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 11px;
-            font-weight: 700;
-            background: var(--bg-surface-variant);
-            color: var(--text-secondary);
-        }
-
-        .loading-stage.active {
-            color: var(--primary);
-        }
-
-        .loading-stage.active .stage-indicator {
-            border-color: var(--primary);
-            background: var(--primary-container);
-            color: var(--primary);
-        }
-
-        .loading-stage.completed {
-            color: var(--status-success);
-        }
-
-        .loading-stage.completed .stage-indicator {
-            border-color: var(--status-success-border);
-            background: var(--status-success-bg);
-            color: var(--status-success);
-        }
-
-        /* ── Results View ── */
-        .results-container {
-            display: none;
-        }
-
-        .results-container.visible {
-            display: block;
-        }
-
-        .evidence-section {
-            padding: 20px;
-        }
-
-        .evidence-image-wrapper {
-            position: relative;
-            border-radius: var(--radius-sm);
-            overflow: hidden;
-            background: var(--bg-surface-variant);
-            border: 1.5px solid var(--border-color);
-            max-height: 460px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .evidence-image {
-            width: 100%;
-            height: auto;
-            max-height: 460px;
-            object-fit: contain;
-            display: block;
-        }
-
-        .evidence-type-badge {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            padding: 4px 10px;
-            background: var(--bg-surface);
-            border: 1.5px solid var(--border-color);
-            border-radius: var(--radius-full);
-            font-size: 10px;
-            font-weight: 700;
-            letter-spacing: 0.05em;
-            color: var(--primary);
-        }
-
-        .answer-section {
-            position: relative;
-            padding: 20px;
-        }
-
-        .confidence-section {
-            margin-bottom: 12px;
-        }
-
-        .confidence-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            padding: 4px 10px;
-            border-radius: var(--radius-full);
-            font-size: 11px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.04em;
-        }
-
-        .confidence-badge.high {
-            background: var(--status-success-bg);
-            border: 1.5px solid var(--status-success-border);
-            color: var(--status-success);
-        }
-
-        .confidence-badge.medium {
-            background: var(--status-warning-bg);
-            border: 1.5px solid var(--status-warning-border);
-            color: var(--status-warning);
-        }
-
-        .confidence-badge.low {
-            background: var(--status-error-bg);
-            border: 1.5px solid var(--status-error-border);
-            color: var(--status-error);
-        }
-
-        .confidence-score {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 11px;
-        }
-
-        .answer-text {
-            font-size: 14px;
-            line-height: 1.6;
-            color: var(--text-primary);
-        }
-
-        /* ── Execution Trace ── */
-        .trace-section {
-            padding: 16px 20px;
-        }
-
-        .trace-toggle {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            cursor: pointer;
-            font-size: 13px;
-            font-weight: 600;
-            color: var(--text-secondary);
-            user-select: none;
-            transition: var(--transition);
-        }
-
-        .trace-toggle:hover {
-            color: var(--primary);
-        }
-
-        .trace-toggle .toggle-arrow {
-            font-size: 10px;
-            transition: transform 0.2s ease;
-            color: var(--text-muted);
-        }
-
-        .trace-toggle.expanded .toggle-arrow {
-            transform: rotate(180deg);
-        }
-
-        .trace-list {
-            display: none;
-            margin-top: 14px;
-            border-top: 1.5px solid var(--border-color);
-            padding-top: 12px;
-        }
-
-        .trace-list.visible {
-            display: block;
-        }
-
-        .trace-item {
-            display: grid;
-            grid-template-columns: 8px 140px 1fr 60px;
-            align-items: center;
-            gap: 12px;
-            padding: 8px 0;
-            font-size: 12px;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .trace-status {
-            width: 6px;
-            height: 6px;
-            border-radius: var(--radius-full);
-        }
-
-        .trace-status.ok {
-            background: var(--status-success);
-        }
-
-        .trace-status.failed {
-            background: var(--status-error);
-        }
-
-        .trace-stage {
-            font-weight: 600;
-            color: var(--text-primary);
-        }
-
-        .trace-detail {
-            color: var(--text-secondary);
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 11px;
-        }
-
-        .trace-duration {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 11px;
-            color: var(--primary);
-            text-align: right;
-            font-weight: 600;
-        }
-
-        /* ── Download Button (Material Outlined) ── */
-        .download-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            padding: 10px 20px;
-            background: var(--bg-surface);
-            border: 1.5px solid var(--border-color);
-            border-radius: var(--radius-sm);
-            color: var(--text-primary);
-            font-family: inherit;
-            font-size: 12px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.04em;
-            cursor: pointer;
-            transition: var(--transition);
-        }
-
-        .download-btn:hover {
-            border-color: var(--primary);
-            background: var(--primary-container);
-            color: var(--on-primary-container);
-        }
+/* Hallmark · genre: modern-minimal · macrostructure: Workbench · theme: cobalt · enrichment: T1 */
+/* Pre-emit critique: P5 H5 E5 S5 R5 V5 */
+
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+/* ── Cobalt Design Tokens ─────────────────────────────────────────── */
+:root, [data-theme="light"], [data-theme="cobalt"] {
+    --color-paper: oklch(98.5% 0.004 250);
+    --color-paper-2: oklch(96.5% 0.006 250);
+    --color-paper-3: oklch(94.5% 0.008 250);
+    --color-graphite: oklch(22% 0.016 260);
+    --color-graphite-surface: oklch(18% 0.014 260);
+    
+    --color-rule: oklch(90% 0.008 250);
+    --color-rule-2: oklch(82% 0.012 250);
+    
+    --color-ink: oklch(24% 0.02 258);
+    --color-ink-2: oklch(34% 0.018 257);
+    --color-muted: oklch(56% 0.012 255);
+    
+    --color-accent: oklch(58% 0.20 256);
+    --color-accent-hover: oklch(52% 0.22 256);
+    --color-accent-active: oklch(46% 0.24 256);
+    --color-accent-ink: #ffffff;
+    --color-accent-subtle: oklch(58% 0.20 256 / 0.08);
+    
+    --color-focus: oklch(58% 0.20 256);
+    
+    --status-success: oklch(62% 0.16 150);
+    --status-success-bg: oklch(62% 0.16 150 / 0.1);
+    --status-success-border: oklch(62% 0.16 150 / 0.25);
+    
+    --status-warning: oklch(68% 0.18 60);
+    --status-warning-bg: oklch(68% 0.18 60 / 0.1);
+    --status-warning-border: oklch(68% 0.18 60 / 0.25);
+    
+    --status-error: oklch(55% 0.22 28);
+    --status-error-bg: oklch(55% 0.22 28 / 0.1);
+    --status-error-border: oklch(55% 0.22 28 / 0.25);
+
+    --font-display: 'Space Grotesk', -apple-system, sans-serif;
+    --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
+
+    --radius-xs: 4px;
+    --radius-sm: 6px;
+    --radius-md: 10px;
+    --radius-full: 9999px;
+    
+    --shadow-subtle: 0 1px 2px oklch(24% 0.02 258 / 0.04);
+    --transition: all 0.16s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+[data-theme="dark"] {
+    --color-paper: oklch(14% 0.012 250);
+    --color-paper-2: oklch(18% 0.014 250);
+    --color-paper-3: oklch(22% 0.016 250);
+    --color-graphite: oklch(11% 0.010 250);
+    --color-graphite-surface: oklch(14% 0.012 250);
+    
+    --color-rule: oklch(24% 0.014 250);
+    --color-rule-2: oklch(32% 0.016 250);
+    
+    --color-ink: oklch(96% 0.006 250);
+    --color-ink-2: oklch(84% 0.008 250);
+    --color-muted: oklch(62% 0.010 250);
+    
+    --color-accent: oklch(64% 0.20 256);
+    --color-accent-hover: oklch(70% 0.18 256);
+    --color-accent-active: oklch(58% 0.22 256);
+    --color-accent-ink: #ffffff;
+    --color-accent-subtle: oklch(64% 0.20 256 / 0.12);
+    
+    --color-focus: oklch(64% 0.20 256);
+    
+    --status-success: oklch(70% 0.16 150);
+    --status-success-bg: oklch(70% 0.16 150 / 0.14);
+    --status-success-border: oklch(70% 0.16 150 / 0.3);
+    
+    --status-warning: oklch(74% 0.18 60);
+    --status-warning-bg: oklch(74% 0.18 60 / 0.14);
+    --status-warning-border: oklch(74% 0.18 60 / 0.3);
+    
+    --status-error: oklch(65% 0.22 28);
+    --status-error-bg: oklch(65% 0.22 28 / 0.14);
+    --status-error-border: oklch(65% 0.22 28 / 0.3);
+
+    --shadow-subtle: 0 1px 2px oklch(0% 0 0 / 0.35);
+}
+
+/* ── Base Reset & Foundation ───────────────────────────────────────── */
+*, *::before, *::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body {
+    overflow-x: clip;
+    min-height: 100vh;
+}
+
+body {
+    background-color: var(--color-paper);
+    color: var(--color-ink-2);
+    font-family: var(--font-body);
+    font-size: 13.5px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* ── Container ─────────────────────────────────────────────────────── */
+.app-container {
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 20px 24px 40px;
+}
+
+/* ── Header Bar (Flush, Rule-Bounded Nav) ───────────────────────────── */
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 18px;
+    background: var(--color-paper-2);
+    border: 1px solid var(--color-rule);
+    border-radius: var(--radius-sm);
+    margin-bottom: 20px;
+    box-shadow: var(--shadow-subtle);
+}
+
+.header-brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.header-logo {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--color-paper-3);
+    border: 1px solid var(--color-rule);
+    border-radius: var(--radius-xs);
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--color-accent);
+}
+
+.header-title {
+    font-family: var(--font-display);
+    font-size: 16px;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    color: var(--color-ink);
+    line-height: 1.2;
+}
+
+.header-subtitle {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--color-muted);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* ── Theme Switcher Button (Tactile 6px) ───────────────────────────── */
+.theme-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    background: var(--color-paper);
+    border: 1px solid var(--color-rule);
+    border-radius: var(--radius-sm);
+    color: var(--color-ink);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.theme-toggle:hover {
+    border-color: var(--color-accent);
+    color: var(--color-accent);
+    background: var(--color-accent-subtle);
+}
+
+.theme-toggle:focus-visible {
+    outline: 2px solid var(--color-focus);
+    outline-offset: 2px;
+}
+
+.theme-toggle:active {
+    transform: translateY(1px);
+}
+
+/* ── Main Workbench Grid ───────────────────────────────────────────── */
+.main-grid {
+    display: grid;
+    grid-template-columns: 440px minmax(0, 1fr);
+    gap: 20px;
+    align-items: start;
+}
+
+@media (max-width: 1024px) {
+    .main-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ── Workbench Decks (Unified Single Containment Layer) ─────────────── */
+.workbench-deck {
+    background: var(--color-paper-2);
+    border: 1px solid var(--color-rule);
+    border-radius: var(--radius-md);
+    padding: 20px;
+    box-shadow: var(--shadow-subtle);
+}
+
+.deck-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding-bottom: 14px;
+    margin-bottom: 16px;
+    border-bottom: 1px solid var(--color-rule);
+}
+
+.deck-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--color-ink);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}
+
+.deck-title .icon {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--color-accent);
+}
+
+/* ── Benchmark Presets Strip ───────────────────────────────────────── */
+.sample-presets-strip {
+    margin-bottom: 16px;
+    background: var(--color-paper);
+    border: 1px solid var(--color-rule);
+    border-radius: var(--radius-sm);
+    padding: 10px 12px;
+}
+
+.sample-presets-label {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: var(--color-muted);
+    margin-bottom: 8px;
+}
+
+.sample-buttons-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.sample-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 10px;
+    background: var(--color-paper-2);
+    border: 1px solid var(--color-rule);
+    border-radius: var(--radius-xs);
+    color: var(--color-ink-2);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.sample-btn:hover {
+    border-color: var(--color-accent);
+    color: var(--color-accent);
+    background: var(--color-accent-subtle);
+}
+
+.sample-btn:focus-visible {
+    outline: 2px solid var(--color-focus);
+    outline-offset: 2px;
+}
+
+.sample-btn:active {
+    transform: translateY(1px);
+}
+
+/* ── Upload Dropzone ───────────────────────────────────────────────── */
+.upload-zone {
+    position: relative;
+    border: 1px dashed var(--color-rule-2);
+    border-radius: var(--radius-sm);
+    padding: 30px 18px;
+    text-align: center;
+    background: var(--color-paper);
+    cursor: pointer;
+    transition: var(--transition);
+    outline: none;
+}
+
+.upload-zone:hover {
+    border-color: var(--color-accent);
+    background: var(--color-accent-subtle);
+}
+
+.upload-zone:focus-visible {
+    border-color: var(--color-accent);
+    outline: 2px solid var(--color-focus);
+    outline-offset: 2px;
+}
+
+.upload-zone:active {
+    transform: translateY(1px);
+}
+
+.upload-zone.drag-over, .upload-zone.has-files {
+    border-color: var(--color-accent);
+    border-style: solid;
+    background: var(--color-accent-subtle);
+}
+
+.upload-input {
+    display: none;
+}
+
+.upload-icon {
+    font-family: var(--font-mono);
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--color-accent);
+    margin-bottom: 8px;
+    display: block;
+}
+
+.upload-text {
+    font-size: 13px;
+    color: var(--color-ink);
+    margin-bottom: 4px;
+    font-weight: 500;
+}
+
+.upload-text strong {
+    color: var(--color-accent);
+    font-weight: 600;
+}
+
+.upload-hint {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--color-muted);
+}
+
+/* ── File Chips ────────────────────────────────────────────────────── */
+.file-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 10px;
+}
+
+.file-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    background: var(--color-paper);
+    border: 1px solid var(--color-rule);
+    border-radius: var(--radius-xs);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--color-ink);
+    font-weight: 500;
+}
+
+.file-chip .remove-file {
+    cursor: pointer;
+    padding: 0 2px;
+    color: var(--color-muted);
+    font-size: 12px;
+    transition: var(--transition);
+}
+
+.file-chip .remove-file:hover {
+    color: var(--status-error);
+}
+
+/* ── Error Display ─────────────────────────────────────────────────── */
+.error-display {
+    display: none;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 10px 12px;
+    margin-top: 12px;
+    background: var(--status-error-bg);
+    border: 1px solid var(--status-error-border);
+    border-radius: var(--radius-sm);
+    color: var(--status-error);
+    font-family: var(--font-mono);
+    font-size: 12px;
+    line-height: 1.4;
+}
+
+.error-display.visible {
+    display: flex;
+}
+
+.error-icon {
+    font-weight: 700;
+    flex-shrink: 0;
+}
+
+/* ── Query Input ───────────────────────────────────────────────────── */
+.query-section {
+    margin-top: 16px;
+}
+
+.query-label {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--color-ink);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 6px;
+}
+
+.query-hint-shortcut {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--color-muted);
+    text-transform: none;
+}
+
+.query-input {
+    width: 100%;
+    padding: 12px 14px;
+    background: var(--color-paper);
+    border: 1px solid var(--color-rule);
+    border-radius: var(--radius-sm);
+    color: var(--color-ink);
+    font-family: var(--font-body);
+    font-size: 13px;
+    line-height: 1.5;
+    resize: vertical;
+    min-height: 84px;
+    outline: none;
+    transition: var(--transition);
+}
+
+.query-input:focus {
+    border-color: var(--color-accent);
+    outline: 2px solid var(--color-focus);
+    outline-offset: 1px;
+}
+
+.query-input::placeholder {
+    color: var(--color-muted);
+}
+
+/* ── Primary Action Button (Solid Cobalt, 6px radius) ─────────────── */
+.submit-btn {
+    width: 100%;
+    margin-top: 14px;
+    padding: 11px 18px;
+    background: var(--color-accent);
+    color: var(--color-accent-ink);
+    border: 1px solid var(--color-accent);
+    border-radius: var(--radius-sm);
+    font-family: var(--font-display);
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    cursor: pointer;
+    transition: var(--transition);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.submit-btn:hover:not(:disabled) {
+    background: var(--color-accent-hover);
+    border-color: var(--color-accent-hover);
+    transform: translateY(-1px);
+}
+
+.submit-btn:focus-visible {
+    outline: 2px solid var(--color-focus);
+    outline-offset: 2px;
+}
+
+.submit-btn:active:not(:disabled) {
+    transform: translateY(1px);
+    background: var(--color-accent-active);
+}
+
+.submit-btn:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+    background: var(--color-paper-3);
+    border-color: var(--color-rule);
+    color: var(--color-muted);
+    transform: none;
+}
+
+/* ── Right Panel: Empty State ──────────────────────────────────────── */
+.empty-state {
+    padding: 64px 20px;
+    text-align: center;
+}
+
+.empty-icon {
+    font-family: var(--font-mono);
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--color-accent);
+    margin-bottom: 12px;
+    display: block;
+}
+
+.empty-title {
+    font-family: var(--font-display);
+    font-size: 17px;
+    font-weight: 600;
+    color: var(--color-ink);
+    margin-bottom: 6px;
+    letter-spacing: -0.01em;
+}
+
+.empty-text {
+    font-size: 13px;
+    color: var(--color-muted);
+    max-width: 440px;
+    margin: 0 auto;
+    line-height: 1.55;
+}
+
+/* ── Loading State Pipeline ────────────────────────────────────────── */
+.loading-container {
+    display: none;
+    padding: 48px 20px;
+    text-align: center;
+}
+
+.loading-container.visible {
+    display: block;
+}
+
+.loading-title {
+    font-family: var(--font-display);
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--color-ink);
+    margin-bottom: 4px;
+}
+
+.loading-subtitle {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--color-muted);
+    margin-bottom: 28px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.loading-stages {
+    display: flex;
+    justify-content: space-between;
+    max-width: 540px;
+    margin: 0 auto;
+    position: relative;
+}
+
+.loading-stages::before {
+    content: '';
+    position: absolute;
+    top: 13px;
+    left: 20px;
+    right: 20px;
+    height: 1px;
+    background: var(--color-rule);
+    z-index: 1;
+}
+
+.loading-stage {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    font-weight: 500;
+    color: var(--color-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.stage-indicator {
+    width: 26px;
+    height: 26px;
+    border-radius: var(--radius-xs);
+    background: var(--color-paper);
+    border: 1px solid var(--color-rule);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--color-muted);
+    transition: var(--transition);
+}
+
+.loading-stage.active .stage-indicator {
+    border-color: var(--color-accent);
+    background: var(--color-accent);
+    color: var(--color-accent-ink);
+}
+
+.loading-stage.active {
+    color: var(--color-accent);
+    font-weight: 600;
+}
+
+.loading-stage.completed .stage-indicator {
+    border-color: var(--status-success);
+    background: var(--status-success);
+    color: #ffffff;
+}
+
+.loading-stage.completed {
+    color: var(--status-success);
+}
+
+/* ── Results Container ─────────────────────────────────────────────── */
+.results-container {
+    display: none;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.results-container.visible {
+    display: flex;
+}
+
+/* ── Visual Evidence Viewport (Graphite Instrument Frame) ──────────── */
+.evidence-viewport {
+    position: relative;
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    background: var(--color-graphite);
+    border: 1px solid var(--color-rule-2);
+}
+
+/* Tactical Crosshair Reticle Ticks */
+.evidence-viewport::before {
+    content: '';
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    width: 10px;
+    height: 10px;
+    border-top: 1.5px solid var(--color-accent);
+    border-left: 1.5px solid var(--color-accent);
+    pointer-events: none;
+    z-index: 5;
+}
+
+.evidence-viewport::after {
+    content: '';
+    position: absolute;
+    bottom: 8px;
+    right: 8px;
+    width: 10px;
+    height: 10px;
+    border-bottom: 1.5px solid var(--color-accent);
+    border-right: 1.5px solid var(--color-accent);
+    pointer-events: none;
+    z-index: 5;
+}
+
+.evidence-image {
+    width: 100%;
+    display: block;
+    max-height: 440px;
+    object-fit: contain;
+}
+
+.evidence-type-badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    padding: 4px 8px;
+    background: oklch(14% 0.012 250 / 0.85);
+    border: 1px solid var(--color-rule-2);
+    border-radius: var(--radius-xs);
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--color-accent);
+    letter-spacing: 0.06em;
+}
+
+/* ── Confidence Badge ──────────────────────────────────────────────── */
+.confidence-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 3px 8px;
+    border-radius: var(--radius-xs);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.confidence-badge.high {
+    background: var(--status-success-bg);
+    border: 1px solid var(--status-success-border);
+    color: var(--status-success);
+}
+
+.confidence-badge.medium {
+    background: var(--status-warning-bg);
+    border: 1px solid var(--status-warning-border);
+    color: var(--status-warning);
+}
+
+.confidence-badge.low {
+    background: var(--status-error-bg);
+    border: 1px solid var(--status-error-border);
+    color: var(--status-error);
+}
+
+.confidence-score {
+    font-family: var(--font-mono);
+    font-weight: 700;
+}
+
+/* ── Executive Summary Box ─────────────────────────────────────────── */
+.summary-box {
+    background: var(--color-paper);
+    border: 1px solid var(--color-rule);
+    border-radius: var(--radius-sm);
+    padding: 16px 18px;
+}
+
+.summary-label {
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: var(--color-accent);
+    margin-bottom: 6px;
+}
+
+.answer-text {
+    font-size: 13.5px;
+    line-height: 1.6;
+    color: var(--color-ink);
+}
+
+/* ── Detected Entities Grounding Chips ─────────────────────────────── */
+.section-micro-label {
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: var(--color-muted);
+    margin-bottom: 8px;
+}
+
+.objects-chips-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.object-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 8px;
+    background: var(--color-paper);
+    border: 1px solid var(--color-rule);
+    border-radius: var(--radius-xs);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--color-ink-2);
+    transition: var(--transition);
+}
+
+.object-chip:hover {
+    border-color: var(--color-accent);
+    color: var(--color-accent);
+}
+
+/* ── Multi-Spectral & Spatial Analysis Telemetry Grid ──────────────── */
+.analysis-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+@media (max-width: 720px) {
+    .analysis-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.analysis-card {
+    background: var(--color-paper);
+    border: 1px solid var(--color-rule);
+    border-radius: var(--radius-sm);
+    padding: 14px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    transition: var(--transition);
+}
+
+.analysis-card:hover {
+    border-color: var(--color-accent);
+}
+
+.analysis-card.full-width {
+    grid-column: 1 / -1;
+}
+
+.analysis-card-title {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--color-ink);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.analysis-card-title .card-icon {
+    color: var(--color-accent);
+    font-weight: 700;
+}
+
+.analysis-card-body {
+    font-size: 12.5px;
+    line-height: 1.5;
+    color: var(--color-ink-2);
+}
+
+.analysis-card-body ul {
+    margin: 0;
+    padding-left: 16px;
+}
+
+.analysis-card-body li {
+    margin-bottom: 3px;
+}
+
+.analysis-card-body li:last-child {
+    margin-bottom: 0;
+}
+
+.analysis-card.alert-card {
+    border-color: var(--status-warning-border);
+    background: var(--status-warning-bg);
+}
+
+.analysis-card.alert-card .analysis-card-title {
+    color: var(--status-warning);
+}
+
+.analysis-card.alert-card .analysis-card-body {
+    color: var(--color-ink);
+}
+
+/* ── Execution Trace Drawer ────────────────────────────────────────── */
+.trace-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--color-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    user-select: none;
+    transition: var(--transition);
+}
+
+.trace-toggle:hover {
+    color: var(--color-ink);
+}
+
+.trace-toggle .toggle-arrow {
+    transition: transform 0.16s var(--transition);
+    font-size: 10px;
+}
+
+.trace-toggle.expanded .toggle-arrow {
+    transform: rotate(180deg);
+}
+
+.trace-list {
+    display: none;
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid var(--color-rule);
+}
+
+.trace-list.visible {
+    display: block;
+}
+
+.trace-item {
+    display: grid;
+    grid-template-columns: 8px 120px minmax(0, 1fr) 60px;
+    align-items: center;
+    gap: 10px;
+    padding: 6px 0;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    border-bottom: 1px solid var(--color-rule);
+}
+
+.trace-item:last-child {
+    border-bottom: none;
+}
+
+.trace-status {
+    width: 5px;
+    height: 5px;
+    border-radius: var(--radius-full);
+}
+
+.trace-status.ok {
+    background: var(--status-success);
+}
+
+.trace-status.failed {
+    background: var(--status-error);
+}
+
+.trace-stage {
+    font-weight: 600;
+    color: var(--color-ink);
+}
+
+.trace-detail {
+    color: var(--color-muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.trace-duration {
+    color: var(--color-accent);
+    text-align: right;
+    font-weight: 600;
+}
+
+/* ── Download Button ───────────────────────────────────────────────── */
+.download-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 9px 18px;
+    background: var(--color-paper);
+    border: 1px solid var(--color-rule);
+    border-radius: var(--radius-sm);
+    color: var(--color-ink);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.download-btn:hover {
+    border-color: var(--color-accent);
+    color: var(--color-accent);
+    background: var(--color-accent-subtle);
+}
+
+.download-btn:focus-visible {
+    outline: 2px solid var(--color-focus);
+    outline-offset: 2px;
+}
+
+.download-btn:active {
+    transform: translateY(1px);
+}
+
+/* ── Multi-Format Report Export Strip ──────────────────────────────── */
+.report-export-container {
+    margin-top: 14px;
+    padding: 14px 16px;
+    background: var(--color-paper);
+    border: 1px solid var(--color-rule);
+    border-radius: var(--radius-sm);
+    text-align: center;
+}
+
+.report-export-label {
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--color-muted);
+    margin-bottom: 10px;
+}
+
+.report-export-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
     </style>
+    <link rel="stylesheet" href="style.css?v=hallmark_cobalt_3">
 </head>
 <body>
     <div class="app-container">
-        <!-- ── Header ── -->
+        <!-- ── Top Header / Telemetry Bar ── -->
         <header class="header">
             <div class="header-brand">
-                <div class="header-logo">🛰️</div>
+                <div class="header-logo">SQ</div>
                 <div>
-                    <div class="header-title">SatQuery AI</div>
-                    <div class="header-subtitle">Remote Sensing Visual Intelligence</div>
+                    <div class="header-title">SatQuery</div>
+                    <div class="header-subtitle">VLM Earth Observation Workbench</div>
                 </div>
             </div>
             <div class="header-actions">
@@ -780,28 +1095,48 @@
                     <span class="theme-toggle-icon" id="themeIcon">🌙</span>
                     <span class="theme-toggle-label" id="themeLabel">Dark</span>
                 </button>
-                <div class="header-badge">Prototype v0.1</div>
             </div>
         </header>
 
-        <!-- ── Main Grid ── -->
-        <div class="main-grid">
-            <!-- ── Left Panel: Input ── -->
-            <div class="input-panel">
-                <div class="glass-card">
-                    <div class="card-title">
-                        <span class="icon">📡</span>
-                        Upload Satellite Image
+        <!-- ── Main Workbench Grid ── -->
+        <main class="main-grid">
+            <!-- ── Left Deck: Controls & Ingestion ── -->
+            <section class="input-panel" aria-label="Input controls">
+                <div class="workbench-deck">
+                    <div class="deck-header">
+                        <div class="deck-title">
+                            <span class="icon">//</span>
+                            Ingestion & Query
+                        </div>
                     </div>
 
-                    <!-- Upload Zone -->
-                    <div class="upload-zone" id="uploadZone">
-                        <span class="upload-icon">🌍</span>
+                    <!-- Preset Satellite Scenes -->
+                    <div class="sample-presets-strip">
+                        <div class="sample-presets-label">Benchmark Scenes & Multi-Sensor Modalities</div>
+                        <div class="sample-buttons-row">
+                            <button type="button" class="sample-btn" onclick="loadSample('change_port')">
+                                Bi-Temporal Change (T1/T2)
+                            </button>
+                            <button type="button" class="sample-btn" onclick="loadSample('fusion_port')">
+                                Optical + SAR Fusion
+                            </button>
+                            <button type="button" class="sample-btn" onclick="loadSample('airport_runway')">
+                                Aerodrome Runway
+                            </button>
+                            <button type="button" class="sample-btn" onclick="loadSample('farm_river')">
+                                Farmland & Hydro
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Upload Dropzone (8-state accessible) -->
+                    <div class="upload-zone" id="uploadZone" tabindex="0" role="button" aria-label="Upload satellite image file">
+                        <span class="upload-icon">↑</span>
                         <div class="upload-text">
-                            <strong>Click or drag & drop</strong> satellite imagery
+                            <strong>Select imagery</strong> or drop raster files here
                         </div>
                         <div class="upload-hint">
-                            Supports GeoTIFF (.tif), JPEG, PNG • Max 50 MB
+                            GeoTIFF, JPEG, PNG • Multi-temporal pairs (T1/T2) & Optical/SAR
                         </div>
                         <input type="file" class="upload-input" id="fileInput" 
                                accept=".tif,.tiff,.jpg,.jpeg,.png" multiple>
@@ -810,124 +1145,194 @@
                     <!-- File chips -->
                     <div class="file-chips" id="fileChips"></div>
 
-                    <!-- Error Display -->
-                    <div class="error-display" id="errorDisplay">
-                        <span class="error-icon">⚠️</span>
+                    <!-- Error Banner -->
+                    <div class="error-display" id="errorDisplay" role="alert">
+                        <span class="error-icon">[ERR]</span>
                         <span id="errorText"></span>
                     </div>
 
-                    <!-- Query Input -->
+                    <!-- Query Section -->
                     <div class="query-section">
-                        <label class="query-label" for="queryInput">Question</label>
+                        <label class="query-label" for="queryInput">
+                            <span>Visual Query</span>
+                            <span class="query-hint-shortcut">Ctrl + Enter to run</span>
+                        </label>
                         <div class="query-input-wrapper">
                             <textarea class="query-input" id="queryInput" 
-                                      placeholder="Ask a question about this satellite scene..."
+                                      placeholder="Inquire about bi-temporal change deltas, SAR backscatter reflections, land use (LULC), or infrastructure..."
                                       rows="3"></textarea>
                         </div>
                     </div>
 
-                    <!-- Submit Button -->
+                    <!-- Submit Action -->
                     <button class="submit-btn" id="submitBtn" disabled>
-                        <span>Analyze Satellite Scene</span>
+                        <span>Run VLM Analysis</span>
                     </button>
                 </div>
-            </div>
+            </section>
 
-            <!-- ── Right Panel: Results ── -->
-            <div class="results-panel">
+            <!-- ── Right Deck: Telemetry, Evidence & Analysis ── -->
+            <section class="results-panel" aria-label="Visual evidence and analysis results">
                 <!-- Empty State -->
-                <div class="glass-card" id="emptyState">
+                <div class="workbench-deck" id="emptyState">
                     <div class="empty-state">
-                        <span class="empty-icon">🛰️</span>
-                        <div class="empty-title">Ready to Analyze</div>
+                        <span class="empty-icon">[SQ-01]</span>
+                        <div class="empty-title">Workbench Ready</div>
                         <div class="empty-text">
-                            Upload a satellite image and query to receive visual evidence, detection grounding, and execution trace.
+                            Select a benchmark scene or drop high-resolution imagery (single, bi-temporal T1/T2, or optical+SAR) to activate vision-language evaluation, spatial grounding, and structured multi-format reporting.
                         </div>
                     </div>
                 </div>
 
-                <!-- Loading State -->
-                <div class="glass-card loading-container" id="loadingState">
-                    <div class="loading-title">Analyzing Image...</div>
-                    <div class="loading-subtitle">Processing through the SatQuery pipeline</div>
+                <!-- Pipeline Stepper (Loading State) -->
+                <div class="workbench-deck loading-container" id="loadingState">
+                    <div class="loading-title">Executing Analysis Pipeline...</div>
+                    <div class="loading-subtitle">Dispatching request across SatQuery specialized nodes</div>
                     <div class="loading-stages">
                         <div class="loading-stage" id="stage-compatibility" data-stage="0">
                             <div class="stage-indicator">1</div>
-                            <span>Compatibility Check</span>
+                            <span>Format</span>
                         </div>
                         <div class="loading-stage" id="stage-routing" data-stage="1">
                             <div class="stage-indicator">2</div>
-                            <span>Routing Query</span>
+                            <span>Routing</span>
                         </div>
                         <div class="loading-stage" id="stage-analyzing" data-stage="2">
                             <div class="stage-indicator">3</div>
-                            <span>Specialist Analysis</span>
+                            <span>VLM Node</span>
                         </div>
                         <div class="loading-stage" id="stage-evidence" data-stage="3">
                             <div class="stage-indicator">4</div>
-                            <span>Building Evidence</span>
+                            <span>Grounding</span>
                         </div>
                         <div class="loading-stage" id="stage-report" data-stage="4">
                             <div class="stage-indicator">5</div>
-                            <span>Generating Report</span>
+                            <span>Report Audit</span>
                         </div>
                     </div>
                 </div>
 
-                <!-- Results -->
+                <!-- Results & Telemetry Viewport -->
                 <div class="results-container" id="resultsContainer">
-                    <!-- Evidence Image -->
-                    <div class="glass-card evidence-section">
-                        <div class="card-title">
-                            <span class="icon">🗺️</span>
-                            Visual Evidence
+                    <!-- Visual Evidence Canvas -->
+                    <div class="workbench-deck evidence-section">
+                        <div class="deck-header">
+                            <div class="deck-title">
+                                <span class="icon">//</span>
+                                Evidence Grounding
+                            </div>
                         </div>
-                        <div class="evidence-image-wrapper">
-                            <img class="evidence-image" id="evidenceImage" alt="Evidence overlay">
-                            <div class="evidence-type-badge" id="evidenceTypeBadge">BBOX</div>
+                        <div class="evidence-viewport">
+                            <img class="evidence-image" id="evidenceImage" alt="Satellite evidence overlay">
+                            <div class="evidence-type-badge" id="evidenceTypeBadge">BOUNDING BOX</div>
                         </div>
                     </div>
 
-                    <!-- Answer -->
-                    <div class="glass-card answer-section" style="margin-top: 20px;">
-                        <div class="card-title">
-                            <span class="icon">🧠</span>
-                            Analysis Result
-                        </div>
-                        <!-- Confidence Badge -->
-                        <div class="confidence-section">
+                    <!-- Operational Analysis Ledger -->
+                    <div class="workbench-deck answer-section">
+                        <div class="deck-header">
+                            <div class="deck-title">
+                                <span class="icon">//</span>
+                                Structured Telemetry
+                            </div>
+                            <!-- Confidence Badge -->
                             <div class="confidence-badge" id="confidenceBadge">
                                 <span id="confidenceLabel">High</span>
                                 <span class="confidence-score" id="confidenceScore">0.92</span>
                             </div>
                         </div>
-                        <div class="answer-text" id="answerText"></div>
+
+                        <!-- Executive Summary Box -->
+                        <div class="summary-box">
+                            <div class="summary-label">Executive Summary</div>
+                            <div class="answer-text" id="answerText"></div>
+                        </div>
+
+                        <!-- Grounded Entities Tag List -->
+                        <div class="detected-objects-container" id="detectedObjectsContainer" style="display: none; margin-top: 16px;">
+                            <div class="section-micro-label">Detected Spatial Entities</div>
+                            <div class="objects-chips-grid" id="detectedObjectsList"></div>
+                        </div>
+
+                        <!-- Multi-Spectral Telemetry Grid -->
+                        <div class="detailed-analysis-container" id="detailedAnalysisContainer" style="display: none; margin-top: 20px;">
+                            <div class="section-micro-label">Multi-Angle Satellite Telemetry</div>
+                            <div class="analysis-grid">
+                                <div class="analysis-card" id="cardSceneOverview">
+                                    <div class="analysis-card-title">
+                                        <span class="card-icon">01</span> Scene Overview
+                                    </div>
+                                    <div class="analysis-card-body" id="textSceneOverview"></div>
+                                </div>
+                                <div class="analysis-card" id="cardLandCover">
+                                    <div class="analysis-card-title">
+                                        <span class="card-icon">02</span> Land Cover & Transitions (LULC)
+                                    </div>
+                                    <div class="analysis-card-body" id="textLandCover"></div>
+                                </div>
+                                <div class="analysis-card full-width" id="cardKeyObjects">
+                                    <div class="analysis-card-title">
+                                        <span class="card-icon">03</span> Key Spatial Features & Hotspots
+                                    </div>
+                                    <div class="analysis-card-body" id="textKeyObjects"></div>
+                                </div>
+                                <div class="analysis-card" id="cardSpatialPatterns">
+                                    <div class="analysis-card-title">
+                                        <span class="card-icon">04</span> Structural & Geometric Configuration
+                                    </div>
+                                    <div class="analysis-card-body" id="textSpatialPatterns"></div>
+                                </div>
+                                <div class="analysis-card" id="cardSpectralObservations">
+                                    <div class="analysis-card-title">
+                                        <span class="card-icon">05</span> Spectral Cues & Sensor Backscatter
+                                    </div>
+                                    <div class="analysis-card-body" id="textSpectralObservations"></div>
+                                </div>
+                                <div class="analysis-card full-width alert-card" id="cardConcerns">
+                                    <div class="analysis-card-title">
+                                        <span class="card-icon">06</span> Operational & Environmental Risk Assessment
+                                    </div>
+                                    <div class="analysis-card-body" id="textConcerns"></div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
-                    <!-- Execution Trace -->
-                    <div class="glass-card trace-section" style="margin-top: 20px;">
-                        <div class="trace-toggle" id="traceToggle" onclick="toggleTrace()">
+                    <!-- Execution Trace Drawer -->
+                    <div class="workbench-deck trace-section">
+                        <div class="trace-toggle" id="traceToggle" onclick="toggleTrace()" tabindex="0" role="button" aria-expanded="false">
                             <span>
-                                <span class="icon">📋</span>
-                                Execution Trace
-                                <span id="traceDuration" style="margin-left:8px; font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--primary);"></span>
+                                Execution Trace & Telemetry
+                                <span id="traceDuration" style="margin-left:8px; font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--color-accent);"></span>
                             </span>
                             <span class="toggle-arrow">▼</span>
                         </div>
                         <div class="trace-list" id="traceList"></div>
                     </div>
 
-                    <!-- Download Report -->
-                    <div style="margin-top: 20px; text-align: center;">
-                        <button class="download-btn" id="downloadBtn" onclick="downloadReport()">
-                            📥 Download Report (JSON)
-                        </button>
+                    <!-- Multi-Format Report Export Action Strip -->
+                    <div class="report-export-container" id="reportExportContainer" style="display: none;">
+                        <div class="report-export-label">// EXPORT INSPECTION REPORT</div>
+                        <div class="report-export-buttons">
+                            <button class="download-btn" type="button" onclick="downloadReportFormat('json')">
+                                JSON (.json)
+                            </button>
+                            <button class="download-btn" type="button" onclick="downloadReportFormat('md')">
+                                Markdown (.md)
+                            </button>
+                            <button class="download-btn" type="button" onclick="downloadReportFormat('pdf')">
+                                PDF Document (.pdf)
+                            </button>
+                            <button class="download-btn" type="button" onclick="downloadReportFormat('docx')">
+                                Word (.docx)
+                            </button>
+                        </div>
                     </div>
                 </div>
-            </div>
-        </div>
+            </section>
+        </main>
     </div>
 
-    <script src="app.js"></script>
+    <script src="app.js?v=3.2_multiformat"></script>
 </body>
 </html>

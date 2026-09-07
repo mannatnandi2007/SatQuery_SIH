@@ -112,17 +112,37 @@ async def process_query(
 
 
 @app.get("/report/{report_id}")
-async def get_report(report_id: str):
-    """Download a generated report as JSON."""
-    report_path = os.path.join(REPORTS_DIR, f"report_{report_id}.json")
+@app.get("/report/{report_id}.{ext}")
+async def get_report(report_id: str, format: Optional[str] = None, ext: Optional[str] = None):
+    """Download a generated report in JSON, Markdown, PDF, or Word DOCX format."""
+    fmt = (ext or format or "json").lower().strip()
+    if "." in report_id:
+        base, ext_part = report_id.rsplit(".", 1)
+        if ext_part.lower() in ["json", "md", "pdf", "docx"]:
+            report_id = base
+            fmt = ext_part.lower()
+
+    media_types = {
+        "json": "application/json",
+        "md": "text/markdown; charset=utf-8",
+        "pdf": "application/pdf",
+        "docx": "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+    }
+
+    if fmt not in media_types:
+        raise HTTPException(status_code=400, detail=f"Unsupported format '{fmt}'. Supported formats: json, md, pdf, docx")
+
+    filename = f"report_{report_id}.{fmt}"
+    report_path = os.path.join(REPORTS_DIR, filename)
 
     if not os.path.exists(report_path):
-        raise HTTPException(status_code=404, detail="Report not found")
+        raise HTTPException(status_code=404, detail=f"Report file '{filename}' not found")
 
+    download_name = f"satquery_report_{report_id}.{fmt}"
     return FileResponse(
         report_path,
-        media_type="application/json",
-        filename=f"satquery_report_{report_id}.json"
+        media_type=media_types[fmt],
+        filename=download_name
     )
 
 

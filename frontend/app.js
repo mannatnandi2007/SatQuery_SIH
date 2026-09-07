@@ -18,7 +18,12 @@ const themeIcon = document.getElementById("themeIcon");
 const themeLabel = document.getElementById("themeLabel");
 
 function initTheme() {
-    const savedTheme = localStorage.getItem("satquery_theme") || "light";
+    if (localStorage.getItem("satquery_theme_version") !== "3.0_cobalt") {
+        localStorage.removeItem("satquery_theme");
+        localStorage.setItem("satquery_theme_version", "3.0_cobalt");
+        localStorage.setItem("satquery_theme", "cobalt");
+    }
+    const savedTheme = localStorage.getItem("satquery_theme") || "cobalt";
     applyTheme(savedTheme);
 }
 
@@ -28,7 +33,7 @@ function applyTheme(theme) {
     if (themeIcon && themeLabel) {
         if (theme === "dark") {
             themeIcon.textContent = "☀️";
-            themeLabel.textContent = "Light";
+            themeLabel.textContent = "Cobalt";
         } else {
             themeIcon.textContent = "🌙";
             themeLabel.textContent = "Dark";
@@ -38,8 +43,8 @@ function applyTheme(theme) {
 
 if (themeToggle) {
     themeToggle.addEventListener("click", () => {
-        const current = document.documentElement.getAttribute("data-theme") || "light";
-        applyTheme(current === "dark" ? "light" : "dark");
+        const current = document.documentElement.getAttribute("data-theme") || "cobalt";
+        applyTheme(current === "dark" ? "cobalt" : "dark");
     });
 }
 
@@ -60,6 +65,12 @@ const resultsContainer = document.getElementById("resultsContainer");
 // ── Upload Zone Event Handlers ─────────────────────────
 
 uploadZone.addEventListener("click", () => fileInput.click());
+uploadZone.addEventListener("keydown", (e) => {
+    if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        fileInput.click();
+    }
+});
 
 uploadZone.addEventListener("dragover", (e) => {
     e.preventDefault();
@@ -161,33 +172,61 @@ function formatFileSize(bytes) {
 
 async function loadSample(sampleKey, defaultQuery) {
     const sampleMap = {
-        urban_port: { path: "/samples/urban_port.jpg", name: "sat_urban_port.jpg" },
-        farm_river: { path: "/samples/farm_river.jpg", name: "sat_farm_river.jpg" },
-        airport_runway: { path: "/samples/airport_runway.jpg", name: "sat_airport_runway.jpg" }
+        change_port: {
+            files: [
+                { path: "/samples/port_t1.jpg", name: "port_t1_baseline.jpg" },
+                { path: "/samples/port_t2.jpg", name: "port_t2_monitoring.jpg" }
+            ],
+            query: "Perform bi-temporal change detection and identify any new logistics warehouse construction or altered waterfront infrastructure."
+        },
+        fusion_port: {
+            files: [
+                { path: "/samples/port_t1.jpg", name: "port_optical_rgb.jpg" },
+                { path: "/samples/port_sar.jpg", name: "port_sentinel1_sar.jpg" }
+            ],
+            query: "Execute optical and SAR radar fusion to detect metallic vessels and corner-reflecting infrastructure."
+        },
+        urban_port: {
+            files: [{ path: "/samples/urban_port.jpg", name: "sat_urban_port.jpg" }],
+            query: "Detect all port facilities and industrial warehouse complexes"
+        },
+        farm_river: {
+            files: [{ path: "/samples/farm_river.jpg", name: "sat_farm_river.jpg" }],
+            query: "Analyze agricultural crop health and identify the river channel"
+        },
+        airport_runway: {
+            files: [{ path: "/samples/airport_runway.jpg", name: "sat_airport_runway.jpg" }],
+            query: "Detect the primary runway alignment and taxiway network"
+        }
     };
 
     const target = sampleMap[sampleKey];
     if (!target) return;
 
     try {
-        const res = await fetch(target.path);
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        const blob = await res.blob();
-        const file = new File([blob], target.name, { type: "image/jpeg" });
+        const fileDefs = target.files || [{ path: target.path, name: target.name }];
+        const loaded = [];
+        for (const f of fileDefs) {
+            const res = await fetch(f.path);
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            const blob = await res.blob();
+            loaded.push(new File([blob], f.name, { type: "image/jpeg" }));
+        }
 
-        uploadedFiles = [file];
+        uploadedFiles = loaded;
         renderFileChips();
         updateUploadZoneState();
 
-        if (defaultQuery) {
-            queryInput.value = defaultQuery;
+        const q = defaultQuery || target.query;
+        if (q) {
+            queryInput.value = q;
         }
 
         updateSubmitState();
         triggerLiveCompatibilityCheck();
     } catch (e) {
-        console.error("Failed to load sample image:", e);
-        showError("Could not load sample image from server.");
+        console.error("Failed to load sample image(s):", e);
+        showError("Could not load sample image(s) from server.");
     }
 }
 
@@ -396,7 +435,7 @@ async function handleSubmit() {
 // ── Render Results ─────────────────────────────────────
 
 function renderResults(data) {
-    // Answer
+    // Answer (Executive Summary)
     document.getElementById("answerText").textContent = data.answer;
 
     // Confidence
@@ -407,6 +446,88 @@ function renderResults(data) {
         `${data.confidence.label} Confidence`;
     document.getElementById("confidenceScore").textContent =
         data.confidence.score.toFixed(3);
+
+    // Detected Object Chips
+    const chipsContainer = document.getElementById("detectedObjectsContainer");
+    const chipsList = document.getElementById("detectedObjectsList");
+    if (data.detected_objects && data.detected_objects.length > 0 && chipsContainer && chipsList) {
+        chipsList.innerHTML = data.detected_objects.map(obj => 
+            `<span class="object-chip">📍 ${escapeHtml(obj)}</span>`
+        ).join("");
+        chipsContainer.style.display = "block";
+    } else if (chipsContainer) {
+        chipsContainer.style.display = "none";
+    }
+
+    // Detailed Multi-Spectral & Spatial Analysis Cards
+    const detailContainer = document.getElementById("detailedAnalysisContainer");
+    if (data.detailed_analysis && detailContainer) {
+        const da = data.detailed_analysis;
+        let hasContent = false;
+
+        const cardScene = document.getElementById("cardSceneOverview");
+        if (da.scene_overview && cardScene) {
+            document.getElementById("textSceneOverview").textContent = da.scene_overview;
+            cardScene.style.display = "flex";
+            hasContent = true;
+        } else if (cardScene) {
+            cardScene.style.display = "none";
+        }
+
+        const cardLand = document.getElementById("cardLandCover");
+        if (da.land_cover && cardLand) {
+            document.getElementById("textLandCover").textContent = da.land_cover;
+            cardLand.style.display = "flex";
+            hasContent = true;
+        } else if (cardLand) {
+            cardLand.style.display = "none";
+        }
+
+        const textKeyObjects = document.getElementById("textKeyObjects");
+        const cardKeyObjects = document.getElementById("cardKeyObjects");
+        if (da.key_objects && (Array.isArray(da.key_objects) ? da.key_objects.length > 0 : Boolean(da.key_objects)) && textKeyObjects && cardKeyObjects) {
+            if (Array.isArray(da.key_objects)) {
+                textKeyObjects.innerHTML = `<ul>${da.key_objects.map(item => `<li>${escapeHtml(item)}</li>`).join("")}</ul>`;
+            } else {
+                textKeyObjects.textContent = da.key_objects;
+            }
+            cardKeyObjects.style.display = "flex";
+            hasContent = true;
+        } else if (cardKeyObjects) {
+            cardKeyObjects.style.display = "none";
+        }
+
+        const cardSpatial = document.getElementById("cardSpatialPatterns");
+        if (da.spatial_patterns && cardSpatial) {
+            document.getElementById("textSpatialPatterns").textContent = da.spatial_patterns;
+            cardSpatial.style.display = "flex";
+            hasContent = true;
+        } else if (cardSpatial) {
+            cardSpatial.style.display = "none";
+        }
+
+        const cardSpectral = document.getElementById("cardSpectralObservations");
+        if (da.spectral_observations && cardSpectral) {
+            document.getElementById("textSpectralObservations").textContent = da.spectral_observations;
+            cardSpectral.style.display = "flex";
+            hasContent = true;
+        } else if (cardSpectral) {
+            cardSpectral.style.display = "none";
+        }
+
+        const cardConcerns = document.getElementById("cardConcerns");
+        if (da.potential_concerns && cardConcerns) {
+            document.getElementById("textConcerns").textContent = da.potential_concerns;
+            cardConcerns.style.display = "flex";
+            hasContent = true;
+        } else if (cardConcerns) {
+            cardConcerns.style.display = "none";
+        }
+
+        detailContainer.style.display = hasContent ? "block" : "none";
+    } else if (detailContainer) {
+        detailContainer.style.display = "none";
+    }
 
     // Evidence image
     const evidenceImg = document.getElementById("evidenceImage");
@@ -424,13 +545,16 @@ function renderResults(data) {
     // Execution Trace
     renderTrace(data.trace);
 
-    // Report URL
+    // Report URL & Multi-Format Export
     currentReportUrl = data.report_url;
+    const reportExportContainer = document.getElementById("reportExportContainer");
     const downloadBtn = document.getElementById("downloadBtn");
     if (data.report_url) {
-        downloadBtn.style.display = "inline-flex";
+        if (reportExportContainer) reportExportContainer.style.display = "block";
+        if (downloadBtn) downloadBtn.style.display = "inline-flex";
     } else {
-        downloadBtn.style.display = "none";
+        if (reportExportContainer) reportExportContainer.style.display = "none";
+        if (downloadBtn) downloadBtn.style.display = "none";
     }
 
     showResults();
@@ -462,15 +586,31 @@ function toggleTrace() {
     const toggle = document.getElementById("traceToggle");
     const list = document.getElementById("traceList");
 
-    toggle.classList.toggle("expanded");
+    const isExpanded = toggle.classList.toggle("expanded");
     list.classList.toggle("visible");
+    toggle.setAttribute("aria-expanded", isExpanded ? "true" : "false");
+}
+
+const traceToggleEl = document.getElementById("traceToggle");
+if (traceToggleEl) {
+    traceToggleEl.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            toggleTrace();
+        }
+    });
 }
 
 // ── Report Download ────────────────────────────────────
 
 function downloadReport() {
+    downloadReportFormat("json");
+}
+
+function downloadReportFormat(format) {
     if (currentReportUrl) {
-        window.open(`${API_BASE}${currentReportUrl}`, "_blank");
+        const cleanUrl = currentReportUrl.replace(/\.(json|md|pdf|docx)$/i, "");
+        window.open(`${API_BASE}${cleanUrl}?format=${format}`, "_blank");
     }
 }
 

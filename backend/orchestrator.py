@@ -17,7 +17,12 @@ from dataclasses import dataclass
 from compatibility import run_compatibility_check, CompatibilityResult
 from router import route_query
 from specialists import rs_vlm, change_detection, fusion, SpecialistResult
-from evidence import draw_bounding_box, create_no_evidence_overlay
+from evidence import (
+    draw_bounding_box,
+    create_no_evidence_overlay,
+    create_change_detection_overlay,
+    create_sar_fusion_overlay
+)
 from confidence import compute_confidence
 from trace import TraceBuilder
 from report import generate_report
@@ -32,6 +37,8 @@ class OrchestratorResponse:
     trace: List[Dict[str, Any]]
     report_url: Optional[str]
     report_id: Optional[str]
+    detailed_analysis: Optional[Dict[str, Any]] = None
+    detected_objects: Optional[List[str]] = None
 
     def to_dict(self) -> Dict[str, Any]:
         return {
@@ -41,7 +48,9 @@ class OrchestratorResponse:
             "evidence": self.evidence,
             "trace": self.trace,
             "report_url": self.report_url,
-            "report_id": self.report_id
+            "report_id": self.report_id,
+            "detailed_analysis": self.detailed_analysis,
+            "detected_objects": self.detected_objects or []
         }
 
 
@@ -76,21 +85,26 @@ class Orchestrator:
                 import asyncio
                 if self.fine_tuned_endpoint:
                     def _call_endpoint():
+                        files = {"image": ("scene.png", image_bytes, "image/png")}
+                        data = {"query": query}
                         res = requests.post(
                             self.fine_tuned_endpoint,
-                            json={"query": query},
+                            files=files,
+                            data=data,
                             timeout=10
                         )
                         return res.json() if res.status_code == 200 else None
 
                     data = await asyncio.to_thread(_call_endpoint)
                     if data:
+                        answer_text = data.get("summary") or data.get("answer", "")
                         return SpecialistResult(
-                            answer=data.get("answer", ""),
+                            answer=answer_text,
                             bounding_box=data.get("bounding_box"),
-                            confidence=float(data.get("confidence", 0.9)),
+                            confidence=float(data.get("confidence", 0.94)),
                             evidence_type="bbox" if data.get("bounding_box") else "none",
-                            detail="Processed by Fine-Tuned RS-VLM Checkpoint"
+                            detail=data.get("specialist", "Processed by Fine-Tuned RS-VLM Checkpoint"),
+                            detailed_analysis=data.get("detailed_analysis")
                         )
             except Exception as e:
                 print(f"[Orchestrator] Fine-tuned model call failed, falling back to Gemini: {e}")
@@ -132,6 +146,9 @@ class Orchestrator:
         # ── Stage 2: Routing & Intent Classification ──
         trace.start_stage("Routing")
         intent, specialist_name = route_query(query)
+        if len(file_contents) >= 2 and intent == "single_image_vqa":
+            intent = "change_detection"
+            specialist_name = "Bi-Temporal Change Detection"
         trace.end_stage("ok", f"Intent: {intent} → Selected Specialist: {specialist_name}")
 
         # ── Stage 3: Specialist Execution ──
@@ -146,7 +163,11 @@ class Orchestrator:
                     query
                 )
             elif intent == "fusion":
-                specialist_result = await fusion.analyze(file_contents[0], query)
+                specialist_result = await fusion.analyze(
+                    file_contents[0],
+                    query,
+                    sar_bytes=file_contents[1] if len(file_contents) > 1 else None
+                )
             else:
                 specialist_result = await self._execute_single_image_vqa(file_contents[0], query)
 
@@ -171,7 +192,24 @@ class Orchestrator:
         overlay_base64 = None
 
         try:
-            if specialist_result.bounding_box and specialist_result.evidence_type == "bbox":
+            if intent == "change_detection" and len(file_contents) >= 2:
+                overlay_filename, overlay_base64 = create_change_detection_overlay(
+                    file_contents[0],
+                    file_contents[1],
+                    specialist_result.bounding_box,
+                    label="DETECTED CHANGE DELTA",
+                    mask_bytes=getattr(specialist_result, "mask_bytes", None)
+                )
+                trace.end_stage("ok", f"Rendered bi-temporal comparative panel with DL contours: {specialist_result.bounding_box}")
+            elif intent == "fusion":
+                overlay_filename, overlay_base64 = create_sar_fusion_overlay(
+                    file_contents[0],
+                    file_contents[1] if len(file_contents) > 1 else None,
+                    specialist_result.bounding_box,
+                    label="FUSED RADAR/OPTICAL DETECTION"
+                )
+                trace.end_stage("ok", f"Rendered Optical+SAR fusion overlay: {specialist_result.bounding_box}")
+            elif specialist_result.bounding_box:
                 overlay_filename, overlay_base64 = draw_bounding_box(
                     file_contents[0],
                     specialist_result.bounding_box,
@@ -201,7 +239,10 @@ class Orchestrator:
                 confidence=confidence_result,
                 trace=trace.get_trace(),
                 evidence_type=specialist_result.evidence_type,
-                overlay_filename=overlay_filename
+                overlay_filename=overlay_filename,
+                detailed_analysis=specialist_result.detailed_analysis,
+                model=specialist_result.detail,
+                dl_metrics=getattr(specialist_result, "dl_metrics", None)
             )
             trace.end_stage("ok", f"Report saved: {report_result.get('report_id')}")
         except Exception as e:
@@ -219,7 +260,9 @@ class Orchestrator:
             },
             trace=trace.get_trace(),
             report_url=report_result.get("report_url"),
-            report_id=report_result.get("report_id")
+            report_id=report_result.get("report_id"),
+            detailed_analysis=specialist_result.detailed_analysis,
+            detected_objects=specialist_result.detected_objects
         )
 
         return 200, response
