@@ -28,9 +28,9 @@ rsvlm_adapter/
 satquery_rsvlm_lora/
 
 # Generated Runtime Artifacts
-backend/static/overlays/*.png
+backend/static/overlays/*
 !backend/static/overlays/.gitkeep
-backend/reports/*.json
+backend/reports/*
 !backend/reports/.gitkeep
 
 # Datasets & Temporary Training Files
