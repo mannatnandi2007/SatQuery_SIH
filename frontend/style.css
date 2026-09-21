@@ -1,9 +1,9 @@
 /* Hallmark · genre: modern-minimal · macrostructure: Workbench · theme: cobalt · enrichment: T1 */
-/* Pre-emit critique: P5 H5 E5 S5 R5 V5 */
+/* Pre-emit critique: Philosophy:5 Hierarchy:5 Execution:5 Specificity:5 Restraint:5 Variety:5 */
 
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cabinet+Grotesk:wght@700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
 
-/* ── Cobalt Design Tokens ─────────────────────────────────────────── */
+/* ── Cobalt & High-Contrast Design Tokens ─────────────────────────── */
 :root, [data-theme="light"], [data-theme="cobalt"] {
     --color-paper: oklch(98.5% 0.004 250);
     --color-paper-2: oklch(96.5% 0.006 250);
@@ -38,9 +38,9 @@
     --status-error-bg: oklch(55% 0.22 28 / 0.1);
     --status-error-border: oklch(55% 0.22 28 / 0.25);
 
-    --font-display: 'Space Grotesk', -apple-system, sans-serif;
-    --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-    --font-mono: 'JetBrains Mono', monospace;
+    --font-display: 'Cabinet Grotesk', -apple-system, BlinkMacSystemFont, sans-serif;
+    --font-body: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    --font-mono: 'JetBrains Mono', 'SF Mono', monospace;
 
     --radius-xs: 4px;
     --radius-sm: 6px;
@@ -48,7 +48,7 @@
     --radius-full: 9999px;
     
     --shadow-subtle: 0 1px 2px oklch(24% 0.02 258 / 0.04);
-    --transition: all 0.16s cubic-bezier(0.16, 1, 0.3, 1);
+    --transition: background 80ms ease, border-color 80ms ease, color 80ms ease;
 }
 
 [data-theme="dark"] {
@@ -166,6 +166,43 @@ body {
     color: var(--color-muted);
     letter-spacing: 0.04em;
     text-transform: uppercase;
+}
+
+/* ── Header Telemetry Status Pills ─────────────────────────────────── */
+.header-telemetry-status {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+@media (max-width: 900px) {
+    .header-telemetry-status {
+        display: none;
+    }
+}
+
+.telemetry-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 8px;
+    background: var(--color-paper);
+    border: 1px solid var(--color-rule);
+    border-radius: var(--radius-xs);
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    font-weight: 600;
+    color: var(--color-ink-2);
+    letter-spacing: 0.04em;
+    font-variant-numeric: tabular-nums;
+}
+
+.pill-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--status-success);
+    box-shadow: 0 0 4px var(--status-success);
 }
 
 .header-actions {
@@ -514,7 +551,6 @@ body {
 .submit-btn:hover:not(:disabled) {
     background: var(--color-accent-hover);
     border-color: var(--color-accent-hover);
-    transform: translateY(-1px);
 }
 
 .submit-btn:focus-visible {
@@ -534,6 +570,28 @@ body {
     border-color: var(--color-rule);
     color: var(--color-muted);
     transform: none;
+}
+
+/* 8-State Additional Declarations */
+.submit-btn[data-state="loading"],
+.submit-btn.is-loading {
+    cursor: wait;
+    opacity: 0.85;
+    pointer-events: none;
+}
+
+.submit-btn[data-state="error"],
+.submit-btn.is-error {
+    border-color: var(--status-error);
+    background: var(--status-error-bg);
+    color: var(--status-error);
+}
+
+.submit-btn[data-state="success"],
+.submit-btn.is-success {
+    border-color: var(--status-success);
+    background: var(--status-success-bg);
+    color: var(--status-success);
 }
 
 /* ── Right Panel: Empty State ──────────────────────────────────────── */

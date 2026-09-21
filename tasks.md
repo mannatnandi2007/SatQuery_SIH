@@ -40,41 +40,41 @@
 *Objective: Prepare datasets, implement spatial resolution normalization baselines, scaffold JEV-JEPA encoder, and configure the Hallmark design tokens.*
 
 #### Track A: GSD Normalisation (Madhura & Dipesh)
-- [ ] **Task 1.1: GSD Metadata Extractor (`backend/gsd_normalizer.py`)**
+- [x] **Task 1.1: GSD Metadata Extractor (`backend/gsd_normalizer.py`)**
   - **Inputs:** GeoTIFF raster bytes, PNG/JPG with optional EXIF/XML header tags.
   - **Outputs:** Structured metadata dictionary: `{detected_gsd_m: float, sensor: str, crs: str, dimensions: (int, int)}`.
   - **Criteria:** Correctly reads pixel resolution for Sentinel-2 (10m/20m/60m), Landsat 8 (15m/30m), and falls back gracefully to manual input for plain JPG/PNG.
-- [ ] **Task 1.2: Spatial Resolution Resampling Engine**
+- [x] **Task 1.2: Spatial Resolution Resampling Engine**
   - **Inputs:** Image tensor or PIL image, source GSD, target canonical GSD (default: $10.0\text{m/px}$).
   - **Outputs:** Resampled raster preserving spatial aspect ratio and high-frequency edge gradients (bicubic or Lanczos anti-aliased).
   - **Criteria:** Eliminates scale-induced artifacts without introducing ringing along water/land or runway boundaries.
 
 #### Track B: Fine-Tuning & Self-Adapting Setup (Aakansha & Mannat)
-- [ ] **Task 1.3: Remote Sensing VQA Dataset Curation (`training/data/`)**
+- [x] **Task 1.3: Remote Sensing VQA Dataset Curation (`training/data/`)**
   - **Inputs:** BigEarthNet, RSIVQA, or curated GeoTIFF scenes.
   - **Outputs:** Formatted instruction-tuning dataset `bigearthnet_vqa_grounding.json` with $(N=500)$ curated pairs containing spatial bounding tags `[ymin, xmin, ymax, xmax]`.
   - **Criteria:** Validated schema, balanced distribution across water bodies, urban ports, airports, agricultural parcels, and industrial facilities.
-- [ ] **Task 1.4: Evaluation Baseline & ECE Harness**
+- [x] **Task 1.4: Evaluation Baseline & ECE Harness**
   - **Inputs:** Base vision-language model (Qwen2-VL-7B or LLaVA-1.5-7B).
   - **Outputs:** Evaluation script computing Grounding IoU, VQA Accuracy, and Expected Calibration Error (ECE).
   - **Criteria:** Generates reproducible zero-shot baseline metrics before LoRA fine-tuning.
 
 #### Track C: JEV-JEPA Representation Engine (Khushal & Aryan)
-- [ ] **Task 1.5: JEV-JEPA Architecture Definition (`backend/jepa_engine.py`)**
+- [x] **Task 1.5: JEV-JEPA Architecture Definition (`backend/jepa_engine.py`)**
   - **Inputs:** Pre-processed multispectral/optical scene patches ($16 \times 16$ or $14 \times 14$).
   - **Outputs:** Vision Transformer (ViT) latent encoder producing patch representations $z \in \mathbb{R}^{B \times N \times D}$ ($D=768$).
   - **Criteria:** Non-generative architecture without pixel decoders; verifies forward pass execution under $< 100\text{ms}$ on GPU.
-- [ ] **Task 1.6: Spatial Masking Strategy**
+- [x] **Task 1.6: Spatial Masking Strategy**
   - **Inputs:** Input scene patch grid.
   - **Outputs:** Multi-block context and target masks (4 context blocks, 2 target blocks).
   - **Criteria:** Context patches pass to encoder; target patches predicted purely in latent feature space.
 
 #### Track D: UI / UX Hallmark Architecture (Aryan)
-- [ ] **Task 1.7: Hallmark Design System Setup (`frontend/style.css`)**
+- [x] **Task 1.7: Hallmark Design System Setup (`frontend/style.css`)**
   - **Inputs:** `UIrules.md` requirements and color token specifications.
   - **Outputs:** Pure CSS design token system implementing high-contrast industrial dark mode (`--color-paper`, `--color-rule`, `--color-accent`, `--font-display`, `--font-mono`).
   - **Criteria:** Completely purge all 20 banned patterns (no purple/blue gradients, no Inter-everywhere, no Space Grotesk/Instrument Serif, no glassmorphism).
-- [ ] **Task 1.8: Telemetry Workbench Shell (`frontend/index.html`)**
+- [x] **Task 1.8: Telemetry Workbench Shell (`frontend/index.html`)**
   - **Inputs:** Wireframe for dual-canvas workspace (Scene view + Evidence overlay view).
   - **Outputs:** Responsive semantic HTML layout with header status bar, stage telemetry drawer, and inspector sidebar.
   - **Criteria:** Passes initial Hallmark anti-slop visual check; zero emojis in headings, zero decorative badge clutter.
