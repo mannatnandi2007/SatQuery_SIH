@@ -594,6 +594,11 @@ body {
     color: var(--status-success);
 }
 
+.submit-btn[data-state="dirty"] {
+    border-color: var(--color-accent);
+    color: var(--color-accent);
+}
+
 /* ── Right Panel: Empty State ──────────────────────────────────────── */
 .empty-state {
     padding: 64px 20px;
@@ -737,12 +742,81 @@ body {
 }
 
 /* ── Visual Evidence Viewport (Graphite Instrument Frame) ──────────── */
+/* ── Canvas Mode Toggle (Pill Switcher) ── */
+.canvas-mode-toggle {
+    display: inline-flex;
+    align-items: center;
+    background: var(--color-paper);
+    border: 1px solid var(--color-rule);
+    border-radius: var(--radius-xs);
+    padding: 2px;
+    gap: 2px;
+}
+
+.mode-btn {
+    padding: 3px 8px;
+    background: transparent;
+    border: none;
+    border-radius: var(--radius-xs);
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--color-muted);
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    transition: var(--transition);
+}
+
+.mode-btn:hover {
+    color: var(--color-ink);
+}
+
+.mode-btn.active {
+    background: var(--color-paper-3);
+    color: var(--color-accent);
+    border: 1px solid var(--color-rule-2);
+}
+
 .evidence-viewport {
     position: relative;
     border-radius: var(--radius-sm);
     overflow: hidden;
     background: var(--color-graphite);
     border: 1px solid var(--color-rule-2);
+    min-height: 280px;
+}
+
+.evidence-viewport.split-mode {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    background: var(--color-graphite-surface);
+}
+
+.canvas-pane {
+    position: relative;
+    overflow: hidden;
+    background: var(--color-graphite);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.pane-label {
+    position: absolute;
+    bottom: 8px;
+    left: 8px;
+    padding: 3px 6px;
+    background: oklch(12% 0.01 250 / 0.85);
+    border: 1px solid var(--color-rule);
+    border-radius: var(--radius-xs);
+    font-family: var(--font-mono);
+    font-size: 9px;
+    font-weight: 600;
+    color: var(--color-muted);
+    letter-spacing: 0.04em;
+    pointer-events: none;
 }
 
 /* Tactical Crosshair Reticle Ticks */
@@ -792,6 +866,26 @@ body {
     font-weight: 600;
     color: var(--color-accent);
     letter-spacing: 0.06em;
+}
+
+/* ── Inspector Reticle Bar ── */
+.inspector-reticle-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 6px 12px;
+    margin-top: 8px;
+    background: var(--color-paper);
+    border: 1px solid var(--color-rule);
+    border-radius: var(--radius-xs);
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    color: var(--color-muted);
+    font-variant-numeric: tabular-nums;
+}
+
+.reticle-item {
+    letter-spacing: 0.02em;
 }
 
 /* ── Confidence Badge ──────────────────────────────────────────────── */

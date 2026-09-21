@@ -197,8 +197,27 @@ class SiameseChangeDetectionModel:
             except Exception as e:
                 print(f"[DL-Model] ONNX inference failed: {e}")
                 prob_map = None
+        # Compute JEV-JEPA latent representation distance (Khushal & Aryan)
+        try:
+            from jepa_engine import jepa_engine
+            jepa_res = jepa_engine.compute_bitemporal_latent_distance(img1, img2)
+            jepa_dist = np.array(jepa_res["distance_map"], dtype=np.float32)
+            jepa_map = cv2.resize(jepa_dist, self.target_size, interpolation=cv2.INTER_CUBIC)
+        except Exception as e:
+            print(f"[DL-Model] JEV-JEPA feature extraction skipped: {e}")
+            jepa_map = None
 
-        if prob_map is None:
+        if prob_map is not None:
+            if jepa_map is not None:
+                # Fused Siamese CNN + JEV-JEPA Latent Representation
+                prob_map = 0.55 * prob_map + 0.45 * jepa_map
+                source = "JEV-JEPA Latents + Siamese CNN"
+            else:
+                source = "Siamese CNN (ONNX)"
+        elif jepa_map is not None:
+            prob_map = jepa_map
+            source = "JEV-JEPA Latent Spatial Distance"
+        else:
             # Change Vector Analysis (CVA) algorithmic fallback
             source = "Change Vector Analysis (CVA Fallback)"
             t1_np = np.array(img1.resize(self.target_size, Image.LANCZOS), dtype=np.float32)

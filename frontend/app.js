@@ -11,6 +11,9 @@ const API_BASE = (window.location && window.location.origin && window.location.o
 // ── State ──────────────────────────────────────────────
 let uploadedFiles = [];
 let currentReportUrl = null;
+let currentGsdM = 10.0;
+let rawImageSource = null;
+let hasRunOnce = false;
 
 // ── Theme Switcher ──────────────────────────────────────
 const themeToggle = document.getElementById("themeToggle");
@@ -61,6 +64,15 @@ const errorText = document.getElementById("errorText");
 const emptyState = document.getElementById("emptyState");
 const loadingState = document.getElementById("loadingState");
 const resultsContainer = document.getElementById("resultsContainer");
+
+// Dual-Canvas & Reticle DOM Elements
+const rawSceneImage = document.getElementById("rawSceneImage");
+const rawCanvasPane = document.getElementById("rawCanvasPane");
+const evidenceCanvasPane = document.getElementById("evidenceCanvasPane");
+const evidenceViewport = document.getElementById("evidenceViewport");
+const reticleCoords = document.getElementById("reticleCoords");
+const reticleGround = document.getElementById("reticleGround");
+const reticleGSD = document.getElementById("reticleGSD");
 
 // ── Upload Zone Event Handlers ─────────────────────────
 
@@ -120,6 +132,16 @@ function handleFiles(files) {
     // Replace or append (max 2)
     uploadedFiles = [...uploadedFiles, ...validFiles].slice(0, 2);
 
+    // Cache raw preview for dual-canvas comparison
+    if (uploadedFiles.length > 0) {
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+            rawImageSource = ev.target.result;
+            if (rawSceneImage) rawSceneImage.src = rawImageSource;
+        };
+        reader.readAsDataURL(uploadedFiles[0]);
+    }
+
     renderFileChips();
     updateUploadZoneState();
     updateSubmitState();
@@ -159,7 +181,19 @@ function updateUploadZoneState() {
 function updateSubmitState() {
     const hasFiles = uploadedFiles.length > 0;
     const hasQuery = queryInput.value.trim().length > 0;
-    submitBtn.disabled = !(hasFiles && hasQuery);
+    const isReady = hasFiles && hasQuery;
+    submitBtn.disabled = !isReady;
+
+    if (!isReady) {
+        submitBtn.setAttribute("data-state", "disabled");
+        submitBtn.textContent = "Analyze Satellite Scene";
+    } else if (hasRunOnce) {
+        submitBtn.setAttribute("data-state", "dirty");
+        submitBtn.textContent = "Re-evaluate Scene";
+    } else {
+        submitBtn.setAttribute("data-state", "idle");
+        submitBtn.textContent = "Analyze Satellite Scene";
+    }
 }
 
 function formatFileSize(bytes) {
@@ -205,6 +239,11 @@ async function loadSample(sampleKey, defaultQuery) {
 
     try {
         const fileDefs = target.files || [{ path: target.path, name: target.name }];
+        if (fileDefs.length > 0) {
+            rawImageSource = fileDefs[0].path;
+            if (rawSceneImage) rawSceneImage.src = rawImageSource;
+        }
+
         const loaded = [];
         for (const f of fileDefs) {
             const res = await fetch(f.path);
@@ -367,9 +406,10 @@ async function handleSubmit() {
     const query = queryInput.value.trim();
     if (!query || uploadedFiles.length === 0) return;
 
-    // Disable submit, show loading
+    // Disable submit, show loading with 8-state telemetry
     submitBtn.disabled = true;
-    submitBtn.textContent = "Processing...";
+    submitBtn.setAttribute("data-state", "loading");
+    submitBtn.textContent = "Analyzing Scene...";
     showLoading();
 
     try {
@@ -419,16 +459,26 @@ async function handleSubmit() {
 
         // Render results
         renderResults(data);
+
+        // 8-State: Success
+        hasRunOnce = true;
+        submitBtn.disabled = false;
+        submitBtn.setAttribute("data-state", "success");
+        submitBtn.textContent = "Analysis Complete · Run Again";
     } catch (err) {
         console.error("API Error:", err);
         showError(
             "Could not connect to the SatQuery AI backend. Make sure the server is running on http://localhost:8000"
         );
         showEmpty();
-    } finally {
         submitBtn.disabled = false;
-        submitBtn.textContent = "Analyze Satellite Scene";
-        updateSubmitState();
+        submitBtn.setAttribute("data-state", "error");
+        submitBtn.textContent = "Retry Analysis";
+    } finally {
+        if (submitBtn.getAttribute("data-state") === "loading") {
+            submitBtn.disabled = false;
+            updateSubmitState();
+        }
     }
 }
 
@@ -529,7 +579,7 @@ function renderResults(data) {
         detailContainer.style.display = "none";
     }
 
-    // Evidence image
+    // Evidence image & GSD calibration
     const evidenceImg = document.getElementById("evidenceImage");
     const evidenceBadge = document.getElementById("evidenceTypeBadge");
 
@@ -541,6 +591,24 @@ function renderResults(data) {
         evidenceImg.src = `${API_BASE}${data.evidence.overlay_image_url}`;
         evidenceBadge.textContent = data.evidence.type.toUpperCase();
     }
+
+    // Update GSD metric calibration
+    if (data.evidence && data.evidence.metric_info && data.evidence.metric_info.gsd_m) {
+        currentGsdM = Number(data.evidence.metric_info.gsd_m) || 10.0;
+    } else {
+        currentGsdM = 10.0;
+    }
+    if (reticleGSD) {
+        reticleGSD.textContent = `GSD: ${currentGsdM.toFixed(1)} m/px`;
+    }
+
+    // Ensure raw scene is bound for dual-canvas comparison
+    if (rawSceneImage && !rawSceneImage.src && rawImageSource) {
+        rawSceneImage.src = rawImageSource;
+    }
+
+    // Default to evidence view on new results
+    switchCanvasMode("evidence");
 
     // Execution Trace
     renderTrace(data.trace);
@@ -627,7 +695,90 @@ function escapeHtml(text) {
     return div.innerHTML;
 }
 
+// ── Dual-Canvas Inspector & Reticle Tracker (Aryan) ────────
+
+window.switchCanvasMode = function(mode) {
+    const btnEvidence = document.getElementById("btnModeEvidence");
+    const btnRaw = document.getElementById("btnModeRaw");
+    const btnSplit = document.getElementById("btnModeSplit");
+    const rawPane = document.getElementById("rawCanvasPane");
+    const evidencePane = document.getElementById("evidenceCanvasPane");
+    const viewport = document.getElementById("evidenceViewport");
+
+    if (!viewport || !rawPane || !evidencePane) return;
+
+    [btnEvidence, btnRaw, btnSplit].forEach(b => {
+        if (b) b.classList.remove("active");
+    });
+
+    if (mode === "raw") {
+        rawPane.style.display = "flex";
+        evidencePane.style.display = "none";
+        viewport.classList.remove("split-mode");
+        if (btnRaw) btnRaw.classList.add("active");
+    } else if (mode === "split") {
+        rawPane.style.display = "flex";
+        evidencePane.style.display = "flex";
+        viewport.classList.add("split-mode");
+        if (btnSplit) btnSplit.classList.add("active");
+    } else {
+        rawPane.style.display = "none";
+        evidencePane.style.display = "flex";
+        viewport.classList.remove("split-mode");
+        if (btnEvidence) btnEvidence.classList.add("active");
+    }
+};
+
+function initReticleTracker() {
+    const viewport = document.getElementById("evidenceViewport");
+    const coordsEl = document.getElementById("reticleCoords");
+    const groundEl = document.getElementById("reticleGround");
+    const gsdEl = document.getElementById("reticleGSD");
+    if (!viewport) return;
+
+    viewport.addEventListener("mousemove", (e) => {
+        const evImg = document.getElementById("evidenceImage");
+        const rawImg = document.getElementById("rawSceneImage");
+
+        let activeImg = null;
+        if (e.target && e.target.tagName === "IMG") {
+            activeImg = e.target;
+        } else if (evImg && evImg.offsetParent) {
+            activeImg = evImg;
+        } else if (rawImg && rawImg.offsetParent) {
+            activeImg = rawImg;
+        }
+
+        if (!activeImg || !activeImg.naturalWidth || activeImg.naturalWidth === 0) {
+            return;
+        }
+
+        const rect = activeImg.getBoundingClientRect();
+        const clientX = Math.max(rect.left, Math.min(e.clientX, rect.right));
+        const clientY = Math.max(rect.top, Math.min(e.clientY, rect.bottom));
+
+        const scaleX = activeImg.naturalWidth / (rect.width || 1);
+        const scaleY = activeImg.naturalHeight / (rect.height || 1);
+
+        const pxX = Math.round((clientX - rect.left) * scaleX);
+        const pxY = Math.round((clientY - rect.top) * scaleY);
+
+        const groundM_X = Math.round(pxX * currentGsdM);
+        const groundM_Y = Math.round(pxY * currentGsdM);
+
+        if (coordsEl) coordsEl.textContent = `COORD: ${pxX} px, ${pxY} px`;
+        if (groundEl) groundEl.textContent = `GROUND: ~${groundM_X} m, ~${groundM_Y} m`;
+        if (gsdEl) gsdEl.textContent = `GSD: ${currentGsdM.toFixed(1)} m/px`;
+    });
+
+    viewport.addEventListener("mouseleave", () => {
+        if (coordsEl) coordsEl.textContent = "COORD: -- px, -- px";
+        if (groundEl) groundEl.textContent = "GROUND: -- m, -- m";
+    });
+}
+
 // ── Initialize ─────────────────────────────────────────
+initReticleTracker();
 showEmpty();
 console.log(
     "%c🛰️ SatQuery AI Frontend Loaded",

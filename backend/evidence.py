@@ -9,7 +9,7 @@ import uuid
 from io import BytesIO
 from PIL import Image, ImageDraw, ImageFont, ImageChops, ImageEnhance
 import base64
-from typing import Optional, List, Dict, Tuple
+from typing import Optional, List, Dict, Tuple, Any
 
 
 # Directory to save overlay images
@@ -27,15 +27,63 @@ def _get_font(size: int = 14):
     return ImageFont.load_default()
 
 
+from gsd_normalizer import gsd_normalizer
+
+
+class EvidenceOutput(tuple):
+    """Tuple subclass maintaining (filename, img_base64) backward compatibility while exposing metric_info."""
+    def __new__(cls, filename: str, img_base64: str, metric_info: Optional[Dict[str, Any]] = None):
+        return super().__new__(cls, (filename, img_base64))
+
+    def __init__(self, filename: str, img_base64: str, metric_info: Optional[Dict[str, Any]] = None):
+        self.filename = filename
+        self.img_base64 = img_base64
+        self.metric_info = metric_info or {}
+
+
+def draw_metric_scale_bar(draw: ImageDraw.ImageDraw, img_w: int, img_h: int, gsd_m: float = 10.0):
+    """
+    Renders a calibrated physical metric scale bar on the image overlay.
+    """
+    spec = gsd_normalizer.generate_scale_bar(img_w, gsd_m)
+    bar_px = spec["bar_length_px"]
+    label = spec["label"]
+
+    margin_x = 16
+    margin_y = img_h - 26
+    bar_height = 4
+
+    font = _get_font(11)
+    text_bbox = draw.textbbox((margin_x, margin_y - 18), label, font=font)
+    pill_w = max(bar_px + 16, (text_bbox[2] - text_bbox[0]) + 20)
+
+    # High-contrast backdrop
+    draw.rectangle(
+        [margin_x - 6, margin_y - 20, margin_x + pill_w, margin_y + 8],
+        fill=(14, 18, 26)
+    )
+    # Scale bar line
+    draw.rectangle(
+        [margin_x, margin_y, margin_x + bar_px, margin_y + bar_height],
+        fill=(0, 229, 255)
+    )
+    # End ticks
+    draw.line([(margin_x, margin_y - 3), (margin_x, margin_y + bar_height + 3)], fill=(255, 255, 255), width=2)
+    draw.line([(margin_x + bar_px, margin_y - 3), (margin_x + bar_px, margin_y + bar_height + 3)], fill=(255, 255, 255), width=2)
+    # Label with GSD indicator
+    draw.text((margin_x + 2, margin_y - 18), f"{label} (GSD: {gsd_m}m/px)", fill=(240, 245, 255), font=font)
+
+
 def draw_bounding_box(
     image_bytes: bytes,
     bbox: List[float],  # [ymin_pct, xmin_pct, ymax_pct, xmax_pct] or [x1, y1, x2, y2]
     label: Optional[str] = "Detection",
     color: Tuple[int, int, int] = (0, 229, 255),
-    thickness: int = 3
-) -> Tuple[str, str]:
+    thickness: int = 3,
+    gsd_m: float = 10.0
+) -> EvidenceOutput:
     """
-    Draw a high-contrast bounding box overlay on a single satellite image.
+    Draw a high-contrast bounding box overlay on a satellite image with physical scale metrics.
     """
     img = Image.open(BytesIO(image_bytes)).convert("RGB")
     draw = ImageDraw.Draw(img)
@@ -51,6 +99,9 @@ def draw_bounding_box(
 
     x1, y1 = max(0, min(x1, x2)), max(0, min(y1, y2))
     x2, y2 = min(w, max(x1, x2)), min(h, max(y1, y2))
+
+    # Calculate physical metric ground dimensions
+    metric_info = gsd_normalizer.compute_metric_dimensions((c1, c2, c3, c4), w, h, gsd_m)
 
     # Semi-transparent fill
     overlay = Image.new("RGBA", img.size, (0, 0, 0, 0))
@@ -73,10 +124,15 @@ def draw_bounding_box(
         draw.line([(x2 + i, y2 + i), (x2 - tick_len, y2 + i)], fill=(255, 255, 255), width=2)
         draw.line([(x2 + i, y2 + i), (x2 + i, y2 - tick_len)], fill=(255, 255, 255), width=2)
 
-    # Draw label badge
+    # Render Calibrated Metric Scale Bar
+    draw_metric_scale_bar(draw, w, h, gsd_m)
+
+    # Draw label badge with metric area appended
     if label:
+        area_str = f"{metric_info['area_m2']:,.0f} m²" if metric_info['area_m2'] < 1_000_000 else f"{metric_info['area_km2']:.2f} km²"
+        display_text = f" {label} · {area_str} "
         font = _get_font(max(12, min(w, h) // 32))
-        text_bbox = draw.textbbox((x1, max(0, y1 - 24)), f" {label} ", font=font)
+        text_bbox = draw.textbbox((x1, max(0, y1 - 24)), display_text, font=font)
         draw.rectangle(
             [text_bbox[0], text_bbox[1], text_bbox[2], text_bbox[3]],
             fill=(10, 15, 25)
@@ -86,7 +142,7 @@ def draw_bounding_box(
             outline=color,
             width=1
         )
-        draw.text((x1 + 3, max(0, y1 - 24)), f" {label} ", fill=color, font=font)
+        draw.text((x1 + 3, max(0, y1 - 24)), display_text, fill=color, font=font)
 
     filename = f"overlay_{uuid.uuid4().hex[:12]}.png"
     filepath = os.path.join(OVERLAYS_DIR, filename)
@@ -96,7 +152,7 @@ def draw_bounding_box(
     img.save(buffer, format="PNG")
     img_base64 = base64.b64encode(buffer.getvalue()).decode("utf-8")
 
-    return filename, img_base64
+    return EvidenceOutput(filename, img_base64, metric_info)
 
 
 def create_change_detection_overlay(
@@ -193,10 +249,6 @@ def create_change_detection_overlay(
     draw.text((12, 10), "T1: BASELINE ACQUISITION", fill=(160, 175, 195), font=font)
     draw.text((target_w + gutter + 12, 10), "T2: MONITORING DELTA", fill=(245, 158, 11), font=font)
 
-    # Divider bar
-    draw.rectangle([target_w, header_h, target_w + gutter, total_h], fill=(25, 32, 45))
-
-    # Save to file
     filename = f"change_{uuid.uuid4().hex[:12]}.png"
     filepath = os.path.join(OVERLAYS_DIR, filename)
     canvas.save(filepath, "PNG")
@@ -205,7 +257,9 @@ def create_change_detection_overlay(
     canvas.save(buffer, format="PNG")
     img_base64 = base64.b64encode(buffer.getvalue()).decode("utf-8")
 
-    return filename, img_base64
+    metric_info = gsd_normalizer.compute_metric_dimensions(bbox, target_w, target_h, 10.0) if bbox else {"gsd_m": 10.0}
+
+    return EvidenceOutput(filename, img_base64, metric_info)
 
 
 def create_sar_fusion_overlay(
@@ -287,10 +341,11 @@ def create_sar_fusion_overlay(
     canvas.save(buffer, format="PNG")
     img_base64 = base64.b64encode(buffer.getvalue()).decode("utf-8")
 
-    return filename, img_base64
+    metric_info = gsd_normalizer.compute_metric_dimensions(bbox, target_w, target_h, 10.0) if bbox else {"gsd_m": 10.0}
+    return EvidenceOutput(filename, img_base64, metric_info)
 
 
-def create_no_evidence_overlay(image_bytes: bytes) -> Tuple[str, str]:
+def create_no_evidence_overlay(image_bytes: bytes) -> EvidenceOutput:
     """
     Return the original image as the overlay when no bounding box is available.
     """
@@ -304,4 +359,4 @@ def create_no_evidence_overlay(image_bytes: bytes) -> Tuple[str, str]:
     img.save(buffer, format="PNG")
     img_base64 = base64.b64encode(buffer.getvalue()).decode("utf-8")
 
-    return filename, img_base64
+    return EvidenceOutput(filename, img_base64, {"gsd_m": 10.0, "is_canonical_sentinel": True})

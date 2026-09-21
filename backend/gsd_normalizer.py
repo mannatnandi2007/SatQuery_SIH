@@ -200,6 +200,7 @@ class GSDNormalizer:
             "physical_height_m": physical_h_m,
             "area_m2": area_m2,
             "area_km2": area_km2,
+            "gsd_m": gsd_m,
             "gsd_m_per_px": gsd_m
         }
 

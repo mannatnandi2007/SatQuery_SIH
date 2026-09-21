@@ -151,17 +151,37 @@
 
                 <!-- Results & Telemetry Viewport -->
                 <div class="results-container" id="resultsContainer">
-                    <!-- Visual Evidence Canvas -->
+                    <!-- Visual Evidence Canvas / Dual-Canvas Inspector (Aryan) -->
                     <div class="workbench-deck evidence-section">
                         <div class="deck-header">
                             <div class="deck-title">
                                 <span class="icon">//</span>
-                                Evidence Grounding
+                                Geospatial Inspector & Evidence
+                            </div>
+                            <!-- Canvas Mode Toggle -->
+                            <div class="canvas-mode-toggle" id="canvasModeToggle">
+                                <button type="button" class="mode-btn active" id="btnModeEvidence" onclick="switchCanvasMode('evidence')">Evidence</button>
+                                <button type="button" class="mode-btn" id="btnModeRaw" onclick="switchCanvasMode('raw')">Raw Scene</button>
+                                <button type="button" class="mode-btn" id="btnModeSplit" onclick="switchCanvasMode('split')">Dual View</button>
                             </div>
                         </div>
-                        <div class="evidence-viewport">
-                            <img class="evidence-image" id="evidenceImage" alt="Satellite evidence overlay">
-                            <div class="evidence-type-badge" id="evidenceTypeBadge">BOUNDING BOX</div>
+                        <div class="evidence-viewport" id="evidenceViewport">
+                            <!-- Raw Input Pane -->
+                            <div class="canvas-pane" id="rawCanvasPane" style="display: none;">
+                                <img class="evidence-image" id="rawSceneImage" alt="Raw satellite scene">
+                                <div class="pane-label">RAW INPUT (GSD CALIBRATED)</div>
+                            </div>
+                            <!-- Evidence Overlay Pane -->
+                            <div class="canvas-pane" id="evidenceCanvasPane">
+                                <img class="evidence-image" id="evidenceImage" alt="Satellite evidence overlay">
+                                <div class="evidence-type-badge" id="evidenceTypeBadge">BOUNDING BOX</div>
+                            </div>
+                        </div>
+                        <!-- Geospatial Reticle Bar -->
+                        <div class="inspector-reticle-bar" id="inspectorReticleBar">
+                            <span class="reticle-item" id="reticleCoords">COORD: 0 px, 0 px</span>
+                            <span class="reticle-item" id="reticleGround">GROUND: ~0 m, ~0 m</span>
+                            <span class="reticle-item" id="reticleGSD">GSD: 10.0 m/px</span>
                         </div>
                     </div>
 

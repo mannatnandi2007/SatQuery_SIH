@@ -190,10 +190,11 @@ class Orchestrator:
         trace.start_stage("Building Evidence")
         overlay_filename = None
         overlay_base64 = None
+        metric_info = None
 
         try:
             if intent == "change_detection" and len(file_contents) >= 2:
-                overlay_filename, overlay_base64 = create_change_detection_overlay(
+                overlay_res = create_change_detection_overlay(
                     file_contents[0],
                     file_contents[1],
                     specialist_result.bounding_box,
@@ -202,7 +203,7 @@ class Orchestrator:
                 )
                 trace.end_stage("ok", f"Rendered bi-temporal comparative panel with DL contours: {specialist_result.bounding_box}")
             elif intent == "fusion":
-                overlay_filename, overlay_base64 = create_sar_fusion_overlay(
+                overlay_res = create_sar_fusion_overlay(
                     file_contents[0],
                     file_contents[1] if len(file_contents) > 1 else None,
                     specialist_result.bounding_box,
@@ -210,15 +211,18 @@ class Orchestrator:
                 )
                 trace.end_stage("ok", f"Rendered Optical+SAR fusion overlay: {specialist_result.bounding_box}")
             elif specialist_result.bounding_box:
-                overlay_filename, overlay_base64 = draw_bounding_box(
+                overlay_res = draw_bounding_box(
                     file_contents[0],
                     specialist_result.bounding_box,
                     label="Detection"
                 )
                 trace.end_stage("ok", f"Rendered bounding box overlay: {specialist_result.bounding_box}")
             else:
-                overlay_filename, overlay_base64 = create_no_evidence_overlay(file_contents[0])
+                overlay_res = create_no_evidence_overlay(file_contents[0])
                 trace.end_stage("ok", "No spatial coordinates returned, generated original base overlay")
+
+            overlay_filename, overlay_base64 = overlay_res[0], overlay_res[1]
+            metric_info = getattr(overlay_res, "metric_info", None)
 
         except Exception as e:
             trace.end_stage("failed", f"Evidence rendering error: {str(e)}")
@@ -256,7 +260,8 @@ class Orchestrator:
             evidence={
                 "type": specialist_result.evidence_type,
                 "overlay_image_base64": overlay_base64,
-                "overlay_image_url": f"/static/overlays/{overlay_filename}" if overlay_filename else None
+                "overlay_image_url": f"/static/overlays/{overlay_filename}" if overlay_filename else None,
+                "metric_info": metric_info
             },
             trace=trace.get_trace(),
             report_url=report_result.get("report_url"),
