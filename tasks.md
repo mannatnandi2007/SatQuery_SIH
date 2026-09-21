@@ -128,10 +128,46 @@
 - [ ] **Task 2.M1: Execute QLoRA Training Job on Colab GPU (Aakansha & Mannat)**
   - **Inputs:** [`training/finetune_rsvlm_colab.ipynb`](file:///c:/Users/nandi/Desktop/SATQuery/training/finetune_rsvlm_colab.ipynb) and [`training/data/bigearthnet_vqa_grounding.json`](file:///c:/Users/nandi/Desktop/SATQuery/training/data/bigearthnet_vqa_grounding.json).
   - **Action:** Open notebook in Google Colab (T4 or A100 GPU runtime), upload dataset, execute 4-bit NF4 quantized training loop with LoRA ($r=32, \alpha=64$).
+  - **Agent Step-by-Step Run Guide (for Aakansha's Agent):**
+    1. *Colab Session Setup*: Open Google Colab (`https://colab.research.google.com`), select `File` > `Upload notebook`, and choose `training/finetune_rsvlm_colab.ipynb`.
+    2. *GPU Hardware Selection*: Navigate to `Runtime` > `Change runtime type` > choose **T4 GPU** (or A100 if Colab Pro is available) > click Save.
+    3. *Data File Ingestion*: Open Colab left-side File drawer (folder icon), and upload `training/data/bigearthnet_vqa_grounding.json` to `/content/bigearthnet_vqa_grounding.json`.
+    4. *Dependency Installation*: Execute Cell 1 (`!pip install -q transformers peft bitsandbytes accelerate datasets`). Verify CUDA is detected with `torch.cuda.is_available()`.
+    5. *Execute Training Loop*: Run the cells in sequence:
+       - 4-bit NF4 Quantization loading (`Qwen/Qwen2-VL-7B-Instruct` or `Qwen/Qwen2-VL-2B-Instruct`)
+       - LoRA configuration setup ($r=32, \alpha=64$, targeting `q_proj`, `v_proj`, `k_proj`, `o_proj`)
+       - Dataset mapping and tokenization
+       - SFT / Training execution (monitor loss dropping from ~2.6 down to < 0.6)
+    6. *Export Artifacts*: Ensure the final export cell completes:
+       - Output directory created: `/content/satquery_rsvlm_lora/`
+       - Contains `adapter_model.safetensors` and `adapter_config.json`.
+    7. *Download Artifacts*: Download `adapter_model.safetensors` and `adapter_config.json` to your local machine.
   - **Criteria:** Loss converges, validation IoU evaluates, and exports `adapter_model.safetensors` and `adapter_config.json`.
 - [ ] **Task 2.M2: Deploy Trained LoRA Weights to Local Backend (Aakansha & Mannat)**
   - **Inputs:** Exported weights from Colab run.
   - **Action:** Place `adapter_model.safetensors` and `adapter_config.json` inside [`backend/weights/satquery_rsvlm_lora/`](file:///c:/Users/nandi/Desktop/SATQuery/backend/weights/satquery_rsvlm_lora/).
+  - **Agent Step-by-Step Deployment Guide (for Aakansha's Agent):**
+    1. *Create Directory*: Ensure directory exists: `mkdir -p backend/weights/satquery_rsvlm_lora`
+    2. *Place Weight Files*: Move the two downloaded files into the repository:
+       - `backend/weights/satquery_rsvlm_lora/adapter_model.safetensors`
+       - `backend/weights/satquery_rsvlm_lora/adapter_config.json`
+    3. *Start Serving Microservice*: In a terminal window from `backend/`:
+       ```bash
+       python serve_fine_tuned.py
+       ```
+       (The service will start on port 8001).
+    4. *Verify Weight Health Endpoint*: Open browser or run curl:
+       ```bash
+       curl http://localhost:8001/health
+       ```
+       Verify the JSON response has:
+       - `"status": "ready"`
+       - `"weights_loaded": true`
+       - `"adapter_path": ".../backend/weights/satquery_rsvlm_lora"`
+    5. *End-to-End Test*: Trigger a test query to verify live inference:
+       ```bash
+       python -c "import requests; r = requests.post('http://localhost:8001/query', data={'query': 'Detect all port facilities'}); print(r.json())"
+       ```
   - **Criteria:** `backend/serve_fine_tuned.py` successfully initializes the live PEFT adapter on startup without falling back to mock mode.
 - [ ] **Task 2.M3: Remote Vision Cloud API Keys Configuration (Optional) (All / User)**
   - **Inputs:** User API credentials for Gemini and Groq.
