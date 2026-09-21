@@ -124,6 +124,24 @@
   - **Outputs:** Multi-mode canvas (`evidence`, `raw`, `split`), real-time reticle coordinates tracker, and GSD ground-meter calculator.
   - **Criteria:** Clean monospace reticle telemetry, tactical crosshair reticles, zero cursor-following glow beams.
 
+#### Pending Manual Action Items (Phase 2)
+- [ ] **Task 2.M1: Execute QLoRA Training Job on Colab GPU (Aakansha & Mannat)**
+  - **Inputs:** [`training/finetune_rsvlm_colab.ipynb`](file:///c:/Users/nandi/Desktop/SATQuery/training/finetune_rsvlm_colab.ipynb) and [`training/data/bigearthnet_vqa_grounding.json`](file:///c:/Users/nandi/Desktop/SATQuery/training/data/bigearthnet_vqa_grounding.json).
+  - **Action:** Open notebook in Google Colab (T4 or A100 GPU runtime), upload dataset, execute 4-bit NF4 quantized training loop with LoRA ($r=32, \alpha=64$).
+  - **Criteria:** Loss converges, validation IoU evaluates, and exports `adapter_model.safetensors` and `adapter_config.json`.
+- [ ] **Task 2.M2: Deploy Trained LoRA Weights to Local Backend (Aakansha & Mannat)**
+  - **Inputs:** Exported weights from Colab run.
+  - **Action:** Place `adapter_model.safetensors` and `adapter_config.json` inside [`backend/weights/satquery_rsvlm_lora/`](file:///c:/Users/nandi/Desktop/SATQuery/backend/weights/satquery_rsvlm_lora/).
+  - **Criteria:** `backend/serve_fine_tuned.py` successfully initializes the live PEFT adapter on startup without falling back to mock mode.
+- [ ] **Task 2.M3: Remote Vision Cloud API Keys Configuration (Optional) (All / User)**
+  - **Inputs:** User API credentials for Gemini and Groq.
+  - **Action:** Set `GEMINI_API_KEY` and/or `GROQ_API_KEY` in [`backend/.env`](file:///c:/Users/nandi/Desktop/SATQuery/backend/.env).
+  - **Criteria:** Remote cloud vision specialist activates for secondary multi-tier arbitration.
+- [ ] **Task 2.M4: Dual-Canvas Geospatial Inspector Visual QA (Aryan)**
+  - **Inputs:** Web browser pointing to [`frontend/index.html`](file:///c:/Users/nandi/Desktop/SATQuery/frontend/index.html) with running backend (`localhost:8000`).
+  - **Action:** Test preset scenes, toggle between Evidence / Raw / Split dual-view, hover over canvas to verify coordinate (`COORD`), ground distance (`GROUND`), and GSD meter readouts, and verify all 8 button states.
+  - **Criteria:** Reticle tracks smoothly at 60fps; no visual glitches or banned UI patterns.
+
 ---
 
 ### Phase 3: Integration, Spatial Calibration & Self-Adapting Feedback
