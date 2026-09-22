@@ -674,6 +674,39 @@ class ChangeDetectionSpecialist:
             except Exception as e:
                 print(f"[ChangeDetection] Gemini call failed: {e}")
 
+        # Check if deep learning detected ANY significant change
+        has_dl_change = dl_output and (len(dl_output.bounding_boxes) > 0 or dl_output.change_area_pct >= 0.5)
+
+        if dl_output and not has_dl_change:
+            # DL Neural Network confirmed NO CHANGE between T1 and T2!
+            return SpecialistResult(
+                answer="Bi-temporal analysis confirms no significant surface or structural changes between T1 and T2. The terrain, infrastructure footprints, and building outlines remain stable across both acquisitions.",
+                bounding_box=None,
+                confidence=float(dl_output.confidence if dl_output else 0.95),
+                evidence_type="none",
+                detail=f"Processed by {dl_output.model_source} (Zero Change Detected)",
+                detailed_analysis={
+                    "scene_overview": "Bi-temporal comparative analysis verified spatial stability across all monitored sectors.",
+                    "land_cover": "Unaltered Terrain & Infrastructure: 100.0%, Detected Disturbance: 0.0%",
+                    "key_objects": [
+                        "Stable ground features across baseline and monitoring dates",
+                        "No unauthorized earthworks or new construction identified"
+                    ],
+                    "spatial_patterns": "High spatial stability with zero anomalous footprint displacement.",
+                    "spectral_observations": "Consistent multi-temporal surface reflectance; no vegetation loss or albedo variance.",
+                    "potential_concerns": "None. The monitored area exhibits zero critical infrastructure drift."
+                },
+                detected_objects=[],
+                mask_bytes=dl_output.mask_bytes if dl_output else None,
+                dl_metrics={
+                    "change_area_pct": 0.0,
+                    "detected_clusters": 0,
+                    "model_source": dl_output.model_source,
+                    "bounding_boxes": []
+                },
+                annotation_set=AnnotationSet(layers=[])
+            )
+
         if result is None:
             result = self._generate_mock_change_response(question)
             source = f"Siamese DL Engine ({dl_output.model_source if dl_output else 'ONNX'}) + Analytical Engine"
@@ -725,7 +758,7 @@ class ChangeDetectionSpecialist:
             answer=result.get("answer", "Bi-temporal change analysis completed."),
             bounding_box=final_bbox,
             confidence=confidence,
-            evidence_type="change_overlay",
+            evidence_type="change_overlay" if change_boxes else "none",
             detail=f"Processed by {source}",
             detailed_analysis=result.get("detailed_analysis"),
             detected_objects=result.get("detected_objects", []),

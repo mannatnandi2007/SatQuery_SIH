@@ -158,6 +158,11 @@ class FeedbackRequest(BaseModel):
     notes: Optional[str] = None
     corrected_bbox: Optional[List[float]] = None
 
+    def validate_rating(self):
+        valid_ratings = {"accept", "flag_inaccurate", "corrected"}
+        if self.rating not in valid_ratings:
+            raise ValueError(f"Invalid rating '{self.rating}'. Must be one of: {valid_ratings}")
+
 class SuggestionClickRequest(BaseModel):
     query_id: str
     suggestion_text: str
@@ -170,6 +175,11 @@ async def record_feedback(payload: FeedbackRequest):
     Operator feedback endpoint (Task 3.3).
     Captures human-in-the-loop ratings, notes, and corrected coordinates.
     """
+    try:
+        payload.validate_rating()
+    except ValueError as e:
+        raise HTTPException(status_code=422, detail=str(e))
+
     audit_store.log_operator_feedback(
         query_id=payload.query_id,
         rating=payload.rating,
@@ -228,9 +238,14 @@ async def startup():
 # ─── Serve Frontend & Static Assets ──────────────────────────────
 FRONTEND_DIR = os.path.join(os.path.dirname(__file__), "..", "frontend")
 SAMPLES_DIR = os.path.join(FRONTEND_DIR, "samples")
+DIST_DIR = os.path.join(FRONTEND_DIR, "dist")
+DIST_ASSETS_DIR = os.path.join(DIST_DIR, "assets")
 
 if os.path.exists(SAMPLES_DIR):
     app.mount("/samples", StaticFiles(directory=SAMPLES_DIR), name="samples")
+
+if os.path.exists(DIST_ASSETS_DIR):
+    app.mount("/assets", StaticFiles(directory=DIST_ASSETS_DIR), name="assets")
 
 NO_CACHE_HEADERS = {
     "Cache-Control": "no-cache, no-store, must-revalidate",
@@ -242,24 +257,18 @@ NO_CACHE_HEADERS = {
 @app.get("/app")
 async def serve_frontend():
     """Serve the main frontend HTML page with no-cache headers."""
+    # Check if compiled React SPA exists in dist/
+    dist_index = os.path.join(DIST_DIR, "index.html")
+    if os.path.exists(dist_index):
+        return FileResponse(dist_index, media_type="text/html", headers=NO_CACHE_HEADERS)
+
+    # Fallback to frontend/index.html
     index_path = os.path.join(FRONTEND_DIR, "index.html")
     if os.path.exists(index_path):
         return FileResponse(index_path, media_type="text/html", headers=NO_CACHE_HEADERS)
     return {"error": "Frontend not found"}
 
-@app.get("/style.css")
-async def serve_css():
-    css_path = os.path.join(FRONTEND_DIR, "style.css")
-    if os.path.exists(css_path):
-        return FileResponse(css_path, media_type="text/css", headers=NO_CACHE_HEADERS)
-
-@app.get("/app.js")
-async def serve_js():
-    js_path = os.path.join(FRONTEND_DIR, "app.js")
-    if os.path.exists(js_path):
-        return FileResponse(js_path, media_type="application/javascript", headers=NO_CACHE_HEADERS)
-
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000, reload=True)
+    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)

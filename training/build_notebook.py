@@ -46,10 +46,10 @@ notebook = {
    "metadata": {},
    "outputs": [],
    "source": [
-    "# Install required packages including updated bitsandbytes\n",
-    "!pip install -q --upgrade pip\n",
-    "!pip install -q -U \"bitsandbytes>=0.46.1\" \"transformers>=4.45.0\" peft accelerate datasets torchvision pillow\n",
-    "print(\"✅ Dependencies installed. If you encounter any module reload issue, click Runtime -> Restart session.\")"
+    "# Install required packages including updated bitsandbytes and Pillow\n",
+    "!pip install -q -U \"bitsandbytes>=0.46.1\" \"transformers>=4.45.0\" peft accelerate datasets torchvision \"pillow>=10.4.0\"\n",
+    "print(\"✅ Dependencies installed.\")\n",
+    "print(\"⚠️ IMPORTANT: In Google Colab, click 'Runtime' -> 'Restart session' now to reload Pillow before proceeding.\")"
    ]
   },
   {

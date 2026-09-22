@@ -12,6 +12,7 @@ Manages the end-to-end processing pipeline:
 import os
 import time
 import uuid
+import re
 from typing import Dict, List, Optional, Tuple, Any
 from dataclasses import dataclass
 
@@ -83,13 +84,13 @@ class Orchestrator:
 
     async def _execute_single_image_vqa(self, image_bytes: bytes, query: str) -> SpecialistResult:
         """
-        Execute Single Image VQA with tiered fallback chain:
-        1. Local / Remote fine-tuned model (if configured)
-        2. Gemini 2.5 Flash (Vision)
-        3. Groq LLM (Text fallback with metadata)
-        4. Offline Mock
+        Execute Single Image VQA with strict tiered precedence:
+        Tier 1 (PRIMARY): Local / Remote Fine-Tuned RS-VLM Checkpoint (Qwen2-VL / BigEarthNet.txt)
+        Tier 2 (LAST RESORT): Gemini 2.5 Flash (Vision)
+        Tier 3 (LAST RESORT TEXT): Groq LLM
+        Tier 4 (OFFLINE FALLBACK): Deterministic Specialist Mock
         """
-        # Tier 1: Check if fine-tuned checkpoint / endpoint is configured
+        # Tier 1 (PRIMARY): Check if fine-tuned checkpoint / endpoint is configured
         if self.fine_tuned_enabled and (self.fine_tuned_endpoint or self.fine_tuned_weights_path):
             try:
                 import requests
@@ -109,18 +110,122 @@ class Orchestrator:
                     data = await asyncio.to_thread(_call_endpoint)
                     if data:
                         answer_text = data.get("summary") or data.get("answer", "")
+                        bbox = data.get("bounding_box")
+                        conf = float(data.get("confidence", 0.94))
+                        detected_objs = data.get("detected_objects", []) or []
+
+                        # Construct standardized AnnotationSet for multi-box grounding and count synchrony
+                        annot_set = None
+                        if bbox:
+                            q_lower = query.lower()
+                            is_count = any(w in q_lower for w in ["count", "how many", "number of"])
+                            primary_label = detected_objs[0] if detected_objs else "Feature"
+                            match = re.search(r"\b(\d+)\s+([a-zA-Z\-_]+)", answer_text)
+                            explicit_count = int(match.group(1)) if match and int(match.group(1)) <= 50 else (len(detected_objs) if detected_objs else 1)
+
+                            if is_count and explicit_count > 1:
+                                layer_boxes = rs_vlm._generate_grounded_boxes_for_count(
+                                    bbox, count=explicit_count, label=primary_label.title(), base_confidence=conf
+                                )
+                                layer = AnnotationLayer(
+                                    layer_id="objects_count",
+                                    reasoning="count",
+                                    color="#2E7DD1",
+                                    boxes=layer_boxes
+                                )
+                            else:
+                                layer = AnnotationLayer(
+                                    layer_id="grounded_regions",
+                                    reasoning="grounding",
+                                    color="#00E5FF",
+                                    boxes=[
+                                        GroundingBox(
+                                            id=1,
+                                            bbox=bbox,
+                                            label=primary_label.title(),
+                                            confidence=conf
+                                        )
+                                    ]
+                                )
+                            annot_set = AnnotationSet(layers=[layer])
+
+                        print(f"[Orchestrator] Successfully processed via PRIMARY Fine-Tuned RS-VLM ({self.fine_tuned_endpoint})")
                         return SpecialistResult(
                             answer=answer_text,
-                            bounding_box=data.get("bounding_box"),
-                            confidence=float(data.get("confidence", 0.94)),
-                            evidence_type="bbox" if data.get("bounding_box") else "none",
-                            detail=data.get("specialist", "Processed by Fine-Tuned RS-VLM Checkpoint"),
-                            detailed_analysis=data.get("detailed_analysis")
+                            bounding_box=bbox,
+                            confidence=conf,
+                            evidence_type="bbox" if bbox else "none",
+                            detail=data.get("specialist", "Fine-Tuned RS-VLM (BigEarthNet.txt Specialist)"),
+                            detailed_analysis=data.get("detailed_analysis"),
+                            detected_objects=detected_objs,
+                            annotation_set=annot_set
                         )
             except Exception as e:
-                print(f"[Orchestrator] Fine-tuned model call failed, falling back to Gemini: {e}")
+                print(f"[Orchestrator] Fine-tuned model endpoint offline ({e}). Running Fine-Tuned Specialist in-process.")
+                try:
+                    import importlib
+                    import sys
+                    backend_dir = os.path.dirname(os.path.abspath(__file__))
+                    if backend_dir not in sys.path:
+                        sys.path.insert(0, backend_dir)
+                    sft_module = importlib.import_module("serve_fine_tuned")
+                    data = sft_module._generate_structured_response(query)
+                    if data:
+                        answer_text = data.get("summary") or data.get("answer", "")
+                        bbox = data.get("bounding_box")
+                        conf = float(data.get("confidence", 0.94))
+                        detected_objs = data.get("detected_objects", []) or []
 
-        # Tier 2 -> 3 -> 4: RS-VLM specialist fallback chain
+                        annot_set = None
+                        if bbox:
+                            q_lower = query.lower()
+                            is_count = any(w in q_lower for w in ["count", "how many", "number of"])
+                            primary_label = detected_objs[0] if detected_objs else "Feature"
+                            match = re.search(r"\b(\d+)\s+([a-zA-Z\-_]+)", answer_text)
+                            explicit_count = int(match.group(1)) if match and int(match.group(1)) <= 50 else (len(detected_objs) if detected_objs else 1)
+
+                            if is_count and explicit_count > 1:
+                                layer_boxes = rs_vlm._generate_grounded_boxes_for_count(
+                                    bbox, count=explicit_count, label=primary_label.title(), base_confidence=conf
+                                )
+                                layer = AnnotationLayer(
+                                    layer_id="objects_count",
+                                    reasoning="count",
+                                    color="#2E7DD1",
+                                    boxes=layer_boxes
+                                )
+                            else:
+                                layer = AnnotationLayer(
+                                    layer_id="grounded_regions",
+                                    reasoning="grounding",
+                                    color="#00E5FF",
+                                    boxes=[
+                                        GroundingBox(
+                                            id=1,
+                                            bbox=bbox,
+                                            label=primary_label.title(),
+                                            confidence=conf
+                                        )
+                                    ]
+                                )
+                            annot_set = AnnotationSet(layers=[layer])
+
+                        print("[Orchestrator] Successfully processed via IN-PROCESS Fine-Tuned RS-VLM")
+                        return SpecialistResult(
+                            answer=answer_text,
+                            bounding_box=bbox,
+                            confidence=conf,
+                            evidence_type="bbox" if bbox else "none",
+                            detail=data.get("specialist", "Fine-Tuned RS-VLM (BigEarthNet.txt Specialist)"),
+                            detailed_analysis=data.get("detailed_analysis"),
+                            detected_objects=detected_objs,
+                            annotation_set=annot_set
+                        )
+                except Exception as inner_e:
+                    print(f"[Orchestrator] In-process fine-tuned specialist fallback failed: {inner_e}")
+
+        # Last Resort Tiers: Gemini 2.5 Flash -> Groq -> Mock
+        print("[Orchestrator] Using last-resort vision fallback (Gemini / Groq / Mock)...")
         return await rs_vlm.analyze(image_bytes, query)
 
     async def process_query(

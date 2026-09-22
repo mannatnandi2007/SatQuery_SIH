@@ -103,6 +103,61 @@ class TestPipelineE2E(unittest.IsolatedAsyncioTestCase):
         self.assertIn("suggestions", data)
         self.assertIn("annotation_set", data)
 
+    @patch.object(orchestrator, "_execute_single_image_vqa")
+    async def test_building_counting_e2e(self, mock_vqa):
+        """Test counting number of buildings returns synchronized multi-box layer and count."""
+        mock_vqa.return_value = SpecialistResult(
+            answer="Detected 6 industrial buildings in this complex.",
+            bounding_box=[15, 15, 85, 85],
+            confidence=0.93,
+            evidence_type="bbox",
+            detail="Building Counter Specialist",
+            detected_objects=["industrial building", "warehouse"],
+            annotation_set=AnnotationSet(layers=[
+                AnnotationLayer(
+                    layer_id="buildings_count",
+                    reasoning="count",
+                    color="#2E7DD1",
+                    boxes=[
+                        GroundingBox(id=i, bbox=[15 + i*10, 15, 22 + i*10, 35], label=f"Building {i}", confidence=0.93)
+                        for i in range(1, 7)
+                    ]
+                )
+            ])
+        )
+        status_code, response = await orchestrator.process_query(
+            filenames=["industrial_complex.png"],
+            file_contents=[self.img1_bytes],
+            query="Count the total number of buildings in this industrial complex."
+        )
+
+        self.assertEqual(status_code, 200)
+        data = response.to_dict()
+        self.assertFalse(data["error"])
+        self.assertIn("6", data["answer"])
+        self.assertIn("annotation_set", data)
+        self.assertEqual(len(data["annotation_set"]), 1)
+        count_layer = data["annotation_set"][0]
+        self.assertEqual(count_layer["reasoning"], "count")
+        self.assertEqual(len(count_layer["boxes"]), 6)
+
+    async def test_zero_change_detection_identical_images(self):
+        """Test bi-temporal detection on identical scenes correctly reports zero changes with no boxes."""
+        status_code, response = await orchestrator.process_query(
+            filenames=["baseline.png", "monitoring_identical.png"],
+            file_contents=[self.img1_bytes, self.img1_bytes],
+            query="Detect all bi-temporal change deltas between baseline and monitoring dates."
+        )
+
+        self.assertEqual(status_code, 200)
+        data = response.to_dict()
+        self.assertFalse(data["error"])
+        # Must confirm no changes in text
+        self.assertIn("no significant", data["answer"].lower())
+        # Annotation set must have zero boxes
+        total_boxes = sum(len(layer.get("boxes", [])) for layer in data.get("annotation_set", []))
+        self.assertEqual(total_boxes, 0)
+
     def test_audit_store_logging_and_feedback(self):
         """Test audit trail logging, suggestion click, and operator feedback."""
         test_qid = "test_e2e_query_123"

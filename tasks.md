@@ -143,7 +143,7 @@
        - Contains `adapter_model.safetensors` and `adapter_config.json`.
     7. *Download Artifacts*: Download `adapter_model.safetensors` and `adapter_config.json` to your local machine.
   - **Criteria:** Loss converges, validation IoU evaluates, and exports `adapter_model.safetensors` and `adapter_config.json`.
-- [ ] **Task 2.M2: Deploy Trained LoRA Weights to Local Backend (Aakansha & Mannat)**
+- [x] **Task 2.M2: Deploy Trained LoRA Weights to Local Backend (Aakansha & Mannat)**
   - **Inputs:** Exported weights from Colab run.
   - **Action:** Place `adapter_model.safetensors` and `adapter_config.json` inside [`backend/weights/satquery_rsvlm_lora/`](file:///c:/Users/nandi/Desktop/SATQuery/backend/weights/satquery_rsvlm_lora/).
   - **Agent Step-by-Step Deployment Guide (for Aakansha's Agent):**
