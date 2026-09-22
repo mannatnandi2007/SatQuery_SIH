@@ -11,9 +11,11 @@ const API_BASE = (window.location && window.location.origin && window.location.o
 // ── State ──────────────────────────────────────────────
 let uploadedFiles = [];
 let currentReportUrl = null;
+let currentQueryId = null;
 let currentGsdM = 10.0;
 let rawImageSource = null;
 let hasRunOnce = false;
+
 
 // ── Theme Switcher ──────────────────────────────────────
 const themeToggle = document.getElementById("themeToggle");
@@ -497,6 +499,48 @@ function renderResults(data) {
     document.getElementById("confidenceScore").textContent =
         data.confidence.score.toFixed(3);
 
+    currentQueryId = data.report_id || null;
+
+    // Next-Query Recommendation Chips (Node N10)
+    const suggestionsContainer = document.getElementById("suggestionsContainer");
+    const suggestionsList = document.getElementById("suggestionsList");
+    if (data.suggestions && data.suggestions.length > 0 && suggestionsContainer && suggestionsList) {
+        suggestionsList.innerHTML = data.suggestions.map(item => `
+            <button class="suggestion-chip" type="button" onclick="selectSuggestion('${escapeAttr(item.text)}', '${escapeAttr(item.task_type)}')">
+                <span class="chip-tag">${escapeHtml(item.task_type.replace('_', ' '))}</span>
+                <span class="chip-text">${escapeHtml(item.text)}</span>
+            </button>
+        `).join("");
+        suggestionsContainer.style.display = "block";
+    } else if (suggestionsContainer) {
+        suggestionsContainer.style.display = "none";
+    }
+
+    // Multi-Layer Grounding Legend Strip (Node N11)
+    const legendStrip = document.getElementById("layersLegendStrip");
+    if (data.annotation_set && data.annotation_set.length > 0 && legendStrip) {
+        legendStrip.innerHTML = data.annotation_set.map(layer => `
+            <span class="layer-pill" style="border-color: ${layer.color};">
+                <span class="layer-dot" style="background: ${layer.color};"></span>
+                <span class="layer-name">${escapeHtml(layer.reasoning.toUpperCase())}</span>
+                <span class="layer-count">${layer.boxes ? layer.boxes.length : 0}</span>
+            </span>
+        `).join("");
+        legendStrip.style.display = "flex";
+    } else if (legendStrip) {
+        legendStrip.style.display = "none";
+    }
+
+    // Operator Verification Controls (Task 3.3 / Task 3.7)
+    const feedbackStrip = document.getElementById("feedbackStrip");
+    const feedbackChip = document.getElementById("feedbackStatusChip");
+    if (feedbackStrip) {
+        feedbackStrip.style.display = "block";
+    }
+    if (feedbackChip) {
+        feedbackChip.style.display = "none";
+    }
+
     // Detected Object Chips
     const chipsContainer = document.getElementById("detectedObjectsContainer");
     const chipsList = document.getElementById("detectedObjectsList");
@@ -694,6 +738,56 @@ function escapeHtml(text) {
     div.textContent = text;
     return div.innerHTML;
 }
+
+function escapeAttr(text) {
+    if (!text) return "";
+    return text.replace(/'/g, "\\'").replace(/"/g, "&quot;");
+}
+
+// ── Next-Query Interaction & Feedback Handlers (Node N10 & Task 3.7) ──
+
+window.selectSuggestion = function(queryText, taskType) {
+    if (!queryText) return;
+    queryInput.value = queryText;
+    updateSubmitState();
+    handleSubmit();
+
+    // Asynchronous logging to suggestion_log in audit store (namespaced, non-gating)
+    if (currentQueryId) {
+        fetch(`${API_BASE}/suggestion/click`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                query_id: currentQueryId,
+                suggestion_text: queryText,
+                task_type: taskType
+            })
+        }).catch(() => {});
+    }
+};
+
+window.submitFeedback = function(rating) {
+    if (!currentQueryId) return;
+    const chip = document.getElementById("feedbackStatusChip");
+
+    fetch(`${API_BASE}/feedback`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            query_id: currentQueryId,
+            rating: rating
+        })
+    }).then(res => res.json()).then(data => {
+        if (chip) {
+            chip.textContent = rating === "accept" ? "ACCEPTED" : "FLAGGED";
+            chip.className = `feedback-status-chip ${rating}`;
+            chip.style.display = "inline-flex";
+        }
+    }).catch(err => {
+        console.error("Feedback submission error:", err);
+    });
+};
+
 
 // ── Dual-Canvas Inspector & Reticle Tracker (Aryan) ────────
 

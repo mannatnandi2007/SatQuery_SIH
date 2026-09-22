@@ -11,6 +11,7 @@ Manages the end-to-end processing pipeline:
 
 import os
 import time
+import uuid
 from typing import Dict, List, Optional, Tuple, Any
 from dataclasses import dataclass
 
@@ -26,6 +27,11 @@ from evidence import (
 from confidence import compute_confidence
 from trace import TraceBuilder
 from report import generate_report
+from annotation_schema import AnnotationSet, AnnotationLayer, GroundingBox
+from evidence_fusion import evidence_fusion
+from render_overlay import multi_box_renderer
+from next_query import next_query_recommender
+from audit_store import audit_store
 
 
 @dataclass
@@ -39,6 +45,8 @@ class OrchestratorResponse:
     report_id: Optional[str]
     detailed_analysis: Optional[Dict[str, Any]] = None
     detected_objects: Optional[List[str]] = None
+    suggestions: Optional[List[Dict[str, str]]] = None
+    annotation_set: Optional[List[Dict[str, Any]]] = None
 
     def to_dict(self) -> Dict[str, Any]:
         return {
@@ -50,8 +58,11 @@ class OrchestratorResponse:
             "report_url": self.report_url,
             "report_id": self.report_id,
             "detailed_analysis": self.detailed_analysis,
-            "detected_objects": self.detected_objects or []
+            "detected_objects": self.detected_objects or [],
+            "suggestions": self.suggestions or [],
+            "annotation_set": self.annotation_set or []
         }
+
 
 
 class Orchestrator:
@@ -186,14 +197,30 @@ class Orchestrator:
             )
             return 500, response
 
-        # ── Stage 4: Evidence Normalization & Overlay Rendering ──
+        # ── Stage 4A: Evidence Fusion & IoU Deduplication (Node N6) ──
+        trace.start_stage("Evidence Fusion")
+        raw_set = getattr(specialist_result, "annotation_set", None)
+        layers = raw_set.layers if raw_set else []
+        fused_annotation_set = evidence_fusion.fuse(layers)
+        trace.end_stage("ok", f"Fused {len(fused_annotation_set.layers)} layer(s) with {fused_annotation_set.total_boxes_count()} deduplicated box(es)")
+
+        # ── Stage 4B: Render Overlay (Node N11) ──
         trace.start_stage("Building Evidence")
         overlay_filename = None
         overlay_base64 = None
         metric_info = None
 
         try:
-            if intent == "change_detection" and len(file_contents) >= 2:
+            # If multi-box annotation set has boxes, render multi-layer overlay with legend strip and scale bar
+            if not fused_annotation_set.is_empty():
+                overlay_filename, overlay_base64, metric_info = multi_box_renderer.render(
+                    file_contents[0],
+                    fused_annotation_set,
+                    gsd_m=10.0,
+                    draw_legend=True
+                )
+                trace.end_stage("ok", f"Rendered multi-layer grounding overlay with {fused_annotation_set.total_boxes_count()} boxes and legend")
+            elif intent == "change_detection" and len(file_contents) >= 2:
                 overlay_res = create_change_detection_overlay(
                     file_contents[0],
                     file_contents[1],
@@ -201,6 +228,8 @@ class Orchestrator:
                     label="DETECTED CHANGE DELTA",
                     mask_bytes=getattr(specialist_result, "mask_bytes", None)
                 )
+                overlay_filename, overlay_base64 = overlay_res[0], overlay_res[1]
+                metric_info = getattr(overlay_res, "metric_info", None)
                 trace.end_stage("ok", f"Rendered bi-temporal comparative panel with DL contours: {specialist_result.bounding_box}")
             elif intent == "fusion":
                 overlay_res = create_sar_fusion_overlay(
@@ -209,6 +238,8 @@ class Orchestrator:
                     specialist_result.bounding_box,
                     label="FUSED RADAR/OPTICAL DETECTION"
                 )
+                overlay_filename, overlay_base64 = overlay_res[0], overlay_res[1]
+                metric_info = getattr(overlay_res, "metric_info", None)
                 trace.end_stage("ok", f"Rendered Optical+SAR fusion overlay: {specialist_result.bounding_box}")
             elif specialist_result.bounding_box:
                 overlay_res = draw_bounding_box(
@@ -216,23 +247,50 @@ class Orchestrator:
                     specialist_result.bounding_box,
                     label="Detection"
                 )
+                overlay_filename, overlay_base64 = overlay_res[0], overlay_res[1]
+                metric_info = getattr(overlay_res, "metric_info", None)
                 trace.end_stage("ok", f"Rendered bounding box overlay: {specialist_result.bounding_box}")
             else:
                 overlay_res = create_no_evidence_overlay(file_contents[0])
+                overlay_filename, overlay_base64 = overlay_res[0], overlay_res[1]
+                metric_info = getattr(overlay_res, "metric_info", None)
                 trace.end_stage("ok", "No spatial coordinates returned, generated original base overlay")
-
-            overlay_filename, overlay_base64 = overlay_res[0], overlay_res[1]
-            metric_info = getattr(overlay_res, "metric_info", None)
 
         except Exception as e:
             trace.end_stage("failed", f"Evidence rendering error: {str(e)}")
 
-        # ── Stage 5: Confidence Arbitration ──
+        # ── Stage 5: Confidence Arbitration & Verification ──
         trace.start_stage("Confidence Scoring")
         confidence_result = compute_confidence(specialist_result.confidence)
-        trace.end_stage("ok", f"Raw: {specialist_result.confidence:.2f} → {confidence_result['label']} ({confidence_result['score']})")
+        evidence_sufficient = (confidence_result["score"] >= 0.70)
+        human_review = (confidence_result["score"] < 0.80 or getattr(compat_result, "gsd_warning", None) is not None)
+        verification_outcome = {
+            "evidence_sufficient": evidence_sufficient,
+            "human_review": human_review,
+            "verification_status": "verified" if evidence_sufficient else "review_recommended"
+        }
+        trace.end_stage("ok", f"Score: {confidence_result['score']} ({confidence_result['label']}) | Review: {'FLAGGED' if human_review else 'PASSED'}")
 
-        # ── Stage 6: Report Generation ──
+        # ── Stage 6: Next-Query Recommendation (Node N10) ──
+        trace.start_stage("Next-Query Recommendation")
+        suggestions_res = next_query_recommender.recommend(
+            task_type=intent,
+            answer_payload={
+                "answer": specialist_result.answer,
+                "detected_objects": specialist_result.detected_objects or [],
+                "annotation_set": fused_annotation_set.to_list(),
+                "detailed_analysis": specialist_result.detailed_analysis or {}
+            },
+            loaded_image_count=len(file_contents),
+            has_sar=(intent == "fusion"),
+            is_bi_temporal=(len(file_contents) >= 2 or intent == "change_detection"),
+            evidence_sufficient=evidence_sufficient,
+            human_review=human_review
+        )
+        suggestions_list = suggestions_res.get("suggestions", [])
+        trace.end_stage("ok", f"Generated {len(suggestions_list)} grounded follow-up suggestion(s)")
+
+        # ── Stage 7: Report Generation ──
         trace.start_stage("Report Generation")
         report_result = {"report_id": None, "report_url": None}
         try:
@@ -246,11 +304,34 @@ class Orchestrator:
                 overlay_filename=overlay_filename,
                 detailed_analysis=specialist_result.detailed_analysis,
                 model=specialist_result.detail,
-                dl_metrics=getattr(specialist_result, "dl_metrics", None)
+                dl_metrics=getattr(specialist_result, "dl_metrics", None),
+                annotation_set=fused_annotation_set.to_list(),
+                suggestions=suggestions_list
             )
             trace.end_stage("ok", f"Report saved: {report_result.get('report_id')}")
         except Exception as e:
             trace.end_stage("failed", f"Report generation error: {str(e)}")
+
+        # ── Audit Store Persistence (audit.json) ──
+        query_id = report_result.get("report_id") or uuid.uuid4().hex[:16]
+        total_duration = trace.get_total_duration_ms()
+        audit_store.log_query_execution(
+            query_id=query_id,
+            query_text=query,
+            filenames=filenames,
+            compat_result=compat_result.to_dict() if hasattr(compat_result, "to_dict") else {},
+            routing_decision={"intent": intent, "specialist": specialist_name},
+            specialist_result={
+                "model": specialist_result.detail,
+                "confidence": specialist_result.confidence,
+                "evidence_type": specialist_result.evidence_type
+            },
+            annotation_set=fused_annotation_set.to_list(),
+            suggestions=suggestions_list,
+            verification_outcome=verification_outcome,
+            trace=trace.get_trace(),
+            total_duration_ms=total_duration
+        )
 
         # ── Compile Response ──
         response = OrchestratorResponse(
@@ -267,7 +348,9 @@ class Orchestrator:
             report_url=report_result.get("report_url"),
             report_id=report_result.get("report_id"),
             detailed_analysis=specialist_result.detailed_analysis,
-            detected_objects=specialist_result.detected_objects
+            detected_objects=specialist_result.detected_objects,
+            suggestions=suggestions_list,
+            annotation_set=fused_annotation_set.to_list()
         )
 
         return 200, response

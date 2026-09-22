@@ -14,23 +14,68 @@ SatQuery AI connects satellite imagery with natural-language question answering 
 │                                   END-TO-END PIPELINE                                   │
 └─────────────────────────────────────────────────────────────────────────────────────────┘
                                        │
-  [1. User Input] ─────────────────────┤ Image (GeoTIFF/PNG) + Query ("How many ships...")
+  [N1. Query Agent] ───────────────────┤ Image (GeoTIFF/PNG) + Query (Typed or Suggestion Chip)
                                        ▼
-  [2. Compatibility Check] ────────────┤ Validates MIME, dimensions, GeoTIFF CRS, image count
+  [N2. Route Decision] ────────────────┤ Natural Language Intent Classifier & Specialist Dispatcher
                                        ▼
-  [3. GSD Normalisation] ──────────────┤ Normalizes spatial resolution (Sentinel vs PlanetScope)
+  [N3. Compatibility & GSD] ───────────┤ Format, CRS, GSD Scale Arbitration & Resampling
                                        ▼
-  [4. JEV-JEPA Representation] ────────┤ Extracts non-generative spatial patch latents
+  [N4. Specialist Exec (T1–T6)] ───────┤ RS-VLM, Siamese CD, SAR Fusion, Grounding DINO
                                        ▼
-  [5. Specialist Reasoning] ───────────┤ Fine-Tuned RS-VLM / Multimodal Vision Inference
+  [N5. JEV-JEPA Representation] ───────┤ (Conditional) Patch Latents & Cosine Distance Metric
                                        ▼
-  [6. Evidence Grounding] ─────────────┤ Renders bounding boxes, masks, and metric scale bars
+  [N6. Evidence Fusion] ───────────────┤ Builds unified AnnotationSet & IoU (≥0.50) Deduplication
                                        ▼
-  [7. Observable Telemetry] ───────────┤ Computes confidence score + step-by-step trace (ms)
-                                       ▼
-  [8. Telemetry Workbench UI] ─────────┤ Displays dual-canvas inspector & structured answer
-                                       ▼
-  [9. Self-Adapting Feedback] ─────────┤ Records operator corrections for continuous learning
+  [N7. Verify Decision] ───────────────┤ Verification arbitration (only loop-back gate to N4)
+                                  ┌────┴───────────────────────────┐
+                                  ▼                                ▼
+  [N9. Final Answer] ─────────────┤ Structured Text Summary       [N11. Render Overlay] ──┤ Multi-Box Color Layers + Legend
+                                  │                                (Parallel Execution)
+                                  ▼
+  [N10. Suggest Next Query] ──────┤ Transition Table & Sensor Gating → Suggestion Chips (Tappable to N1)
+                                  ▼
+  [UI & Audit Store] ─────────────┤ Hallmark Telemetry Workbench & Gradio QA | audit.json Ledger
+```
+
+### Complete Pipeline Architecture (Mermaid)
+
+```mermaid
+flowchart TD
+    classDef input fill:#1e293b,stroke:#0284c7,stroke-width:1.5px,color:#f8fafc;
+    classDef core fill:#0f172a,stroke:#38bdf8,stroke-width:2px,color:#f8fafc;
+    classDef specialist fill:#1e1b4b,stroke:#818cf8,stroke-width:1.5px,color:#f8fafc;
+    classDef verify fill:#31102b,stroke:#f43f5e,stroke-width:2px,color:#f8fafc;
+    classDef output fill:#064e3b,stroke:#10b981,stroke-width:2px,color:#f8fafc;
+    classDef suggest fill:#3b1e06,stroke:#f59e0b,stroke-width:2px,color:#f8fafc;
+
+    N1["N1: Query Agent<br/>(User Prompt / Clicked Chip)"]:::input
+    N2["N2: Route Decision<br/>(Intent Classifier)"]:::core
+    N3["N3: Compatibility & GSD<br/>(Validation & Resampling)"]:::core
+    N4["N4: Specialist Registry (T1-T6)<br/>• T1 Single VQA &nbsp;• T2 Scene Caption<br/>• T3 Ground Region &nbsp;• T4 Bi-Temp Change<br/>• T5 Change VQA &nbsp;• T6 Optical+SAR"]:::specialist
+    N5["N5: JEV-JEPA Latents<br/>(Conditional Representation)"]:::specialist
+    N6["N6: Evidence Fusion<br/>(Unified AnnotationSet & IoU Deduplication)"]:::core
+    N7{"N7: Verify Decision<br/>(Dual Gate Check)"}:::verify
+    N9["N9: Final Answer<br/>(Natural Language & Summary)"]:::output
+    N11["N11: Render Overlay<br/>(Multi-Box Color Layers, Numbers & Legend)"]:::output
+    N10["N10: Suggest Next Query<br/>(Task Transition Table & Sensor Gating)"]:::suggest
+    UI["Chat UI / Hallmark Workbench<br/>(Dual Canvas, Reticle & Suggestion Chips)"]:::input
+    AUDIT[("audit.json Store<br/>(Trace, AnnotationSet, Suggestion Log)")]:::input
+
+    N1 --> N2 --> N3 --> N4
+    N4 -. Conditional .-> N5
+    N4 --> N6
+    N5 --> N6
+    N6 --> N7
+    N7 -- Loop-back on insufficient evidence --> N4
+    N7 -- Verified --> N9
+    N7 -- Verified --> N11
+    N9 --> N10
+    N10 --> UI
+    N11 --> UI
+    N10 -. Click chip resubmits .-> N1
+    N7 -. Telemetry .-> AUDIT
+    N10 -. Suggestion Log .-> AUDIT
+    N11 -. Annotation Set .-> AUDIT
 ```
 
 ---
@@ -48,19 +93,30 @@ SATQuery/
 ├── start.ps1                       # PowerShell launcher for backend + frontend
 │
 ├── backend/                        # FastAPI Backend & Inference Engine
-│   ├── main.py                     # FastAPI application entrypoint & API routes
-│   ├── orchestrator.py             # Pipeline orchestrator managing all execution stages
-│   ├── compatibility.py            # Pre-flight input validation & rule-based checks
+│   ├── main.py                     # FastAPI entrypoint, /query, /feedback, /suggestion/click
+│   ├── orchestrator.py             # 11-stage pipeline orchestrator
+│   ├── compatibility.py            # Pre-flight input validation & GSD arbitration
 │   ├── router.py                   # Natural-language intent classifier & dispatcher
 │   ├── gsd_normalizer.py           # GSD detection, resolution resampling, & scale math
 │   ├── jepa_engine.py              # JEV-JEPA latent patch representation architecture
-│   ├── dl_models.py                # Deep learning models (Siamese CNN, JEPA latents)
+│   ├── dl_models.py                # Deep learning models (Siamese CNN, ONNX change detector)
 │   ├── specialists.py              # Specialist engines (RS-VLM, Change Detection, SAR Fusion)
+│   ├── annotation_schema.py        # Standardized AnnotationSet schema (T1-T6)
+│   ├── evidence_fusion.py          # Node N6: Multi-layer fusion & IoU deduplication
+│   ├── render_overlay.py           # Node N11: Multi-layer color overlay, numbers & legend
+│   ├── next_query.py               # Node N10: Grounded follow-up recommendation engine
+│   ├── audit_store.py              # Persistent audit logger (audit.json)
+│   ├── audit.json                  # Append-only structured telemetry & feedback log
 │   ├── serve_fine_tuned.py         # Local inference server for fine-tuned LoRA checkpoint
-│   ├── evidence.py                 # Evidence overlay rendering (bboxes, masks, scale bars)
+│   ├── evidence.py                 # Core rendering utilities and metric scale bar math
 │   ├── confidence.py               # Compound confidence arbitration & calibration
 │   ├── trace.py                    # Stage-by-stage observable execution telemetry builder
 │   ├── report.py                   # Multi-format report export (JSON, Markdown, PDF, DOCX)
+│   ├── gradio_app.py               # Standalone Gradio chat QA surface with suggestion chips
+│   ├── tests/                      # Isolated unit & integration tests
+│   │   ├── test_next_query.py      # Node N10 isolated unit tests
+│   │   ├── test_render_overlay.py  # Node N11 & IoU deduplication unit tests
+│   │   └── test_pipeline_e2e.py    # Complete pipeline end-to-end integration tests
 │   ├── requirements.txt            # Python package dependencies
 │   ├── weights/                    # Model weights directory (git-ignored)
 │   │   ├── satquery_rsvlm_lora/    # Fine-tuned LoRA adapter safetensors & config

@@ -986,6 +986,196 @@ body {
     color: var(--color-accent);
 }
 
+/* ── Next-Query Recommendation Chips (Node N10) ────────────────────── */
+.suggestions-container {
+    margin-top: 14px;
+    padding: 12px 14px;
+    background: var(--color-paper);
+    border: 1px solid var(--color-rule);
+    border-radius: var(--radius-sm);
+}
+
+.suggestions-chips-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.suggestion-chip {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 12px;
+    background: var(--color-paper-2);
+    border: 1px solid var(--color-rule);
+    border-radius: var(--radius-xs);
+    color: var(--color-ink);
+    font-family: var(--font-body);
+    font-size: 12.5px;
+    text-align: left;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.suggestion-chip:hover {
+    background: var(--color-paper-3);
+    border-color: var(--color-accent);
+}
+
+.suggestion-chip:active {
+    transform: translateY(1px);
+}
+
+.suggestion-chip:focus-visible {
+    outline: 2px solid var(--color-focus);
+    outline-offset: 1px;
+}
+
+.chip-tag {
+    display: inline-block;
+    padding: 2px 6px;
+    background: var(--color-paper);
+    border: 1px solid var(--color-rule);
+    border-radius: 2px;
+    font-family: var(--font-mono);
+    font-size: 9.5px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--color-accent);
+    white-space: nowrap;
+}
+
+.chip-text {
+    flex: 1;
+    color: var(--color-ink);
+    font-size: 12px;
+    line-height: 1.4;
+}
+
+/* ── Multi-Layer Grounding Legend Strip (Node N11) ─────────────────── */
+.layers-legend-strip {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    background: var(--color-paper);
+    border-top: 1px solid var(--color-rule);
+}
+
+.layer-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 3px 8px;
+    background: var(--color-paper-2);
+    border: 1px solid var(--color-rule);
+    border-radius: var(--radius-xs);
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    color: var(--color-ink);
+}
+
+.layer-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+.layer-name {
+    color: var(--color-ink-2);
+}
+
+.layer-count {
+    padding: 0 4px;
+    background: var(--color-paper);
+    border-radius: 2px;
+    color: var(--color-accent);
+    font-weight: 700;
+}
+
+/* ── Operator Verification Controls (Task 3.3 / Task 3.7) ─────────── */
+.operator-feedback-strip {
+    margin-top: 14px;
+    padding: 12px 14px;
+    background: var(--color-paper);
+    border: 1px solid var(--color-rule);
+    border-radius: var(--radius-sm);
+}
+
+.feedback-actions-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.feedback-btn {
+    padding: 6px 14px;
+    font-family: var(--font-display);
+    font-size: 11.5px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    border-radius: var(--radius-xs);
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.feedback-btn:active {
+    transform: translateY(1px);
+}
+
+.feedback-btn:focus-visible {
+    outline: 2px solid var(--color-focus);
+    outline-offset: 1px;
+}
+
+.feedback-btn.accept-btn {
+    background: var(--status-success-bg);
+    border: 1px solid var(--status-success-border);
+    color: var(--status-success);
+}
+
+.feedback-btn.accept-btn:hover {
+    background: oklch(26% 0.08 145);
+}
+
+.feedback-btn.flag-btn {
+    background: var(--status-error-bg);
+    border: 1px solid var(--status-error-border);
+    color: var(--status-error);
+}
+
+.feedback-btn.flag-btn:hover {
+    background: oklch(26% 0.08 25);
+}
+
+.feedback-status-chip {
+    padding: 4px 10px;
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border-radius: var(--radius-xs);
+}
+
+.feedback-status-chip.accept {
+    background: var(--status-success-bg);
+    border: 1px solid var(--status-success-border);
+    color: var(--status-success);
+}
+
+.feedback-status-chip.flag_inaccurate {
+    background: var(--status-error-bg);
+    border: 1px solid var(--status-error-border);
+    color: var(--status-error);
+}
+
 /* ── Multi-Spectral & Spatial Analysis Telemetry Grid ──────────────── */
 .analysis-grid {
     display: grid;

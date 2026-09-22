@@ -1,0 +1,1326 @@
+{
+  "system": "SatQuery AI",
+  "schema_version": "2.1",
+  "records": [
+    {
+      "query_id": "test_e2e_query_123",
+      "timestamp": "2026-09-22T18:53:36.112766+00:00",
+      "query": {
+        "text": "Test query text",
+        "images": [
+          "test.png"
+        ]
+      },
+      "compatibility": {
+        "valid": true
+      },
+      "routing": {
+        "intent": "single_image_vqa"
+      },
+      "specialist": {
+        "model": "Test",
+        "confidence": 0.9
+      },
+      "annotation_set": [],
+      "suggestion_log": {
+        "suggestions_offered": [
+          {
+            "text": "Follow up",
+            "task_type": "ground_region"
+          }
+        ],
+        "clicked_at": "2026-09-22T18:53:36.113761+00:00",
+        "clicked_suggestion": "Follow up"
+      },
+      "verification_outcome": {
+        "evidence_sufficient": true,
+        "human_review": false
+      },
+      "trace": [],
+      "total_duration_ms": 120
+    },
+    {
+      "query_id": "b848af28c87a4638",
+      "timestamp": "2026-09-22T18:53:36.910182+00:00",
+      "query": {
+        "text": "Detect all bi-temporal change deltas between baseline and monitoring dates.",
+        "images": [
+          "port_t1.png",
+          "port_t2.png"
+        ]
+      },
+      "compatibility": {
+        "valid": true,
+        "reason": null,
+        "detected_intent": "change_detection",
+        "gsd_metadata": [
+          {
+            "detected_gsd_m": 0.5,
+            "sensor_family": "WorldView / Aerial (0.5m Very High Res)",
+            "crs": "EPSG:4326 (WGS84)",
+            "width": 400,
+            "height": 300,
+            "is_geotiff": false,
+            "scale_factor_to_canonical": 0.05,
+            "normalization_applied": "anti_aliased_downsample"
+          },
+          {
+            "detected_gsd_m": 0.5,
+            "sensor_family": "WorldView / Aerial (0.5m Very High Res)",
+            "crs": "EPSG:4326 (WGS84)",
+            "width": 400,
+            "height": 300,
+            "is_geotiff": false,
+            "scale_factor_to_canonical": 0.05,
+            "normalization_applied": "anti_aliased_downsample"
+          }
+        ],
+        "gsd_ratio": 1.0,
+        "gsd_warning": null
+      },
+      "routing": {
+        "intent": "change_detection",
+        "specialist": "Change Detection"
+      },
+      "specialist": {
+        "model": "Processed by Siamese DL Engine (JEV-JEPA Latents + Siamese CNN) + Analytical Engine",
+        "confidence": 0.7,
+        "evidence_type": "change_overlay"
+      },
+      "annotation_set": [
+        {
+          "layer_id": "likely_new_construction",
+          "reasoning": "change",
+          "color": "#D14545",
+          "boxes": [
+            {
+              "id": 1,
+              "bbox": [
+                30,
+                25,
+                70,
+                75
+              ],
+              "label": "Primary Change Delta",
+              "confidence": 0.7
+            }
+          ]
+        }
+      ],
+      "suggestion_log": {
+        "suggestions_offered": [
+          {
+            "text": "Show me where the cleared terrain are located.",
+            "task_type": "ground_region"
+          },
+          {
+            "text": "Describe the surrounding land cover and landscape context.",
+            "task_type": "caption_scene"
+          },
+          {
+            "text": "Has this cleared terrain sector changed compared to baseline imagery?",
+            "task_type": "bi_temporal_change"
+          }
+        ],
+        "clicked_at": null,
+        "clicked_suggestion": null
+      },
+      "verification_outcome": {
+        "evidence_sufficient": true,
+        "human_review": true,
+        "verification_status": "verified"
+      },
+      "trace": [
+        {
+          "stage": "Compatibility Check",
+          "status": "ok",
+          "duration_ms": 1,
+          "detail": "Validated 2 image(s) for intent: change_detection"
+        },
+        {
+          "stage": "Routing",
+          "status": "ok",
+          "duration_ms": 0,
+          "detail": "Intent: change_detection → Selected Specialist: Change Detection"
+        },
+        {
+          "stage": "Analyzing",
+          "status": "ok",
+          "duration_ms": 566,
+          "detail": "Processed by Siamese DL Engine (JEV-JEPA Latents + Siamese CNN) + Analytical Engine"
+        },
+        {
+          "stage": "Evidence Fusion",
+          "status": "ok",
+          "duration_ms": 0,
+          "detail": "Fused 1 layer(s) with 1 deduplicated box(es)"
+        },
+        {
+          "stage": "Building Evidence",
+          "status": "ok",
+          "duration_ms": 22,
+          "detail": "Rendered multi-layer grounding overlay with 1 boxes and legend"
+        },
+        {
+          "stage": "Confidence Scoring",
+          "status": "ok",
+          "duration_ms": 1,
+          "detail": "Score: 0.7 (Medium) | Review: FLAGGED"
+        },
+        {
+          "stage": "Next-Query Recommendation",
+          "status": "ok",
+          "duration_ms": 0,
+          "detail": "Generated 3 grounded follow-up suggestion(s)"
+        },
+        {
+          "stage": "Report Generation",
+          "status": "ok",
+          "duration_ms": 138,
+          "detail": "Report saved: b848af28c87a4638"
+        }
+      ],
+      "total_duration_ms": 728
+    },
+    {
+      "query_id": "90c55bffd03a4a88",
+      "timestamp": "2026-09-22T18:53:37.082088+00:00",
+      "query": {
+        "text": "Count how many buildings are in this port complex.",
+        "images": [
+          "scene.png"
+        ]
+      },
+      "compatibility": {
+        "valid": true,
+        "reason": null,
+        "detected_intent": "single_image_vqa",
+        "gsd_metadata": [
+          {
+            "detected_gsd_m": 10.0,
+            "sensor_family": "Standard Optical Scene (Estimated ~10m GSD)",
+            "crs": "EPSG:4326 (WGS84)",
+            "width": 400,
+            "height": 300,
+            "is_geotiff": false,
+            "scale_factor_to_canonical": 1.0,
+            "normalization_applied": "identity"
+          }
+        ],
+        "gsd_ratio": null,
+        "gsd_warning": null
+      },
+      "routing": {
+        "intent": "single_image_vqa",
+        "specialist": "RS-VLM"
+      },
+      "specialist": {
+        "model": "Processed by Mock RS-VLM (offline mode)",
+        "confidence": 0.89,
+        "evidence_type": "bbox"
+      },
+      "annotation_set": [
+        {
+          "layer_id": "buildings_count",
+          "reasoning": "count",
+          "color": "#2E7DD1",
+          "boxes": [
+            {
+              "id": 1,
+              "bbox": [
+                32.5,
+                22.75,
+                52.5,
+                44.75
+              ],
+              "label": "Industrial Buildings 1",
+              "confidence": 0.88
+            },
+            {
+              "id": 2,
+              "bbox": [
+                57.5,
+                22.75,
+                77.5,
+                44.75
+              ],
+              "label": "Industrial Buildings 2",
+              "confidence": 0.87
+            },
+            {
+              "id": 3,
+              "bbox": [
+                32.5,
+                50.25,
+                52.5,
+                72.25
+              ],
+              "label": "Industrial Buildings 3",
+              "confidence": 0.86
+            },
+            {
+              "id": 4,
+              "bbox": [
+                57.5,
+                50.25,
+                77.5,
+                72.25
+              ],
+              "label": "Industrial Buildings 4",
+              "confidence": 0.85
+            }
+          ]
+        }
+      ],
+      "suggestion_log": {
+        "suggestions_offered": [
+          {
+            "text": "Show me where the industrial buildings are located.",
+            "task_type": "ground_region"
+          },
+          {
+            "text": "Describe the surrounding land cover and landscape context.",
+            "task_type": "caption_scene"
+          }
+        ],
+        "clicked_at": null,
+        "clicked_suggestion": null
+      },
+      "verification_outcome": {
+        "evidence_sufficient": true,
+        "human_review": false,
+        "verification_status": "verified"
+      },
+      "trace": [
+        {
+          "stage": "Compatibility Check",
+          "status": "ok",
+          "duration_ms": 1,
+          "detail": "Validated 1 image(s) for intent: single_image_vqa"
+        },
+        {
+          "stage": "Routing",
+          "status": "ok",
+          "duration_ms": 0,
+          "detail": "Intent: single_image_vqa → Selected Specialist: RS-VLM"
+        },
+        {
+          "stage": "Analyzing",
+          "status": "ok",
+          "duration_ms": 0,
+          "detail": "Processed by Mock RS-VLM (offline mode)"
+        },
+        {
+          "stage": "Evidence Fusion",
+          "status": "ok",
+          "duration_ms": 0,
+          "detail": "Fused 1 layer(s) with 4 deduplicated box(es)"
+        },
+        {
+          "stage": "Building Evidence",
+          "status": "ok",
+          "duration_ms": 45,
+          "detail": "Rendered multi-layer grounding overlay with 4 boxes and legend"
+        },
+        {
+          "stage": "Confidence Scoring",
+          "status": "ok",
+          "duration_ms": 0,
+          "detail": "Score: 0.89 (High) | Review: PASSED"
+        },
+        {
+          "stage": "Next-Query Recommendation",
+          "status": "ok",
+          "duration_ms": 0,
+          "detail": "Generated 2 grounded follow-up suggestion(s)"
+        },
+        {
+          "stage": "Report Generation",
+          "status": "ok",
+          "duration_ms": 112,
+          "detail": "Report saved: 90c55bffd03a4a88"
+        }
+      ],
+      "total_duration_ms": 158
+    },
+    {
+      "query_id": "a9e4394716fd49bd",
+      "timestamp": "2026-09-22T18:55:37.501928+00:00",
+      "query": {
+        "text": "Count how many buildings are located in this industrial complex.",
+        "images": [
+          "scene.png"
+        ]
+      },
+      "compatibility": {
+        "valid": true,
+        "reason": null,
+        "detected_intent": "single_image_vqa",
+        "gsd_metadata": [
+          {
+            "detected_gsd_m": 10.0,
+            "sensor_family": "Standard Optical Scene (Estimated ~10m GSD)",
+            "crs": "EPSG:4326 (WGS84)",
+            "width": 256,
+            "height": 256,
+            "is_geotiff": false,
+            "scale_factor_to_canonical": 1.0,
+            "normalization_applied": "identity"
+          }
+        ],
+        "gsd_ratio": null,
+        "gsd_warning": null
+      },
+      "routing": {
+        "intent": "single_image_vqa",
+        "specialist": "RS-VLM"
+      },
+      "specialist": {
+        "model": "Processed by Gemini Vision",
+        "confidence": 0.0,
+        "evidence_type": "none"
+      },
+      "annotation_set": [],
+      "suggestion_log": {
+        "suggestions_offered": [
+          {
+            "text": "Show me where the features are located.",
+            "task_type": "ground_region"
+          },
+          {
+            "text": "Describe the surrounding land cover and landscape context.",
+            "task_type": "caption_scene"
+          }
+        ],
+        "clicked_at": null,
+        "clicked_suggestion": null
+      },
+      "verification_outcome": {
+        "evidence_sufficient": false,
+        "human_review": true,
+        "verification_status": "review_recommended"
+      },
+      "trace": [
+        {
+          "stage": "Compatibility Check",
+          "status": "ok",
+          "duration_ms": 0,
+          "detail": "Validated 1 image(s) for intent: single_image_vqa"
+        },
+        {
+          "stage": "Routing",
+          "status": "ok",
+          "duration_ms": 0,
+          "detail": "Intent: single_image_vqa → Selected Specialist: RS-VLM"
+        },
+        {
+          "stage": "Analyzing",
+          "status": "ok",
+          "duration_ms": 11513,
+          "detail": "Processed by Gemini Vision"
+        },
+        {
+          "stage": "Evidence Fusion",
+          "status": "ok",
+          "duration_ms": 0,
+          "detail": "Fused 0 layer(s) with 0 deduplicated box(es)"
+        },
+        {
+          "stage": "Building Evidence",
+          "status": "ok",
+          "duration_ms": 3,
+          "detail": "No spatial coordinates returned, generated original base overlay"
+        },
+        {
+          "stage": "Confidence Scoring",
+          "status": "ok",
+          "duration_ms": 0,
+          "detail": "Score: 0.0 (Low) | Review: FLAGGED"
+        },
+        {
+          "stage": "Next-Query Recommendation",
+          "status": "ok",
+          "duration_ms": 0,
+          "detail": "Generated 2 grounded follow-up suggestion(s)"
+        },
+        {
+          "stage": "Report Generation",
+          "status": "ok",
+          "duration_ms": 140,
+          "detail": "Report saved: a9e4394716fd49bd"
+        }
+      ],
+      "total_duration_ms": 11656
+    },
+    {
+      "query_id": "a5e270d580e14098",
+      "timestamp": "2026-09-22T18:56:30.419170+00:00",
+      "query": {
+        "text": "Count how many buildings are located in this industrial complex.",
+        "images": [
+          "scene.png"
+        ]
+      },
+      "compatibility": {
+        "valid": true,
+        "reason": null,
+        "detected_intent": "single_image_vqa",
+        "gsd_metadata": [
+          {
+            "detected_gsd_m": 10.0,
+            "sensor_family": "Standard Optical Scene (Estimated ~10m GSD)",
+            "crs": "EPSG:4326 (WGS84)",
+            "width": 256,
+            "height": 256,
+            "is_geotiff": false,
+            "scale_factor_to_canonical": 1.0,
+            "normalization_applied": "identity"
+          }
+        ],
+        "gsd_ratio": null,
+        "gsd_warning": null
+      },
+      "routing": {
+        "intent": "single_image_vqa",
+        "specialist": "RS-VLM"
+      },
+      "specialist": {
+        "model": "Processed by Gemini Vision",
+        "confidence": 0.01,
+        "evidence_type": "none"
+      },
+      "annotation_set": [],
+      "suggestion_log": {
+        "suggestions_offered": [
+          {
+            "text": "Show me where the features are located.",
+            "task_type": "ground_region"
+          },
+          {
+            "text": "Describe the surrounding land cover and landscape context.",
+            "task_type": "caption_scene"
+          }
+        ],
+        "clicked_at": null,
+        "clicked_suggestion": null
+      },
+      "verification_outcome": {
+        "evidence_sufficient": false,
+        "human_review": true,
+        "verification_status": "review_recommended"
+      },
+      "trace": [
+        {
+          "stage": "Compatibility Check",
+          "status": "ok",
+          "duration_ms": 0,
+          "detail": "Validated 1 image(s) for intent: single_image_vqa"
+        },
+        {
+          "stage": "Routing",
+          "status": "ok",
+          "duration_ms": 0,
+          "detail": "Intent: single_image_vqa → Selected Specialist: RS-VLM"
+        },
+        {
+          "stage": "Analyzing",
+          "status": "ok",
+          "duration_ms": 35428,
+          "detail": "Processed by Gemini Vision"
+        },
+        {
+          "stage": "Evidence Fusion",
+          "status": "ok",
+          "duration_ms": 0,
+          "detail": "Fused 0 layer(s) with 0 deduplicated box(es)"
+        },
+        {
+          "stage": "Building Evidence",
+          "status": "ok",
+          "duration_ms": 2,
+          "detail": "No spatial coordinates returned, generated original base overlay"
+        },
+        {
+          "stage": "Confidence Scoring",
+          "status": "ok",
+          "duration_ms": 0,
+          "detail": "Score: 0.01 (Low) | Review: FLAGGED"
+        },
+        {
+          "stage": "Next-Query Recommendation",
+          "status": "ok",
+          "duration_ms": 1,
+          "detail": "Generated 2 grounded follow-up suggestion(s)"
+        },
+        {
+          "stage": "Report Generation",
+          "status": "ok",
+          "duration_ms": 94,
+          "detail": "Report saved: a5e270d580e14098"
+        }
+      ],
+      "total_duration_ms": 35525
+    },
+    {
+      "query_id": "test_e2e_query_123",
+      "timestamp": "2026-09-22T18:56:30.481866+00:00",
+      "query": {
+        "text": "Test query text",
+        "images": [
+          "test.png"
+        ]
+      },
+      "compatibility": {
+        "valid": true
+      },
+      "routing": {
+        "intent": "single_image_vqa"
+      },
+      "specialist": {
+        "model": "Test",
+        "confidence": 0.9
+      },
+      "annotation_set": [],
+      "suggestion_log": {
+        "suggestions_offered": [
+          {
+            "text": "Follow up",
+            "task_type": "ground_region"
+          }
+        ],
+        "clicked_at": "2026-09-22T18:56:30.499290+00:00",
+        "clicked_suggestion": "Follow up"
+      },
+      "verification_outcome": {
+        "evidence_sufficient": true,
+        "human_review": false
+      },
+      "trace": [],
+      "total_duration_ms": 120
+    },
+    {
+      "query_id": "c13a787a1dfc45e5",
+      "timestamp": "2026-09-22T18:56:42.277779+00:00",
+      "query": {
+        "text": "Detect all bi-temporal change deltas between baseline and monitoring dates.",
+        "images": [
+          "port_t1.png",
+          "port_t2.png"
+        ]
+      },
+      "compatibility": {
+        "valid": true,
+        "reason": null,
+        "detected_intent": "change_detection",
+        "gsd_metadata": [
+          {
+            "detected_gsd_m": 0.5,
+            "sensor_family": "WorldView / Aerial (0.5m Very High Res)",
+            "crs": "EPSG:4326 (WGS84)",
+            "width": 400,
+            "height": 300,
+            "is_geotiff": false,
+            "scale_factor_to_canonical": 0.05,
+            "normalization_applied": "anti_aliased_downsample"
+          },
+          {
+            "detected_gsd_m": 0.5,
+            "sensor_family": "WorldView / Aerial (0.5m Very High Res)",
+            "crs": "EPSG:4326 (WGS84)",
+            "width": 400,
+            "height": 300,
+            "is_geotiff": false,
+            "scale_factor_to_canonical": 0.05,
+            "normalization_applied": "anti_aliased_downsample"
+          }
+        ],
+        "gsd_ratio": 1.0,
+        "gsd_warning": null
+      },
+      "routing": {
+        "intent": "change_detection",
+        "specialist": "Change Detection"
+      },
+      "specialist": {
+        "model": "Processed by Siamese DL Engine (JEV-JEPA Latents + Siamese CNN) + Gemini 2.5 Flash",
+        "confidence": 0.7,
+        "evidence_type": "change_overlay"
+      },
+      "annotation_set": [],
+      "suggestion_log": {
+        "suggestions_offered": [
+          {
+            "text": "Show me where the no specific change are located.",
+            "task_type": "ground_region"
+          },
+          {
+            "text": "Describe the surrounding land cover and landscape context.",
+            "task_type": "caption_scene"
+          },
+          {
+            "text": "Has this no specific change sector changed compared to baseline imagery?",
+            "task_type": "bi_temporal_change"
+          }
+        ],
+        "clicked_at": null,
+        "clicked_suggestion": null
+      },
+      "verification_outcome": {
+        "evidence_sufficient": true,
+        "human_review": true,
+        "verification_status": "verified"
+      },
+      "trace": [
+        {
+          "stage": "Compatibility Check",
+          "status": "ok",
+          "duration_ms": 0,
+          "detail": "Validated 2 image(s) for intent: change_detection"
+        },
+        {
+          "stage": "Routing",
+          "status": "ok",
+          "duration_ms": 0,
+          "detail": "Intent: change_detection → Selected Specialist: Change Detection"
+        },
+        {
+          "stage": "Analyzing",
+          "status": "ok",
+          "duration_ms": 11551,
+          "detail": "Processed by Siamese DL Engine (JEV-JEPA Latents + Siamese CNN) + Gemini 2.5 Flash"
+        },
+        {
+          "stage": "Evidence Fusion",
+          "status": "ok",
+          "duration_ms": 0,
+          "detail": "Fused 0 layer(s) with 0 deduplicated box(es)"
+        },
+        {
+          "stage": "Building Evidence",
+          "status": "ok",
+          "duration_ms": 45,
+          "detail": "Rendered bi-temporal comparative panel with DL contours: None"
+        },
+        {
+          "stage": "Confidence Scoring",
+          "status": "ok",
+          "duration_ms": 0,
+          "detail": "Score: 0.7 (Medium) | Review: FLAGGED"
+        },
+        {
+          "stage": "Next-Query Recommendation",
+          "status": "ok",
+          "duration_ms": 0,
+          "detail": "Generated 3 grounded follow-up suggestion(s)"
+        },
+        {
+          "stage": "Report Generation",
+          "status": "ok",
+          "duration_ms": 125,
+          "detail": "Report saved: c13a787a1dfc45e5"
+        }
+      ],
+      "total_duration_ms": 11721
+    },
+    {
+      "query_id": "f7c1558455a74873",
+      "timestamp": "2026-09-22T18:56:52.280515+00:00",
+      "query": {
+        "text": "Count how many buildings are in this port complex.",
+        "images": [
+          "scene.png"
+        ]
+      },
+      "compatibility": {
+        "valid": true,
+        "reason": null,
+        "detected_intent": "single_image_vqa",
+        "gsd_metadata": [
+          {
+            "detected_gsd_m": 10.0,
+            "sensor_family": "Standard Optical Scene (Estimated ~10m GSD)",
+            "crs": "EPSG:4326 (WGS84)",
+            "width": 400,
+            "height": 300,
+            "is_geotiff": false,
+            "scale_factor_to_canonical": 1.0,
+            "normalization_applied": "identity"
+          }
+        ],
+        "gsd_ratio": null,
+        "gsd_warning": null
+      },
+      "routing": {
+        "intent": "single_image_vqa",
+        "specialist": "RS-VLM"
+      },
+      "specialist": {
+        "model": "Processed by Gemini Vision",
+        "confidence": 0.01,
+        "evidence_type": "none"
+      },
+      "annotation_set": [],
+      "suggestion_log": {
+        "suggestions_offered": [
+          {
+            "text": "Show me where the features are located.",
+            "task_type": "ground_region"
+          },
+          {
+            "text": "Describe the surrounding land cover and landscape context.",
+            "task_type": "caption_scene"
+          }
+        ],
+        "clicked_at": null,
+        "clicked_suggestion": null
+      },
+      "verification_outcome": {
+        "evidence_sufficient": false,
+        "human_review": true,
+        "verification_status": "review_recommended"
+      },
+      "trace": [
+        {
+          "stage": "Compatibility Check",
+          "status": "ok",
+          "duration_ms": 0,
+          "detail": "Validated 1 image(s) for intent: single_image_vqa"
+        },
+        {
+          "stage": "Routing",
+          "status": "ok",
+          "duration_ms": 0,
+          "detail": "Intent: single_image_vqa → Selected Specialist: RS-VLM"
+        },
+        {
+          "stage": "Analyzing",
+          "status": "ok",
+          "duration_ms": 9856,
+          "detail": "Processed by Gemini Vision"
+        },
+        {
+          "stage": "Evidence Fusion",
+          "status": "ok",
+          "duration_ms": 0,
+          "detail": "Fused 0 layer(s) with 0 deduplicated box(es)"
+        },
+        {
+          "stage": "Building Evidence",
+          "status": "ok",
+          "duration_ms": 5,
+          "detail": "No spatial coordinates returned, generated original base overlay"
+        },
+        {
+          "stage": "Confidence Scoring",
+          "status": "ok",
+          "duration_ms": 0,
+          "detail": "Score: 0.01 (Low) | Review: FLAGGED"
+        },
+        {
+          "stage": "Next-Query Recommendation",
+          "status": "ok",
+          "duration_ms": 0,
+          "detail": "Generated 2 grounded follow-up suggestion(s)"
+        },
+        {
+          "stage": "Report Generation",
+          "status": "ok",
+          "duration_ms": 126,
+          "detail": "Report saved: f7c1558455a74873"
+        }
+      ],
+      "total_duration_ms": 9987
+    },
+    {
+      "query_id": "8268377cc17b4b09",
+      "timestamp": "2026-09-22T18:59:38.420976+00:00",
+      "query": {
+        "text": "Count how many buildings are located in this industrial complex.",
+        "images": [
+          "scene.png"
+        ]
+      },
+      "compatibility": {
+        "valid": true,
+        "reason": null,
+        "detected_intent": "single_image_vqa",
+        "gsd_metadata": [
+          {
+            "detected_gsd_m": 10.0,
+            "sensor_family": "Standard Optical Scene (Estimated ~10m GSD)",
+            "crs": "EPSG:4326 (WGS84)",
+            "width": 256,
+            "height": 256,
+            "is_geotiff": false,
+            "scale_factor_to_canonical": 1.0,
+            "normalization_applied": "identity"
+          }
+        ],
+        "gsd_ratio": null,
+        "gsd_warning": null
+      },
+      "routing": {
+        "intent": "single_image_vqa",
+        "specialist": "RS-VLM"
+      },
+      "specialist": {
+        "model": "Processed by Gemini Vision",
+        "confidence": 0.4,
+        "evidence_type": "none"
+      },
+      "annotation_set": [],
+      "suggestion_log": {
+        "suggestions_offered": [
+          {
+            "text": "Show me where the features are located.",
+            "task_type": "ground_region"
+          },
+          {
+            "text": "Describe the surrounding land cover and landscape context.",
+            "task_type": "caption_scene"
+          }
+        ],
+        "clicked_at": null,
+        "clicked_suggestion": null
+      },
+      "verification_outcome": {
+        "evidence_sufficient": false,
+        "human_review": true,
+        "verification_status": "review_recommended"
+      },
+      "trace": [
+        {
+          "stage": "Compatibility Check",
+          "status": "ok",
+          "duration_ms": 0,
+          "detail": "Validated 1 image(s) for intent: single_image_vqa"
+        },
+        {
+          "stage": "Routing",
+          "status": "ok",
+          "duration_ms": 0,
+          "detail": "Intent: single_image_vqa → Selected Specialist: RS-VLM"
+        },
+        {
+          "stage": "Analyzing",
+          "status": "ok",
+          "duration_ms": 12373,
+          "detail": "Processed by Gemini Vision"
+        },
+        {
+          "stage": "Evidence Fusion",
+          "status": "ok",
+          "duration_ms": 0,
+          "detail": "Fused 0 layer(s) with 0 deduplicated box(es)"
+        },
+        {
+          "stage": "Building Evidence",
+          "status": "ok",
+          "duration_ms": 3,
+          "detail": "No spatial coordinates returned, generated original base overlay"
+        },
+        {
+          "stage": "Confidence Scoring",
+          "status": "ok",
+          "duration_ms": 0,
+          "detail": "Score: 0.4 (Low) | Review: FLAGGED"
+        },
+        {
+          "stage": "Next-Query Recommendation",
+          "status": "ok",
+          "duration_ms": 0,
+          "detail": "Generated 2 grounded follow-up suggestion(s)"
+        },
+        {
+          "stage": "Report Generation",
+          "status": "ok",
+          "duration_ms": 150,
+          "detail": "Report saved: 8268377cc17b4b09"
+        }
+      ],
+      "total_duration_ms": 12526
+    },
+    {
+      "query_id": "test_e2e_query_123",
+      "timestamp": "2026-09-22T18:59:38.485452+00:00",
+      "query": {
+        "text": "Test query text",
+        "images": [
+          "test.png"
+        ]
+      },
+      "compatibility": {
+        "valid": true
+      },
+      "routing": {
+        "intent": "single_image_vqa"
+      },
+      "specialist": {
+        "model": "Test",
+        "confidence": 0.9
+      },
+      "annotation_set": [],
+      "suggestion_log": {
+        "suggestions_offered": [
+          {
+            "text": "Follow up",
+            "task_type": "ground_region"
+          }
+        ],
+        "clicked_at": "2026-09-22T18:59:38.510536+00:00",
+        "clicked_suggestion": "Follow up"
+      },
+      "verification_outcome": {
+        "evidence_sufficient": true,
+        "human_review": false
+      },
+      "trace": [],
+      "total_duration_ms": 120
+    },
+    {
+      "query_id": "c3172047b30b4cf6",
+      "timestamp": "2026-09-22T18:59:45.934016+00:00",
+      "query": {
+        "text": "Detect all bi-temporal change deltas between baseline and monitoring dates.",
+        "images": [
+          "port_t1.png",
+          "port_t2.png"
+        ]
+      },
+      "compatibility": {
+        "valid": true,
+        "reason": null,
+        "detected_intent": "change_detection",
+        "gsd_metadata": [
+          {
+            "detected_gsd_m": 0.5,
+            "sensor_family": "WorldView / Aerial (0.5m Very High Res)",
+            "crs": "EPSG:4326 (WGS84)",
+            "width": 400,
+            "height": 300,
+            "is_geotiff": false,
+            "scale_factor_to_canonical": 0.05,
+            "normalization_applied": "anti_aliased_downsample"
+          },
+          {
+            "detected_gsd_m": 0.5,
+            "sensor_family": "WorldView / Aerial (0.5m Very High Res)",
+            "crs": "EPSG:4326 (WGS84)",
+            "width": 400,
+            "height": 300,
+            "is_geotiff": false,
+            "scale_factor_to_canonical": 0.05,
+            "normalization_applied": "anti_aliased_downsample"
+          }
+        ],
+        "gsd_ratio": 1.0,
+        "gsd_warning": null
+      },
+      "routing": {
+        "intent": "change_detection",
+        "specialist": "Change Detection"
+      },
+      "specialist": {
+        "model": "Processed by Siamese DL Engine (JEV-JEPA Latents + Siamese CNN) + Gemini 2.5 Flash",
+        "confidence": 0.7,
+        "evidence_type": "change_overlay"
+      },
+      "annotation_set": [],
+      "suggestion_log": {
+        "suggestions_offered": [
+          {
+            "text": "Show me where the features are located.",
+            "task_type": "ground_region"
+          },
+          {
+            "text": "Describe the surrounding land cover and landscape context.",
+            "task_type": "caption_scene"
+          },
+          {
+            "text": "Has this features sector changed compared to baseline imagery?",
+            "task_type": "bi_temporal_change"
+          }
+        ],
+        "clicked_at": null,
+        "clicked_suggestion": null
+      },
+      "verification_outcome": {
+        "evidence_sufficient": true,
+        "human_review": true,
+        "verification_status": "verified"
+      },
+      "trace": [
+        {
+          "stage": "Compatibility Check",
+          "status": "ok",
+          "duration_ms": 0,
+          "detail": "Validated 2 image(s) for intent: change_detection"
+        },
+        {
+          "stage": "Routing",
+          "status": "ok",
+          "duration_ms": 0,
+          "detail": "Intent: change_detection → Selected Specialist: Change Detection"
+        },
+        {
+          "stage": "Analyzing",
+          "status": "ok",
+          "duration_ms": 6940,
+          "detail": "Processed by Siamese DL Engine (JEV-JEPA Latents + Siamese CNN) + Gemini 2.5 Flash"
+        },
+        {
+          "stage": "Evidence Fusion",
+          "status": "ok",
+          "duration_ms": 0,
+          "detail": "Fused 0 layer(s) with 0 deduplicated box(es)"
+        },
+        {
+          "stage": "Building Evidence",
+          "status": "ok",
+          "duration_ms": 76,
+          "detail": "Rendered bi-temporal comparative panel with DL contours: None"
+        },
+        {
+          "stage": "Confidence Scoring",
+          "status": "ok",
+          "duration_ms": 0,
+          "detail": "Score: 0.7 (Medium) | Review: FLAGGED"
+        },
+        {
+          "stage": "Next-Query Recommendation",
+          "status": "ok",
+          "duration_ms": 0,
+          "detail": "Generated 3 grounded follow-up suggestion(s)"
+        },
+        {
+          "stage": "Report Generation",
+          "status": "ok",
+          "duration_ms": 324,
+          "detail": "Report saved: c3172047b30b4cf6"
+        }
+      ],
+      "total_duration_ms": 7340
+    },
+    {
+      "query_id": "1a0c2a78b18343f9",
+      "timestamp": "2026-09-22T18:59:46.237311+00:00",
+      "query": {
+        "text": "Count how many buildings are in this port complex.",
+        "images": [
+          "scene.png"
+        ]
+      },
+      "compatibility": {
+        "valid": true,
+        "reason": null,
+        "detected_intent": "single_image_vqa",
+        "gsd_metadata": [
+          {
+            "detected_gsd_m": 10.0,
+            "sensor_family": "Standard Optical Scene (Estimated ~10m GSD)",
+            "crs": "EPSG:4326 (WGS84)",
+            "width": 400,
+            "height": 300,
+            "is_geotiff": false,
+            "scale_factor_to_canonical": 1.0,
+            "normalization_applied": "identity"
+          }
+        ],
+        "gsd_ratio": null,
+        "gsd_warning": null
+      },
+      "routing": {
+        "intent": "single_image_vqa",
+        "specialist": "RS-VLM"
+      },
+      "specialist": {
+        "model": "Mock RS-VLM for pipeline test",
+        "confidence": 0.92,
+        "evidence_type": "bbox"
+      },
+      "annotation_set": [
+        {
+          "layer_id": "buildings_count",
+          "reasoning": "count",
+          "color": "#2E7DD1",
+          "boxes": [
+            {
+              "id": 1,
+              "bbox": [
+                22,
+                22,
+                45,
+                45
+              ],
+              "label": "Building 1",
+              "confidence": 0.92
+            },
+            {
+              "id": 2,
+              "bbox": [
+                50,
+                22,
+                75,
+                45
+              ],
+              "label": "Building 2",
+              "confidence": 0.9
+            }
+          ]
+        }
+      ],
+      "suggestion_log": {
+        "suggestions_offered": [
+          {
+            "text": "Show me where the 8 buildings are located.",
+            "task_type": "ground_region"
+          },
+          {
+            "text": "Describe the surrounding land cover and landscape context.",
+            "task_type": "caption_scene"
+          }
+        ],
+        "clicked_at": null,
+        "clicked_suggestion": null
+      },
+      "verification_outcome": {
+        "evidence_sufficient": true,
+        "human_review": false,
+        "verification_status": "verified"
+      },
+      "trace": [
+        {
+          "stage": "Compatibility Check",
+          "status": "ok",
+          "duration_ms": 0,
+          "detail": "Validated 1 image(s) for intent: single_image_vqa"
+        },
+        {
+          "stage": "Routing",
+          "status": "ok",
+          "duration_ms": 0,
+          "detail": "Intent: single_image_vqa → Selected Specialist: RS-VLM"
+        },
+        {
+          "stage": "Analyzing",
+          "status": "ok",
+          "duration_ms": 0,
+          "detail": "Mock RS-VLM for pipeline test"
+        },
+        {
+          "stage": "Evidence Fusion",
+          "status": "ok",
+          "duration_ms": 0,
+          "detail": "Fused 1 layer(s) with 2 deduplicated box(es)"
+        },
+        {
+          "stage": "Building Evidence",
+          "status": "ok",
+          "duration_ms": 44,
+          "detail": "Rendered multi-layer grounding overlay with 2 boxes and legend"
+        },
+        {
+          "stage": "Confidence Scoring",
+          "status": "ok",
+          "duration_ms": 0,
+          "detail": "Score: 0.92 (High) | Review: PASSED"
+        },
+        {
+          "stage": "Next-Query Recommendation",
+          "status": "ok",
+          "duration_ms": 0,
+          "detail": "Generated 2 grounded follow-up suggestion(s)"
+        },
+        {
+          "stage": "Report Generation",
+          "status": "ok",
+          "duration_ms": 231,
+          "detail": "Report saved: 1a0c2a78b18343f9"
+        }
+      ],
+      "total_duration_ms": 275
+    }
+  ],
+  "operator_feedback": [
+    {
+      "timestamp": "2026-09-22T18:53:36.125720+00:00",
+      "query_id": "test_e2e_query_123",
+      "rating": "accept",
+      "notes": "Operator verified detection",
+      "corrected_bbox": null
+    },
+    {
+      "timestamp": "2026-09-22T18:55:25.827611+00:00",
+      "query_id": "test_api_query_456",
+      "rating": "accept",
+      "notes": "Verified bounding coordinates.",
+      "corrected_bbox": null
+    },
+    {
+      "timestamp": "2026-09-22T18:55:54.877300+00:00",
+      "query_id": "test_api_query_456",
+      "rating": "accept",
+      "notes": "Verified bounding coordinates.",
+      "corrected_bbox": null
+    },
+    {
+      "timestamp": "2026-09-22T18:56:30.514792+00:00",
+      "query_id": "test_e2e_query_123",
+      "rating": "accept",
+      "notes": "Operator verified detection",
+      "corrected_bbox": null
+    },
+    {
+      "timestamp": "2026-09-22T18:59:25.872282+00:00",
+      "query_id": "test_api_query_456",
+      "rating": "accept",
+      "notes": "Verified bounding coordinates.",
+      "corrected_bbox": null
+    },
+    {
+      "timestamp": "2026-09-22T18:59:38.537629+00:00",
+      "query_id": "test_e2e_query_123",
+      "rating": "accept",
+      "notes": "Operator verified detection",
+      "corrected_bbox": null
+    }
+  ],
+  "suggestion_clicks": [
+    {
+      "timestamp": "2026-09-22T18:53:36.113761+00:00",
+      "query_id": "test_e2e_query_123",
+      "clicked_suggestion": "Follow up",
+      "task_type": "ground_region"
+    },
+    {
+      "timestamp": "2026-09-22T18:55:37.514270+00:00",
+      "query_id": "test_api_query_456",
+      "clicked_suggestion": "Show me where the buildings are located.",
+      "task_type": "ground_region"
+    },
+    {
+      "timestamp": "2026-09-22T18:56:30.449844+00:00",
+      "query_id": "test_api_query_456",
+      "clicked_suggestion": "Show me where the buildings are located.",
+      "task_type": "ground_region"
+    },
+    {
+      "timestamp": "2026-09-22T18:56:30.499290+00:00",
+      "query_id": "test_e2e_query_123",
+      "clicked_suggestion": "Follow up",
+      "task_type": "ground_region"
+    },
+    {
+      "timestamp": "2026-09-22T18:59:38.435798+00:00",
+      "query_id": "test_api_query_456",
+      "clicked_suggestion": "Show me where the buildings are located.",
+      "task_type": "ground_region"
+    },
+    {
+      "timestamp": "2026-09-22T18:59:38.510536+00:00",
+      "query_id": "test_e2e_query_123",
+      "clicked_suggestion": "Follow up",
+      "task_type": "ground_region"
+    }
+  ]
+}

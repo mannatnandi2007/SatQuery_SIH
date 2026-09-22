@@ -7,9 +7,10 @@ import os
 import json
 import uuid
 from io import BytesIO
-from typing import List, Optional
+from typing import List, Optional, Dict, Any
+from pydantic import BaseModel
 
-from fastapi import FastAPI, File, UploadFile, Form, HTTPException
+from fastapi import FastAPI, File, UploadFile, Form, HTTPException, Body
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
@@ -17,6 +18,9 @@ from dotenv import load_dotenv
 
 # Load environment variables
 load_dotenv()
+
+from audit_store import audit_store
+
 
 from compatibility import run_compatibility_check
 from router import route_query, classify_intent
@@ -146,7 +150,67 @@ async def get_report(report_id: str, format: Optional[str] = None, ext: Optional
     )
 
 
+# ─── Operator Feedback & Telemetry Endpoints ──────────────────────
+
+class FeedbackRequest(BaseModel):
+    query_id: str
+    rating: str  # "accept" | "flag_inaccurate" | "corrected"
+    notes: Optional[str] = None
+    corrected_bbox: Optional[List[float]] = None
+
+class SuggestionClickRequest(BaseModel):
+    query_id: str
+    suggestion_text: str
+    task_type: str
+
+
+@app.post("/feedback")
+async def record_feedback(payload: FeedbackRequest):
+    """
+    Operator feedback endpoint (Task 3.3).
+    Captures human-in-the-loop ratings, notes, and corrected coordinates.
+    """
+    audit_store.log_operator_feedback(
+        query_id=payload.query_id,
+        rating=payload.rating,
+        notes=payload.notes,
+        corrected_bbox=payload.corrected_bbox
+    )
+    return {
+        "status": "success",
+        "message": f"Feedback '{payload.rating}' logged for query {payload.query_id}"
+    }
+
+
+@app.post("/suggestion/click")
+async def record_suggestion_click(payload: SuggestionClickRequest):
+    """
+    Asynchronous telemetry endpoint for suggestion chip taps (Feature 1).
+    Logs suggestion interaction without entering promotion-gate signal.
+    """
+    audit_store.log_suggestion_click(
+        query_id=payload.query_id,
+        suggestion_text=payload.suggestion_text,
+        task_type=payload.task_type
+    )
+    return {
+        "status": "recorded",
+        "query_id": payload.query_id
+    }
+
+
+@app.get("/audit")
+async def get_audit_trail(limit: int = 15):
+    """Retrieve the latest records from audit.json."""
+    records = audit_store.get_latest_records(limit=limit)
+    return {
+        "count": len(records),
+        "records": records
+    }
+
+
 # ─── Startup ──────────────────────────────────────────────────────
+
 
 @app.on_event("startup")
 async def startup():

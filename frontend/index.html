@@ -183,6 +183,8 @@
                             <span class="reticle-item" id="reticleGround">GROUND: ~0 m, ~0 m</span>
                             <span class="reticle-item" id="reticleGSD">GSD: 10.0 m/px</span>
                         </div>
+                        <!-- Multi-Layer Grounding Legend Strip (Node N11) -->
+                        <div class="layers-legend-strip" id="layersLegendStrip" style="display: none;"></div>
                     </div>
 
                     <!-- Operational Analysis Ledger -->
@@ -203,6 +205,26 @@
                         <div class="summary-box">
                             <div class="summary-label">Executive Summary</div>
                             <div class="answer-text" id="answerText"></div>
+                        </div>
+
+                        <!-- Next-Query Recommendation Chips (Node N10) -->
+                        <div class="suggestions-container" id="suggestionsContainer" style="display: none;">
+                            <div class="section-micro-label">// RECOMMENDED FOLLOW-UP QUERIES (TAP TO RUN)</div>
+                            <div class="suggestions-chips-grid" id="suggestionsList"></div>
+                        </div>
+
+                        <!-- Human-in-the-Loop Operator Feedback (Task 3.3 / Task 3.7) -->
+                        <div class="operator-feedback-strip" id="feedbackStrip" style="display: none;">
+                            <div class="section-micro-label">// OPERATOR VERIFICATION</div>
+                            <div class="feedback-actions-row">
+                                <button type="button" class="feedback-btn accept-btn" id="btnFeedbackAccept" onclick="submitFeedback('accept')">
+                                    Accept Verification
+                                </button>
+                                <button type="button" class="feedback-btn flag-btn" id="btnFeedbackFlag" onclick="submitFeedback('flag_inaccurate')">
+                                    Flag Inaccurate
+                                </button>
+                                <span class="feedback-status-chip" id="feedbackStatusChip" style="display: none;">Logged</span>
+                            </div>
                         </div>
 
                         <!-- Grounded Entities Tag List -->

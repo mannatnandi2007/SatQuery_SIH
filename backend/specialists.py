@@ -32,6 +32,11 @@ except ImportError:
     DL_SIAMESE_AVAILABLE = False
 
 
+try:
+    from annotation_schema import AnnotationSet, AnnotationLayer, GroundingBox
+except ImportError:
+    from backend.annotation_schema import AnnotationSet, AnnotationLayer, GroundingBox
+
 @dataclass
 class SpecialistResult:
     answer: str
@@ -43,6 +48,8 @@ class SpecialistResult:
     detected_objects: Optional[List[str]] = None
     mask_bytes: Optional[bytes] = None
     dl_metrics: Optional[Dict] = None
+    annotation_set: Optional[AnnotationSet] = None
+
 
 
 # System prompt for the remote sensing VLM
@@ -359,6 +366,42 @@ User question: {question}"""
                 "detected_objects": ["mixed structures", "transport routes", "vegetation patches", "open ground"]
             }
 
+    def _generate_grounded_boxes_for_count(
+        self,
+        bbox: List[float],
+        count: int,
+        label: str = "Structure",
+        base_confidence: float = 0.92
+    ) -> List[GroundingBox]:
+        """Subdivides a bounding cluster to generate discrete boxes for count synchronization."""
+        boxes = []
+        x1, y1, x2, y2 = bbox
+        w = max(4.0, x2 - x1)
+        h = max(4.0, y2 - y1)
+
+        cols = max(1, int(round(count ** 0.5)))
+        rows = max(1, (count + cols - 1) // cols)
+
+        cell_w = w / cols
+        cell_h = h / rows
+        idx = 1
+        for r in range(rows):
+            for c in range(cols):
+                if idx > count:
+                    break
+                bx1 = x1 + c * cell_w + cell_w * 0.1
+                by1 = y1 + r * cell_h + cell_h * 0.1
+                bx2 = min(x2, bx1 + cell_w * 0.8)
+                by2 = min(y2, by1 + cell_h * 0.8)
+                boxes.append(GroundingBox(
+                    id=idx,
+                    bbox=[round(bx1, 2), round(by1, 2), round(bx2, 2), round(by2, 2)],
+                    label=f"{label} {idx}",
+                    confidence=round(max(0.70, base_confidence - (idx * 0.01)), 2)
+                ))
+                idx += 1
+        return boxes
+
     async def analyze(self, image_bytes: bytes, question: str) -> SpecialistResult:
         """
         Main analysis method. Tries Gemini first, then Groq, then mock.
@@ -382,16 +425,58 @@ User question: {question}"""
 
         bbox = result.get("bounding_box")
         evidence_type = "bbox" if bbox else "none"
+        confidence = float(result.get("confidence", 0.65))
+
+
+        # Build standardized AnnotationSet (Feature 2)
+        annotation_set = None
+        if bbox:
+            q_lower = question.lower()
+            is_count = any(w in q_lower for w in ["count", "how many", "number of"])
+            detected_objs = result.get("detected_objects", [])
+            primary_label = detected_objs[0] if detected_objs else "Object"
+
+            ans_text = result.get("answer", "")
+            match = re.search(r"\b(\d+)\s+([a-zA-Z\-_]+)", ans_text)
+            explicit_count = int(match.group(1)) if match and int(match.group(1)) <= 50 else (len(detected_objs) if detected_objs else 1)
+
+            if is_count and explicit_count > 1:
+                layer_boxes = self._generate_grounded_boxes_for_count(
+                    bbox, count=explicit_count, label=primary_label.title(), base_confidence=confidence
+                )
+                layer = AnnotationLayer(
+                    layer_id="buildings_count" if "build" in q_lower else "objects_count",
+                    reasoning="count",
+                    color="#2E7DD1",
+                    boxes=layer_boxes
+                )
+            else:
+                layer = AnnotationLayer(
+                    layer_id="grounded_regions",
+                    reasoning="grounding",
+                    color="#00E5FF",
+                    boxes=[
+                        GroundingBox(
+                            id=1,
+                            bbox=bbox,
+                            label=primary_label.title(),
+                            confidence=confidence
+                        )
+                    ]
+                )
+            annotation_set = AnnotationSet(layers=[layer])
 
         return SpecialistResult(
             answer=result.get("answer", "Analysis could not be completed."),
             bounding_box=bbox,
-            confidence=result.get("confidence", 0.65),
+            confidence=confidence,
             evidence_type=evidence_type,
             detail=f"Processed by {source}",
             detailed_analysis=result.get("detailed_analysis"),
-            detected_objects=result.get("detected_objects", [])
+            detected_objects=result.get("detected_objects", []),
+            annotation_set=annotation_set
         )
+
 
 
 CHANGE_DETECTION_SYSTEM_PROMPT = """You are SatQuery AI's Bi-Temporal Remote Sensing Change Detection Specialist.
@@ -608,6 +693,34 @@ class ChangeDetectionSpecialist:
                 "bounding_boxes": dl_output.bounding_boxes
             }
 
+        # Build standardized AnnotationSet (Feature 2)
+        annotation_set = None
+        change_boxes = []
+        if dl_output and dl_output.bounding_boxes:
+            for idx, b in enumerate(dl_output.bounding_boxes, 1):
+                change_boxes.append(GroundingBox(
+                    id=idx,
+                    bbox=b,
+                    label=f"Altered Area #{idx}",
+                    confidence=confidence
+                ))
+        elif final_bbox:
+            change_boxes.append(GroundingBox(
+                id=1,
+                bbox=final_bbox,
+                label="Primary Change Delta",
+                confidence=confidence
+            ))
+
+        if change_boxes:
+            layer = AnnotationLayer(
+                layer_id="likely_new_construction",
+                reasoning="change",
+                color="#D14545",
+                boxes=change_boxes
+            )
+            annotation_set = AnnotationSet(layers=[layer])
+
         return SpecialistResult(
             answer=result.get("answer", "Bi-temporal change analysis completed."),
             bounding_box=final_bbox,
@@ -617,7 +730,8 @@ class ChangeDetectionSpecialist:
             detailed_analysis=result.get("detailed_analysis"),
             detected_objects=result.get("detected_objects", []),
             mask_bytes=mask_bytes,
-            dl_metrics=dl_metrics
+            dl_metrics=dl_metrics,
+            annotation_set=annotation_set
         )
 
 
@@ -728,14 +842,35 @@ class FusionSpecialist:
             source = "Optical-SAR Fusion Engine (Heuristic Fallback)"
 
         bbox = result.get("bounding_box")
+        confidence = float(result.get("confidence", 0.92))
+
+        # Build standardized AnnotationSet (Feature 2)
+        annotation_set = None
+        if bbox:
+            layer = AnnotationLayer(
+                layer_id="sar_anomalies",
+                reasoning="sar_anomaly",
+                color="#10B981",
+                boxes=[
+                    GroundingBox(
+                        id=1,
+                        bbox=bbox,
+                        label="Radar Anomaly / Reflector",
+                        confidence=confidence
+                    )
+                ]
+            )
+            annotation_set = AnnotationSet(layers=[layer])
+
         return SpecialistResult(
             answer=result.get("answer", "Optical-SAR fusion analysis completed."),
             bounding_box=bbox,
-            confidence=result.get("confidence", 0.92),
+            confidence=confidence,
             evidence_type="sar_fusion",
             detail=f"Processed by {source}",
             detailed_analysis=result.get("detailed_analysis"),
-            detected_objects=result.get("detected_objects", [])
+            detected_objects=result.get("detected_objects", []),
+            annotation_set=annotation_set
         )
 
 

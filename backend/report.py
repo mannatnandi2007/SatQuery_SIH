@@ -436,7 +436,9 @@ def generate_report(
     overlay_filename: Optional[str] = None,
     detailed_analysis: Optional[Dict] = None,
     model: Optional[str] = None,
-    dl_metrics: Optional[Dict] = None
+    dl_metrics: Optional[Dict] = None,
+    annotation_set: Optional[List[Dict]] = None,
+    suggestions: Optional[List[Dict]] = None
 ) -> Dict:
     """
     Generate all 4 report formats (JSON, Markdown, PDF, DOCX) and save to disk.
@@ -462,7 +464,9 @@ def generate_report(
             "evidence": {
                 "type": evidence_type,
                 "overlay_file": overlay_filename
-            }
+            },
+            "annotation_set": annotation_set or [],
+            "suggestions": suggestions or []
         },
         "execution_trace": trace,
         "total_duration_ms": sum(t.get("duration_ms", 0) for t in trace),
