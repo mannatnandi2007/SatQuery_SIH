@@ -285,7 +285,7 @@ python -m pytest tests/ -v
 ## 👥 Team
 
 Developed for the **Smart India Hackathon (SIH)** by:
-Khushal, Aryan, Madhura, Dipesh, Aakansha, Mannat
+Mannat, Khushal, Aakansha, Madhura, Dipesh, Aryan (students of Vcet)
 
 ---
 
