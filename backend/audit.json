@@ -8390,6 +8390,1406 @@
         }
       ],
       "total_duration_ms": 7974
+    },
+    {
+      "query_id": "c690e671b74f448e",
+      "timestamp": "2026-09-23T11:11:54.873551+00:00",
+      "query": {
+        "text": "analyse the image and tell me ehat do you uderstand\r\n",
+        "images": [
+          "ID9_Banner_Pleiades_Venice.jpg"
+        ]
+      },
+      "compatibility": {
+        "valid": true,
+        "reason": null,
+        "detected_intent": "single_image_vqa",
+        "gsd_metadata": [
+          {
+            "detected_gsd_m": 10.0,
+            "sensor_family": "Standard Optical Scene (Estimated ~10m GSD)",
+            "crs": "EPSG:4326 (WGS84)",
+            "width": 1920,
+            "height": 1080,
+            "is_geotiff": false,
+            "scale_factor_to_canonical": 1.0,
+            "normalization_applied": "identity"
+          }
+        ],
+        "gsd_ratio": null,
+        "gsd_warning": null
+      },
+      "routing": {
+        "intent": "single_image_vqa",
+        "specialist": "RS-VLM"
+      },
+      "specialist": {
+        "model": "Processed by Mock RS-VLM (offline mode)",
+        "confidence": 0.82,
+        "evidence_type": "bbox"
+      },
+      "annotation_set": [
+        {
+          "layer_id": "grounded_regions",
+          "reasoning": "grounding",
+          "color": "#00E5FF",
+          "boxes": [
+            {
+              "id": 1,
+              "bbox": [
+                20,
+                20,
+                80,
+                80
+              ],
+              "label": "Mixed Structures",
+              "confidence": 0.82
+            }
+          ]
+        }
+      ],
+      "suggestion_log": {
+        "suggestions_offered": [
+          {
+            "text": "Show me where the mixed structures are located.",
+            "task_type": "ground_region"
+          },
+          {
+            "text": "Describe the surrounding land cover and landscape context.",
+            "task_type": "caption_scene"
+          }
+        ],
+        "clicked_at": null,
+        "clicked_suggestion": null
+      },
+      "verification_outcome": {
+        "evidence_sufficient": true,
+        "human_review": false,
+        "verification_status": "verified"
+      },
+      "trace": [
+        {
+          "stage": "Compatibility Check",
+          "status": "ok",
+          "duration_ms": 32,
+          "detail": "Validated 1 image(s) for intent: single_image_vqa"
+        },
+        {
+          "stage": "Routing",
+          "status": "ok",
+          "duration_ms": 0,
+          "detail": "Intent: single_image_vqa → Selected Specialist: RS-VLM"
+        },
+        {
+          "stage": "Analyzing",
+          "status": "ok",
+          "duration_ms": 0,
+          "detail": "Processed by Mock RS-VLM (offline mode)"
+        },
+        {
+          "stage": "Evidence Fusion",
+          "status": "ok",
+          "duration_ms": 0,
+          "detail": "Fused 1 layer(s) with 1 deduplicated box(es)"
+        },
+        {
+          "stage": "Building Evidence",
+          "status": "ok",
+          "duration_ms": 2176,
+          "detail": "Rendered multi-layer grounding overlay with 1 boxes and legend"
+        },
+        {
+          "stage": "Confidence Scoring",
+          "status": "ok",
+          "duration_ms": 0,
+          "detail": "Score: 0.82 (High) | Review: PASSED"
+        },
+        {
+          "stage": "Next-Query Recommendation",
+          "status": "ok",
+          "duration_ms": 0,
+          "detail": "Generated 2 grounded follow-up suggestion(s)"
+        },
+        {
+          "stage": "Report Generation",
+          "status": "ok",
+          "duration_ms": 4646,
+          "detail": "Report saved: c690e671b74f448e"
+        }
+      ],
+      "total_duration_ms": 6854
+    },
+    {
+      "query_id": "d58af231e5bd4d83",
+      "timestamp": "2026-09-23T11:13:45.234918+00:00",
+      "query": {
+        "text": "is there water present\r\n\r\n",
+        "images": [
+          "ID9_Banner_Pleiades_Venice.jpg"
+        ]
+      },
+      "compatibility": {
+        "valid": true,
+        "reason": null,
+        "detected_intent": "single_image_vqa",
+        "gsd_metadata": [
+          {
+            "detected_gsd_m": 10.0,
+            "sensor_family": "Standard Optical Scene (Estimated ~10m GSD)",
+            "crs": "EPSG:4326 (WGS84)",
+            "width": 1920,
+            "height": 1080,
+            "is_geotiff": false,
+            "scale_factor_to_canonical": 1.0,
+            "normalization_applied": "identity"
+          }
+        ],
+        "gsd_ratio": null,
+        "gsd_warning": null
+      },
+      "routing": {
+        "intent": "single_image_vqa",
+        "specialist": "RS-VLM"
+      },
+      "specialist": {
+        "model": "Processed by Mock RS-VLM (offline mode)",
+        "confidence": 0.94,
+        "evidence_type": "bbox"
+      },
+      "annotation_set": [
+        {
+          "layer_id": "grounded_regions",
+          "reasoning": "grounding",
+          "color": "#00E5FF",
+          "boxes": [
+            {
+              "id": 1,
+              "bbox": [
+                5,
+                45,
+                55,
+                95
+              ],
+              "label": "Water Body",
+              "confidence": 0.94
+            }
+          ]
+        }
+      ],
+      "suggestion_log": {
+        "suggestions_offered": [
+          {
+            "text": "Show me where the water body are located.",
+            "task_type": "ground_region"
+          },
+          {
+            "text": "Describe the surrounding land cover and landscape context.",
+            "task_type": "caption_scene"
+          }
+        ],
+        "clicked_at": null,
+        "clicked_suggestion": null
+      },
+      "verification_outcome": {
+        "evidence_sufficient": true,
+        "human_review": false,
+        "verification_status": "verified"
+      },
+      "trace": [
+        {
+          "stage": "Compatibility Check",
+          "status": "ok",
+          "duration_ms": 0,
+          "detail": "Validated 1 image(s) for intent: single_image_vqa"
+        },
+        {
+          "stage": "Routing",
+          "status": "ok",
+          "duration_ms": 0,
+          "detail": "Intent: single_image_vqa → Selected Specialist: RS-VLM"
+        },
+        {
+          "stage": "Analyzing",
+          "status": "ok",
+          "duration_ms": 0,
+          "detail": "Processed by Mock RS-VLM (offline mode)"
+        },
+        {
+          "stage": "Evidence Fusion",
+          "status": "ok",
+          "duration_ms": 0,
+          "detail": "Fused 1 layer(s) with 1 deduplicated box(es)"
+        },
+        {
+          "stage": "Building Evidence",
+          "status": "ok",
+          "duration_ms": 2208,
+          "detail": "Rendered multi-layer grounding overlay with 1 boxes and legend"
+        },
+        {
+          "stage": "Confidence Scoring",
+          "status": "ok",
+          "duration_ms": 0,
+          "detail": "Score: 0.94 (High) | Review: PASSED"
+        },
+        {
+          "stage": "Next-Query Recommendation",
+          "status": "ok",
+          "duration_ms": 0,
+          "detail": "Generated 2 grounded follow-up suggestion(s)"
+        },
+        {
+          "stage": "Report Generation",
+          "status": "ok",
+          "duration_ms": 4014,
+          "detail": "Report saved: d58af231e5bd4d83"
+        }
+      ],
+      "total_duration_ms": 6222
+    },
+    {
+      "query_id": "b7e031936b294160",
+      "timestamp": "2026-09-23T13:15:39.218053+00:00",
+      "query": {
+        "text": "Identify and locate all objects, structures, or regions of interest in this satellite image.",
+        "images": [
+          "ID9_Banner_Pleiades_Venice.jpg"
+        ]
+      },
+      "compatibility": {
+        "valid": true,
+        "reason": null,
+        "detected_intent": "single_image_vqa",
+        "gsd_metadata": [
+          {
+            "detected_gsd_m": 10.0,
+            "sensor_family": "Standard Optical Scene (Estimated ~10m GSD)",
+            "crs": "EPSG:4326 (WGS84)",
+            "width": 1920,
+            "height": 1080,
+            "is_geotiff": false,
+            "scale_factor_to_canonical": 1.0,
+            "normalization_applied": "identity"
+          }
+        ],
+        "gsd_ratio": null,
+        "gsd_warning": null
+      },
+      "routing": {
+        "intent": "single_image_vqa",
+        "specialist": "RS-VLM"
+      },
+      "specialist": {
+        "model": "Processed by Mock RS-VLM (offline mode)",
+        "confidence": 0.89,
+        "evidence_type": "bbox"
+      },
+      "annotation_set": [
+        {
+          "layer_id": "grounded_regions",
+          "reasoning": "grounding",
+          "color": "#00E5FF",
+          "boxes": [
+            {
+              "id": 1,
+              "bbox": [
+                30,
+                20,
+                80,
+                75
+              ],
+              "label": "Industrial Buildings",
+              "confidence": 0.89
+            }
+          ]
+        }
+      ],
+      "suggestion_log": {
+        "suggestions_offered": [
+          {
+            "text": "Show me where the industrial buildings are located.",
+            "task_type": "ground_region"
+          },
+          {
+            "text": "Describe the surrounding land cover and landscape context.",
+            "task_type": "caption_scene"
+          }
+        ],
+        "clicked_at": null,
+        "clicked_suggestion": null
+      },
+      "verification_outcome": {
+        "evidence_sufficient": true,
+        "human_review": false,
+        "verification_status": "verified"
+      },
+      "trace": [
+        {
+          "stage": "Compatibility Check",
+          "status": "ok",
+          "duration_ms": 37,
+          "detail": "Validated 1 image(s) for intent: single_image_vqa"
+        },
+        {
+          "stage": "Routing",
+          "status": "ok",
+          "duration_ms": 0,
+          "detail": "Intent: single_image_vqa → Selected Specialist: RS-VLM"
+        },
+        {
+          "stage": "Analyzing",
+          "status": "ok",
+          "duration_ms": 0,
+          "detail": "Processed by Mock RS-VLM (offline mode)"
+        },
+        {
+          "stage": "Evidence Fusion",
+          "status": "ok",
+          "duration_ms": 0,
+          "detail": "Fused 1 layer(s) with 1 deduplicated box(es)"
+        },
+        {
+          "stage": "Building Evidence",
+          "status": "ok",
+          "duration_ms": 2229,
+          "detail": "Rendered multi-layer grounding overlay with 1 boxes and legend"
+        },
+        {
+          "stage": "Confidence Scoring",
+          "status": "ok",
+          "duration_ms": 0,
+          "detail": "Score: 0.89 (High) | Review: PASSED"
+        },
+        {
+          "stage": "Next-Query Recommendation",
+          "status": "ok",
+          "duration_ms": 0,
+          "detail": "Generated 2 grounded follow-up suggestion(s)"
+        },
+        {
+          "stage": "Report Generation",
+          "status": "ok",
+          "duration_ms": 4461,
+          "detail": "Report saved: b7e031936b294160"
+        }
+      ],
+      "total_duration_ms": 6727
+    },
+    {
+      "query_id": "22f829a94dfa44a0",
+      "timestamp": "2026-09-23T13:24:29.754760+00:00",
+      "query": {
+        "text": "Explain what this satellite imagery dataset shows and provide an analysis of the observed patterns.",
+        "images": [
+          "ID9_Banner_Pleiades_Venice.jpg"
+        ]
+      },
+      "compatibility": {
+        "valid": true,
+        "reason": null,
+        "detected_intent": "single_image_vqa",
+        "gsd_metadata": [
+          {
+            "detected_gsd_m": 10.0,
+            "sensor_family": "Standard Optical Scene (Estimated ~10m GSD)",
+            "crs": "EPSG:4326 (WGS84)",
+            "width": 1920,
+            "height": 1080,
+            "is_geotiff": false,
+            "scale_factor_to_canonical": 1.0,
+            "normalization_applied": "identity"
+          }
+        ],
+        "gsd_ratio": null,
+        "gsd_warning": null
+      },
+      "routing": {
+        "intent": "single_image_vqa",
+        "specialist": "RS-VLM"
+      },
+      "specialist": {
+        "model": "Processed by Mock RS-VLM (offline mode)",
+        "confidence": 0.82,
+        "evidence_type": "bbox"
+      },
+      "annotation_set": [
+        {
+          "layer_id": "grounded_regions",
+          "reasoning": "grounding",
+          "color": "#00E5FF",
+          "boxes": [
+            {
+              "id": 1,
+              "bbox": [
+                20,
+                20,
+                80,
+                80
+              ],
+              "label": "Mixed Structures",
+              "confidence": 0.82
+            }
+          ]
+        }
+      ],
+      "suggestion_log": {
+        "suggestions_offered": [
+          {
+            "text": "Show me where the mixed structures are located.",
+            "task_type": "ground_region"
+          },
+          {
+            "text": "Describe the surrounding land cover and landscape context.",
+            "task_type": "caption_scene"
+          }
+        ],
+        "clicked_at": null,
+        "clicked_suggestion": null
+      },
+      "verification_outcome": {
+        "evidence_sufficient": true,
+        "human_review": false,
+        "verification_status": "verified"
+      },
+      "trace": [
+        {
+          "stage": "Compatibility Check",
+          "status": "ok",
+          "duration_ms": 20,
+          "detail": "Validated 1 image(s) for intent: single_image_vqa"
+        },
+        {
+          "stage": "Routing",
+          "status": "ok",
+          "duration_ms": 0,
+          "detail": "Intent: single_image_vqa → Selected Specialist: RS-VLM"
+        },
+        {
+          "stage": "Analyzing",
+          "status": "ok",
+          "duration_ms": 1,
+          "detail": "Processed by Mock RS-VLM (offline mode)"
+        },
+        {
+          "stage": "Evidence Fusion",
+          "status": "ok",
+          "duration_ms": 0,
+          "detail": "Fused 1 layer(s) with 1 deduplicated box(es)"
+        },
+        {
+          "stage": "Building Evidence",
+          "status": "ok",
+          "duration_ms": 2204,
+          "detail": "Rendered multi-layer grounding overlay with 1 boxes and legend"
+        },
+        {
+          "stage": "Confidence Scoring",
+          "status": "ok",
+          "duration_ms": 0,
+          "detail": "Score: 0.82 (High) | Review: PASSED"
+        },
+        {
+          "stage": "Next-Query Recommendation",
+          "status": "ok",
+          "duration_ms": 0,
+          "detail": "Generated 2 grounded follow-up suggestion(s)"
+        },
+        {
+          "stage": "Report Generation",
+          "status": "ok",
+          "duration_ms": 4111,
+          "detail": "Report saved: 22f829a94dfa44a0"
+        }
+      ],
+      "total_duration_ms": 6336
+    },
+    {
+      "query_id": "bba6e416154e4ba0",
+      "timestamp": "2026-09-23T13:25:30.459474+00:00",
+      "query": {
+        "text": "Explain what this satellite imagery dataset shows and provide an analysis of the observed patterns.",
+        "images": [
+          "ID9_Banner_Pleiades_Venice.jpg"
+        ]
+      },
+      "compatibility": {
+        "valid": true,
+        "reason": null,
+        "detected_intent": "single_image_vqa",
+        "gsd_metadata": [
+          {
+            "detected_gsd_m": 10.0,
+            "sensor_family": "Standard Optical Scene (Estimated ~10m GSD)",
+            "crs": "EPSG:4326 (WGS84)",
+            "width": 1920,
+            "height": 1080,
+            "is_geotiff": false,
+            "scale_factor_to_canonical": 1.0,
+            "normalization_applied": "identity"
+          }
+        ],
+        "gsd_ratio": null,
+        "gsd_warning": null
+      },
+      "routing": {
+        "intent": "single_image_vqa",
+        "specialist": "RS-VLM"
+      },
+      "specialist": {
+        "model": "Processed by Mock RS-VLM (offline mode)",
+        "confidence": 0.82,
+        "evidence_type": "bbox"
+      },
+      "annotation_set": [
+        {
+          "layer_id": "grounded_regions",
+          "reasoning": "grounding",
+          "color": "#00E5FF",
+          "boxes": [
+            {
+              "id": 1,
+              "bbox": [
+                20,
+                20,
+                80,
+                80
+              ],
+              "label": "Mixed Structures",
+              "confidence": 0.82
+            }
+          ]
+        }
+      ],
+      "suggestion_log": {
+        "suggestions_offered": [
+          {
+            "text": "Show me where the mixed structures are located.",
+            "task_type": "ground_region"
+          },
+          {
+            "text": "Describe the surrounding land cover and landscape context.",
+            "task_type": "caption_scene"
+          }
+        ],
+        "clicked_at": null,
+        "clicked_suggestion": null
+      },
+      "verification_outcome": {
+        "evidence_sufficient": true,
+        "human_review": false,
+        "verification_status": "verified"
+      },
+      "trace": [
+        {
+          "stage": "Compatibility Check",
+          "status": "ok",
+          "duration_ms": 0,
+          "detail": "Validated 1 image(s) for intent: single_image_vqa"
+        },
+        {
+          "stage": "Routing",
+          "status": "ok",
+          "duration_ms": 0,
+          "detail": "Intent: single_image_vqa → Selected Specialist: RS-VLM"
+        },
+        {
+          "stage": "Analyzing",
+          "status": "ok",
+          "duration_ms": 0,
+          "detail": "Processed by Mock RS-VLM (offline mode)"
+        },
+        {
+          "stage": "Evidence Fusion",
+          "status": "ok",
+          "duration_ms": 0,
+          "detail": "Fused 1 layer(s) with 1 deduplicated box(es)"
+        },
+        {
+          "stage": "Building Evidence",
+          "status": "ok",
+          "duration_ms": 2289,
+          "detail": "Rendered multi-layer grounding overlay with 1 boxes and legend"
+        },
+        {
+          "stage": "Confidence Scoring",
+          "status": "ok",
+          "duration_ms": 0,
+          "detail": "Score: 0.82 (High) | Review: PASSED"
+        },
+        {
+          "stage": "Next-Query Recommendation",
+          "status": "ok",
+          "duration_ms": 0,
+          "detail": "Generated 2 grounded follow-up suggestion(s)"
+        },
+        {
+          "stage": "Report Generation",
+          "status": "ok",
+          "duration_ms": 4084,
+          "detail": "Report saved: bba6e416154e4ba0"
+        }
+      ],
+      "total_duration_ms": 6373
+    },
+    {
+      "query_id": "225f0d8e2f4a413d",
+      "timestamp": "2026-09-23T13:34:38.838059+00:00",
+      "query": {
+        "text": "Explain what this satellite imagery dataset shows and provide an analysis of the observed patterns.",
+        "images": [
+          "ID9_Banner_Pleiades_Venice.jpg"
+        ]
+      },
+      "compatibility": {
+        "valid": true,
+        "reason": null,
+        "detected_intent": "single_image_vqa",
+        "gsd_metadata": [
+          {
+            "detected_gsd_m": 10.0,
+            "sensor_family": "Standard Optical Scene (Estimated ~10m GSD)",
+            "crs": "EPSG:4326 (WGS84)",
+            "width": 1920,
+            "height": 1080,
+            "is_geotiff": false,
+            "scale_factor_to_canonical": 1.0,
+            "normalization_applied": "identity"
+          }
+        ],
+        "gsd_ratio": null,
+        "gsd_warning": null
+      },
+      "routing": {
+        "intent": "single_image_vqa",
+        "specialist": "RS-VLM"
+      },
+      "specialist": {
+        "model": "Processed by Mock RS-VLM (offline mode)",
+        "confidence": 0.82,
+        "evidence_type": "bbox"
+      },
+      "annotation_set": [
+        {
+          "layer_id": "grounded_regions",
+          "reasoning": "grounding",
+          "color": "#00E5FF",
+          "boxes": [
+            {
+              "id": 1,
+              "bbox": [
+                20,
+                20,
+                80,
+                80
+              ],
+              "label": "Mixed Structures",
+              "confidence": 0.82
+            }
+          ]
+        }
+      ],
+      "suggestion_log": {
+        "suggestions_offered": [
+          {
+            "text": "Show me where the mixed structures are located.",
+            "task_type": "ground_region"
+          },
+          {
+            "text": "Describe the surrounding land cover and landscape context.",
+            "task_type": "caption_scene"
+          }
+        ],
+        "clicked_at": null,
+        "clicked_suggestion": null
+      },
+      "verification_outcome": {
+        "evidence_sufficient": true,
+        "human_review": false,
+        "verification_status": "verified"
+      },
+      "trace": [
+        {
+          "stage": "Compatibility Check",
+          "status": "ok",
+          "duration_ms": 1,
+          "detail": "Validated 1 image(s) for intent: single_image_vqa"
+        },
+        {
+          "stage": "Routing",
+          "status": "ok",
+          "duration_ms": 0,
+          "detail": "Intent: single_image_vqa → Selected Specialist: RS-VLM"
+        },
+        {
+          "stage": "Analyzing",
+          "status": "ok",
+          "duration_ms": 0,
+          "detail": "Processed by Mock RS-VLM (offline mode)"
+        },
+        {
+          "stage": "Evidence Fusion",
+          "status": "ok",
+          "duration_ms": 0,
+          "detail": "Fused 1 layer(s) with 1 deduplicated box(es)"
+        },
+        {
+          "stage": "Building Evidence",
+          "status": "ok",
+          "duration_ms": 2352,
+          "detail": "Rendered multi-layer grounding overlay with 1 boxes and legend"
+        },
+        {
+          "stage": "Confidence Scoring",
+          "status": "ok",
+          "duration_ms": 0,
+          "detail": "Score: 0.82 (High) | Review: PASSED"
+        },
+        {
+          "stage": "Next-Query Recommendation",
+          "status": "ok",
+          "duration_ms": 0,
+          "detail": "Generated 2 grounded follow-up suggestion(s)"
+        },
+        {
+          "stage": "Report Generation",
+          "status": "ok",
+          "duration_ms": 4148,
+          "detail": "Report saved: 225f0d8e2f4a413d"
+        }
+      ],
+      "total_duration_ms": 6501
+    },
+    {
+      "query_id": "4a4eae86a93546c9",
+      "timestamp": "2026-09-23T13:35:07.145625+00:00",
+      "query": {
+        "text": "Explain what this satellite imagery dataset shows and provide an analysis of the observed patterns.",
+        "images": [
+          "ID9_Banner_Pleiades_Venice.jpg"
+        ]
+      },
+      "compatibility": {
+        "valid": true,
+        "reason": null,
+        "detected_intent": "single_image_vqa",
+        "gsd_metadata": [
+          {
+            "detected_gsd_m": 10.0,
+            "sensor_family": "Standard Optical Scene (Estimated ~10m GSD)",
+            "crs": "EPSG:4326 (WGS84)",
+            "width": 1920,
+            "height": 1080,
+            "is_geotiff": false,
+            "scale_factor_to_canonical": 1.0,
+            "normalization_applied": "identity"
+          }
+        ],
+        "gsd_ratio": null,
+        "gsd_warning": null
+      },
+      "routing": {
+        "intent": "single_image_vqa",
+        "specialist": "RS-VLM"
+      },
+      "specialist": {
+        "model": "Processed by Mock RS-VLM (offline mode)",
+        "confidence": 0.82,
+        "evidence_type": "bbox"
+      },
+      "annotation_set": [
+        {
+          "layer_id": "grounded_regions",
+          "reasoning": "grounding",
+          "color": "#00E5FF",
+          "boxes": [
+            {
+              "id": 1,
+              "bbox": [
+                20,
+                20,
+                80,
+                80
+              ],
+              "label": "Mixed Structures",
+              "confidence": 0.82
+            }
+          ]
+        }
+      ],
+      "suggestion_log": {
+        "suggestions_offered": [
+          {
+            "text": "Show me where the mixed structures are located.",
+            "task_type": "ground_region"
+          },
+          {
+            "text": "Describe the surrounding land cover and landscape context.",
+            "task_type": "caption_scene"
+          }
+        ],
+        "clicked_at": null,
+        "clicked_suggestion": null
+      },
+      "verification_outcome": {
+        "evidence_sufficient": true,
+        "human_review": false,
+        "verification_status": "verified"
+      },
+      "trace": [
+        {
+          "stage": "Compatibility Check",
+          "status": "ok",
+          "duration_ms": 0,
+          "detail": "Validated 1 image(s) for intent: single_image_vqa"
+        },
+        {
+          "stage": "Routing",
+          "status": "ok",
+          "duration_ms": 0,
+          "detail": "Intent: single_image_vqa → Selected Specialist: RS-VLM"
+        },
+        {
+          "stage": "Analyzing",
+          "status": "ok",
+          "duration_ms": 0,
+          "detail": "Processed by Mock RS-VLM (offline mode)"
+        },
+        {
+          "stage": "Evidence Fusion",
+          "status": "ok",
+          "duration_ms": 0,
+          "detail": "Fused 1 layer(s) with 1 deduplicated box(es)"
+        },
+        {
+          "stage": "Building Evidence",
+          "status": "ok",
+          "duration_ms": 2278,
+          "detail": "Rendered multi-layer grounding overlay with 1 boxes and legend"
+        },
+        {
+          "stage": "Confidence Scoring",
+          "status": "ok",
+          "duration_ms": 0,
+          "detail": "Score: 0.82 (High) | Review: PASSED"
+        },
+        {
+          "stage": "Next-Query Recommendation",
+          "status": "ok",
+          "duration_ms": 0,
+          "detail": "Generated 2 grounded follow-up suggestion(s)"
+        },
+        {
+          "stage": "Report Generation",
+          "status": "ok",
+          "duration_ms": 4547,
+          "detail": "Report saved: 4a4eae86a93546c9"
+        }
+      ],
+      "total_duration_ms": 6825
+    },
+    {
+      "query_id": "a654a8f56b664f74",
+      "timestamp": "2026-09-23T13:39:52.862944+00:00",
+      "query": {
+        "text": "Explain what this satellite imagery dataset shows and provide an analysis of the observed patterns.",
+        "images": [
+          "ID9_Banner_Pleiades_Venice.jpg"
+        ]
+      },
+      "compatibility": {
+        "valid": true,
+        "reason": null,
+        "detected_intent": "single_image_vqa",
+        "gsd_metadata": [
+          {
+            "detected_gsd_m": 10.0,
+            "sensor_family": "Standard Optical Scene (Estimated ~10m GSD)",
+            "crs": "EPSG:4326 (WGS84)",
+            "width": 1920,
+            "height": 1080,
+            "is_geotiff": false,
+            "scale_factor_to_canonical": 1.0,
+            "normalization_applied": "identity"
+          }
+        ],
+        "gsd_ratio": null,
+        "gsd_warning": null
+      },
+      "routing": {
+        "intent": "single_image_vqa",
+        "specialist": "RS-VLM"
+      },
+      "specialist": {
+        "model": "Processed by Mock RS-VLM (offline mode)",
+        "confidence": 0.82,
+        "evidence_type": "bbox"
+      },
+      "annotation_set": [
+        {
+          "layer_id": "grounded_regions",
+          "reasoning": "grounding",
+          "color": "#00E5FF",
+          "boxes": [
+            {
+              "id": 1,
+              "bbox": [
+                20,
+                20,
+                80,
+                80
+              ],
+              "label": "Mixed Structures",
+              "confidence": 0.82
+            }
+          ]
+        }
+      ],
+      "suggestion_log": {
+        "suggestions_offered": [
+          {
+            "text": "Show me where the mixed structures are located.",
+            "task_type": "ground_region"
+          },
+          {
+            "text": "Describe the surrounding land cover and landscape context.",
+            "task_type": "caption_scene"
+          }
+        ],
+        "clicked_at": null,
+        "clicked_suggestion": null
+      },
+      "verification_outcome": {
+        "evidence_sufficient": true,
+        "human_review": false,
+        "verification_status": "verified"
+      },
+      "trace": [
+        {
+          "stage": "Compatibility Check",
+          "status": "ok",
+          "duration_ms": 6,
+          "detail": "Validated 1 image(s) for intent: single_image_vqa"
+        },
+        {
+          "stage": "Routing",
+          "status": "ok",
+          "duration_ms": 0,
+          "detail": "Intent: single_image_vqa → Selected Specialist: RS-VLM"
+        },
+        {
+          "stage": "Analyzing",
+          "status": "ok",
+          "duration_ms": 0,
+          "detail": "Processed by Mock RS-VLM (offline mode)"
+        },
+        {
+          "stage": "Evidence Fusion",
+          "status": "ok",
+          "duration_ms": 0,
+          "detail": "Fused 1 layer(s) with 1 deduplicated box(es)"
+        },
+        {
+          "stage": "Building Evidence",
+          "status": "ok",
+          "duration_ms": 2391,
+          "detail": "Rendered multi-layer grounding overlay with 1 boxes and legend"
+        },
+        {
+          "stage": "Confidence Scoring",
+          "status": "ok",
+          "duration_ms": 0,
+          "detail": "Score: 0.82 (High) | Review: PASSED"
+        },
+        {
+          "stage": "Next-Query Recommendation",
+          "status": "ok",
+          "duration_ms": 0,
+          "detail": "Generated 2 grounded follow-up suggestion(s)"
+        },
+        {
+          "stage": "Report Generation",
+          "status": "ok",
+          "duration_ms": 4397,
+          "detail": "Report saved: a654a8f56b664f74"
+        }
+      ],
+      "total_duration_ms": 6794
+    },
+    {
+      "query_id": "17c6261de5624183",
+      "timestamp": "2026-09-23T13:42:55.394761+00:00",
+      "query": {
+        "text": "Explain what this satellite imagery dataset shows and provide an analysis of the observed patterns.",
+        "images": [
+          "ID9_Banner_Pleiades_Venice.jpg",
+          "ID9_Banner_Pleiades_Venice.jpg"
+        ]
+      },
+      "compatibility": {
+        "valid": true,
+        "reason": null,
+        "detected_intent": "change_detection",
+        "gsd_metadata": [
+          {
+            "detected_gsd_m": 10.0,
+            "sensor_family": "Standard Optical Scene (Estimated ~10m GSD)",
+            "crs": "EPSG:4326 (WGS84)",
+            "width": 1920,
+            "height": 1080,
+            "is_geotiff": false,
+            "scale_factor_to_canonical": 1.0,
+            "normalization_applied": "identity"
+          },
+          {
+            "detected_gsd_m": 10.0,
+            "sensor_family": "Standard Optical Scene (Estimated ~10m GSD)",
+            "crs": "EPSG:4326 (WGS84)",
+            "width": 1920,
+            "height": 1080,
+            "is_geotiff": false,
+            "scale_factor_to_canonical": 1.0,
+            "normalization_applied": "identity"
+          }
+        ],
+        "gsd_ratio": 1.0,
+        "gsd_warning": null
+      },
+      "routing": {
+        "intent": "change_detection",
+        "specialist": "Bi-Temporal Change Detection"
+      },
+      "specialist": {
+        "model": "Processed by JEV-JEPA Latents + Siamese CNN (Zero Change Detected)",
+        "confidence": 0.7,
+        "evidence_type": "none"
+      },
+      "annotation_set": [],
+      "suggestion_log": {
+        "suggestions_offered": [
+          {
+            "text": "Show me where the stable ground features are located.",
+            "task_type": "ground_region"
+          },
+          {
+            "text": "Describe the surrounding land cover and landscape context.",
+            "task_type": "caption_scene"
+          },
+          {
+            "text": "Has this stable ground features sector changed compared to baseline imagery?",
+            "task_type": "bi_temporal_change"
+          }
+        ],
+        "clicked_at": null,
+        "clicked_suggestion": null
+      },
+      "verification_outcome": {
+        "evidence_sufficient": true,
+        "human_review": true,
+        "verification_status": "verified"
+      },
+      "trace": [
+        {
+          "stage": "Compatibility Check",
+          "status": "ok",
+          "duration_ms": 1,
+          "detail": "Validated 2 image(s) for intent: change_detection"
+        },
+        {
+          "stage": "Routing",
+          "status": "ok",
+          "duration_ms": 0,
+          "detail": "Intent: change_detection → Selected Specialist: Bi-Temporal Change Detection"
+        },
+        {
+          "stage": "Analyzing",
+          "status": "ok",
+          "duration_ms": 608,
+          "detail": "Processed by JEV-JEPA Latents + Siamese CNN (Zero Change Detected)"
+        },
+        {
+          "stage": "Evidence Fusion",
+          "status": "ok",
+          "duration_ms": 0,
+          "detail": "Fused 0 layer(s) with 0 deduplicated box(es)"
+        },
+        {
+          "stage": "Building Evidence",
+          "status": "ok",
+          "duration_ms": 571,
+          "detail": "Rendered bi-temporal comparative panel with DL contours: None"
+        },
+        {
+          "stage": "Confidence Scoring",
+          "status": "ok",
+          "duration_ms": 0,
+          "detail": "Score: 0.7 (Medium) | Review: FLAGGED"
+        },
+        {
+          "stage": "Next-Query Recommendation",
+          "status": "ok",
+          "duration_ms": 0,
+          "detail": "Generated 3 grounded follow-up suggestion(s)"
+        },
+        {
+          "stage": "Report Generation",
+          "status": "ok",
+          "duration_ms": 784,
+          "detail": "Report saved: 17c6261de5624183"
+        }
+      ],
+      "total_duration_ms": 1964
+    },
+    {
+      "query_id": "6f6987efbc61465f",
+      "timestamp": "2026-09-23T13:43:05.211081+00:00",
+      "query": {
+        "text": "Explain what this satellite imagery dataset shows and provide an analysis of the observed patterns.",
+        "images": [
+          "ID9_Banner_Pleiades_Venice.jpg",
+          "ID9_Banner_Pleiades_Venice.jpg"
+        ]
+      },
+      "compatibility": {
+        "valid": true,
+        "reason": null,
+        "detected_intent": "change_detection",
+        "gsd_metadata": [
+          {
+            "detected_gsd_m": 10.0,
+            "sensor_family": "Standard Optical Scene (Estimated ~10m GSD)",
+            "crs": "EPSG:4326 (WGS84)",
+            "width": 1920,
+            "height": 1080,
+            "is_geotiff": false,
+            "scale_factor_to_canonical": 1.0,
+            "normalization_applied": "identity"
+          },
+          {
+            "detected_gsd_m": 10.0,
+            "sensor_family": "Standard Optical Scene (Estimated ~10m GSD)",
+            "crs": "EPSG:4326 (WGS84)",
+            "width": 1920,
+            "height": 1080,
+            "is_geotiff": false,
+            "scale_factor_to_canonical": 1.0,
+            "normalization_applied": "identity"
+          }
+        ],
+        "gsd_ratio": 1.0,
+        "gsd_warning": null
+      },
+      "routing": {
+        "intent": "change_detection",
+        "specialist": "Bi-Temporal Change Detection"
+      },
+      "specialist": {
+        "model": "Processed by JEV-JEPA Latents + Siamese CNN (Zero Change Detected)",
+        "confidence": 0.7,
+        "evidence_type": "none"
+      },
+      "annotation_set": [],
+      "suggestion_log": {
+        "suggestions_offered": [
+          {
+            "text": "Show me where the stable ground features are located.",
+            "task_type": "ground_region"
+          },
+          {
+            "text": "Describe the surrounding land cover and landscape context.",
+            "task_type": "caption_scene"
+          },
+          {
+            "text": "Has this stable ground features sector changed compared to baseline imagery?",
+            "task_type": "bi_temporal_change"
+          }
+        ],
+        "clicked_at": null,
+        "clicked_suggestion": null
+      },
+      "verification_outcome": {
+        "evidence_sufficient": true,
+        "human_review": true,
+        "verification_status": "verified"
+      },
+      "trace": [
+        {
+          "stage": "Compatibility Check",
+          "status": "ok",
+          "duration_ms": 0,
+          "detail": "Validated 2 image(s) for intent: change_detection"
+        },
+        {
+          "stage": "Routing",
+          "status": "ok",
+          "duration_ms": 0,
+          "detail": "Intent: change_detection → Selected Specialist: Bi-Temporal Change Detection"
+        },
+        {
+          "stage": "Analyzing",
+          "status": "ok",
+          "duration_ms": 447,
+          "detail": "Processed by JEV-JEPA Latents + Siamese CNN (Zero Change Detected)"
+        },
+        {
+          "stage": "Evidence Fusion",
+          "status": "ok",
+          "duration_ms": 0,
+          "detail": "Fused 0 layer(s) with 0 deduplicated box(es)"
+        },
+        {
+          "stage": "Building Evidence",
+          "status": "ok",
+          "duration_ms": 549,
+          "detail": "Rendered bi-temporal comparative panel with DL contours: None"
+        },
+        {
+          "stage": "Confidence Scoring",
+          "status": "ok",
+          "duration_ms": 0,
+          "detail": "Score: 0.7 (Medium) | Review: FLAGGED"
+        },
+        {
+          "stage": "Next-Query Recommendation",
+          "status": "ok",
+          "duration_ms": 0,
+          "detail": "Generated 3 grounded follow-up suggestion(s)"
+        },
+        {
+          "stage": "Report Generation",
+          "status": "ok",
+          "duration_ms": 875,
+          "detail": "Report saved: 6f6987efbc61465f"
+        }
+      ],
+      "total_duration_ms": 1871
+    },
+    {
+      "query_id": "533284ada62841e6",
+      "timestamp": "2026-09-23T13:44:01.187578+00:00",
+      "query": {
+        "text": "Explain what this satellite imagery dataset shows and provide an analysis of the observed patterns.",
+        "images": [
+          "ID9_Banner_Pleiades_Venice.jpg"
+        ]
+      },
+      "compatibility": {
+        "valid": true,
+        "reason": null,
+        "detected_intent": "single_image_vqa",
+        "gsd_metadata": [
+          {
+            "detected_gsd_m": 10.0,
+            "sensor_family": "Standard Optical Scene (Estimated ~10m GSD)",
+            "crs": "EPSG:4326 (WGS84)",
+            "width": 1920,
+            "height": 1080,
+            "is_geotiff": false,
+            "scale_factor_to_canonical": 1.0,
+            "normalization_applied": "identity"
+          }
+        ],
+        "gsd_ratio": null,
+        "gsd_warning": null
+      },
+      "routing": {
+        "intent": "single_image_vqa",
+        "specialist": "RS-VLM"
+      },
+      "specialist": {
+        "model": "Processed by Mock RS-VLM (offline mode)",
+        "confidence": 0.82,
+        "evidence_type": "bbox"
+      },
+      "annotation_set": [
+        {
+          "layer_id": "grounded_regions",
+          "reasoning": "grounding",
+          "color": "#00E5FF",
+          "boxes": [
+            {
+              "id": 1,
+              "bbox": [
+                20,
+                20,
+                80,
+                80
+              ],
+              "label": "Mixed Structures",
+              "confidence": 0.82
+            }
+          ]
+        }
+      ],
+      "suggestion_log": {
+        "suggestions_offered": [
+          {
+            "text": "Show me where the mixed structures are located.",
+            "task_type": "ground_region"
+          },
+          {
+            "text": "Describe the surrounding land cover and landscape context.",
+            "task_type": "caption_scene"
+          }
+        ],
+        "clicked_at": null,
+        "clicked_suggestion": null
+      },
+      "verification_outcome": {
+        "evidence_sufficient": true,
+        "human_review": false,
+        "verification_status": "verified"
+      },
+      "trace": [
+        {
+          "stage": "Compatibility Check",
+          "status": "ok",
+          "duration_ms": 0,
+          "detail": "Validated 1 image(s) for intent: single_image_vqa"
+        },
+        {
+          "stage": "Routing",
+          "status": "ok",
+          "duration_ms": 0,
+          "detail": "Intent: single_image_vqa → Selected Specialist: RS-VLM"
+        },
+        {
+          "stage": "Analyzing",
+          "status": "ok",
+          "duration_ms": 0,
+          "detail": "Processed by Mock RS-VLM (offline mode)"
+        },
+        {
+          "stage": "Evidence Fusion",
+          "status": "ok",
+          "duration_ms": 0,
+          "detail": "Fused 1 layer(s) with 1 deduplicated box(es)"
+        },
+        {
+          "stage": "Building Evidence",
+          "status": "ok",
+          "duration_ms": 2498,
+          "detail": "Rendered multi-layer grounding overlay with 1 boxes and legend"
+        },
+        {
+          "stage": "Confidence Scoring",
+          "status": "ok",
+          "duration_ms": 0,
+          "detail": "Score: 0.82 (High) | Review: PASSED"
+        },
+        {
+          "stage": "Next-Query Recommendation",
+          "status": "ok",
+          "duration_ms": 0,
+          "detail": "Generated 2 grounded follow-up suggestion(s)"
+        },
+        {
+          "stage": "Report Generation",
+          "status": "ok",
+          "duration_ms": 5032,
+          "detail": "Report saved: 533284ada62841e6"
+        }
+      ],
+      "total_duration_ms": 7530
     }
   ],
   "operator_feedback": [

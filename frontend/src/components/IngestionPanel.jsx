@@ -157,11 +157,11 @@ export default function IngestionPanel({
             accept="image/*,.tif,.tiff"
             style={{ display: 'none' }}
           />
-          <div className="dropzone-icon-circle">
-            <UploadCloud size={18} />
+          <div className="dropzone-icon-circle" style={{ background: 'transparent', border: 'none' }}>
+            <UploadCloud size={20} style={{ color: 'var(--color-muted)' }} />
           </div>
           <div>
-            <div style={{ fontWeight: 600, color: 'var(--color-ink)', fontSize: '13px' }}>
+            <div style={{ fontWeight: 500, color: 'var(--color-ink-2)', fontSize: '13px' }}>
               Drop raster files or click to browse
             </div>
             <div style={{ fontSize: '11px', color: 'var(--color-muted)', marginTop: '4px' }}>
@@ -173,10 +173,10 @@ export default function IngestionPanel({
         {files.length > 0 && (
           <div className="uploaded-files-list">
             {files.map((f, idx) => (
-              <div key={idx} className="file-item-pill">
+              <div key={idx} className="file-item-pill" style={{ background: 'rgba(80, 140, 255, 0.08)', border: '1px solid rgba(80, 140, 255, 0.3)', color: '#fff' }}>
                 <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                   <FileImage size={12} style={{ color: 'var(--color-accent)' }} />
-                  {f.name} ({(f.size / 1024).toFixed(0)} KB)
+                  {f.name} <span style={{ color: 'var(--color-muted)' }}>({(f.size / 1024).toFixed(0)} KB)</span>
                 </span>
                 <button
                   type="button"
@@ -220,8 +220,8 @@ export default function IngestionPanel({
             </>
           ) : (
             <>
-              <Play size={13} fill="currentColor" />
-              <span>RUN ANALYSIS</span>
+              <Play size={14} fill="currentColor" />
+              <span style={{ fontWeight: 700, letterSpacing: '0.05em', fontFamily: 'var(--font-land-display)' }}>RUN ANALYSIS</span>
             </>
           )}
         </button>

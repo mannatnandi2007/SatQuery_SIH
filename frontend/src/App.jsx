@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import LandingPage from './components/LandingPage';
 import Header from './components/Header';
 import IngestionPanel from './components/IngestionPanel';
 import CanvasInspector from './components/CanvasInspector';
@@ -7,9 +8,14 @@ import SuggestionChips from './components/SuggestionChips';
 import FeedbackStrip from './components/FeedbackStrip';
 import TelemetryDrawer from './components/TelemetryDrawer';
 import ReportModal from './components/ReportModal';
+import ProcessingView from './components/ProcessingView';
 import { queryPipeline, logSuggestionClick } from './api/satquery';
 
 export default function App() {
+  // ── View state: 'landing' | 'workbench' ──────────────────────────
+  const [view, setView] = useState('landing');
+
+  // ── Workbench state (unchanged from original) ─────────────────────
   const [files, setFiles] = useState([]);
   const [rawImageUrls, setRawImageUrls] = useState([]);
   const [queryText, setQueryText] = useState('');
@@ -31,6 +37,46 @@ export default function App() {
     };
   }, [files]);
 
+  // ── Called from LandingPage ChatPanel submit ──────────────────────
+  const handleLandingEnter = async ({ queryText: text, files: attachedFiles }) => {
+    setQueryText(text);
+    
+    const validFiles = attachedFiles && attachedFiles.length > 0 ? attachedFiles : [];
+    if (validFiles.length > 0) {
+      setFiles(validFiles);
+    } else {
+      setErrorMessage("Please attach at least one satellite image to analyze.");
+      return;
+    }
+
+    // Switch to processing state
+    setView('processing');
+    setErrorMessage(null);
+    setIsProcessing(true);
+
+    try {
+      const data = await queryPipeline(validFiles, text);
+      setResultData(data);
+      setView('workbench');
+    } catch (err) {
+      console.error('Landing query execution error:', err);
+      setErrorMessage(err.message || 'Analysis failed. Please check your image and try again.');
+      setView('landing');
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  // ── Return to landing ─────────────────────────────────────────────
+  const handleBackToLanding = () => {
+    setView('landing');
+    setResultData(null);
+    setErrorMessage(null);
+    setActivePreset(null);
+    // Keep query/files so user can continue if they navigate back
+  };
+
+  // ── Pipeline execution (unchanged from original) ──────────────────
   const executeQuery = async (queryToRun) => {
     const text = queryToRun || queryText;
     if (!text.trim() || files.length === 0 || isProcessing) return;
@@ -60,11 +106,23 @@ export default function App() {
     executeQuery(suggestion.text);
   };
 
+  // ── Landing view ──────────────────────────────────────────────────
+  if (view === 'landing') {
+    return <LandingPage onEnter={handleLandingEnter} errorMessage={errorMessage} />;
+  }
+
+  // ── Processing view ───────────────────────────────────────────────
+  if (view === 'processing') {
+    return <ProcessingView />;
+  }
+
+  // ── Workbench view (original layout, unchanged) ───────────────────
   return (
     <div className="app-container">
       <Header
         hasResult={Boolean(resultData?.report_id)}
         onOpenReport={() => setIsReportModalOpen(true)}
+        onBackToLanding={handleBackToLanding}
       />
 
       <main className="command-center-layout">
@@ -91,7 +149,7 @@ export default function App() {
         <div className="panel right-panel">
           <ExecutiveSummary resultData={resultData} />
 
-          {/* Inline error state instead of alert() */}
+          {/* Inline error state */}
           {errorMessage && (
             <div className="error-inline">
               {errorMessage}
