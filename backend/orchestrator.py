@@ -33,6 +33,7 @@ from evidence_fusion import evidence_fusion
 from render_overlay import multi_box_renderer
 from next_query import next_query_recommender
 from audit_store import audit_store
+from memory_store import memory_store
 
 
 @dataclass
@@ -85,148 +86,73 @@ class Orchestrator:
     async def _execute_single_image_vqa(self, image_bytes: bytes, query: str) -> SpecialistResult:
         """
         Execute Single Image VQA with strict tiered precedence:
-        Tier 1 (PRIMARY): Local / Remote Fine-Tuned RS-VLM Checkpoint (Qwen2-VL / BigEarthNet.txt)
-        Tier 2 (LAST RESORT): Gemini 2.5 Flash (Vision)
-        Tier 3 (LAST RESORT TEXT): Groq LLM
-        Tier 4 (OFFLINE FALLBACK): Deterministic Specialist Mock
+        Tier 1: Live Fine-Tuned Endpoint (if active and responsive)
+        Tier 2 (PRIMARY ENGINE): Local Remote Sensing Computer Vision Engine with Closed-Loop Self-Adaptation
         """
-        # Tier 1 (PRIMARY): Check if fine-tuned checkpoint / endpoint is configured
-        if self.fine_tuned_enabled and (self.fine_tuned_endpoint or self.fine_tuned_weights_path):
+        # Tier 1: Check if live external fine-tuned model endpoint is active
+        if self.fine_tuned_enabled and self.fine_tuned_endpoint:
             try:
                 import requests
                 import asyncio
-                if self.fine_tuned_endpoint:
-                    def _call_endpoint():
-                        files = {"image": ("scene.png", image_bytes, "image/png")}
-                        data = {"query": query}
-                        res = requests.post(
-                            self.fine_tuned_endpoint,
-                            files=files,
-                            data=data,
-                            timeout=10
-                        )
-                        return res.json() if res.status_code == 200 else None
+                def _call_endpoint():
+                    files = {"image": ("scene.png", image_bytes, "image/png")}
+                    data = {"query": query}
+                    res = requests.post(
+                        self.fine_tuned_endpoint,
+                        files=files,
+                        data=data,
+                        timeout=3
+                    )
+                    return res.json() if res.status_code == 200 else None
 
-                    data = await asyncio.to_thread(_call_endpoint)
-                    if data:
-                        answer_text = data.get("summary") or data.get("answer", "")
-                        bbox = data.get("bounding_box")
-                        conf = float(data.get("confidence", 0.94))
-                        detected_objs = data.get("detected_objects", []) or []
+                data = await asyncio.to_thread(_call_endpoint)
+                if data and data.get("live_inference"):
+                    answer_text = data.get("summary") or data.get("answer", "")
+                    bbox = data.get("bounding_box")
+                    conf = float(data.get("confidence", 0.94))
+                    detected_objs = data.get("detected_objects", []) or []
+                    print(f"[Orchestrator] Processed via live fine-tuned endpoint: {self.fine_tuned_endpoint}")
+                    return SpecialistResult(
+                        answer=answer_text,
+                        bounding_box=bbox,
+                        confidence=conf,
+                        evidence_type="bbox" if bbox else "none",
+                        detail=data.get("specialist", "Fine-Tuned RS-VLM Live Endpoint"),
+                        detailed_analysis=data.get("detailed_analysis"),
+                        detected_objects=detected_objs
+                    )
+            except Exception:
+                pass
 
-                        # Construct standardized AnnotationSet for multi-box grounding and count synchrony
-                        annot_set = None
-                        if bbox:
-                            q_lower = query.lower()
-                            is_count = any(w in q_lower for w in ["count", "how many", "number of"])
-                            primary_label = detected_objs[0] if detected_objs else "Feature"
-                            match = re.search(r"\b(\d+)\s+([a-zA-Z\-_]+)", answer_text)
-                            explicit_count = int(match.group(1)) if match and int(match.group(1)) <= 50 else (len(detected_objs) if detected_objs else 1)
+        # Tier 2: Check Operator Exemplar Memory (Immediate Memorization Tier)
+        exemplar = memory_store.find_exemplar(image_bytes, query)
+        adaptation_profile = audit_store.get_adaptation_profile()
 
-                            if is_count and explicit_count > 1:
-                                layer_boxes = rs_vlm._generate_grounded_boxes_for_count(
-                                    bbox, count=explicit_count, label=primary_label.title(), base_confidence=conf
-                                )
-                                layer = AnnotationLayer(
-                                    layer_id="objects_count",
-                                    reasoning="count",
-                                    color="#2E7DD1",
-                                    boxes=layer_boxes
-                                )
-                            else:
-                                layer = AnnotationLayer(
-                                    layer_id="grounded_regions",
-                                    reasoning="grounding",
-                                    color="#00E5FF",
-                                    boxes=[
-                                        GroundingBox(
-                                            id=1,
-                                            bbox=bbox,
-                                            label=primary_label.title(),
-                                            confidence=conf
-                                        )
-                                    ]
-                                )
-                            annot_set = AnnotationSet(layers=[layer])
+        if exemplar and (exemplar.get("notes") or exemplar.get("corrected_bbox")):
+            base_res = await rs_vlm.analyze(image_bytes, query, adaptation_profile)
+            corr_bbox = exemplar.get("corrected_bbox") or base_res.bounding_box
+            user_notes = exemplar.get("notes", "")
+            ans = f"[Operator Verified] {user_notes}" if user_notes else base_res.answer
 
-                        print(f"[Orchestrator] Successfully processed via PRIMARY Fine-Tuned RS-VLM ({self.fine_tuned_endpoint})")
-                        return SpecialistResult(
-                            answer=answer_text,
-                            bounding_box=bbox,
-                            confidence=conf,
-                            evidence_type="bbox" if bbox else "none",
-                            detail=data.get("specialist", "Fine-Tuned RS-VLM (BigEarthNet.txt Specialist)"),
-                            detailed_analysis=data.get("detailed_analysis"),
-                            detected_objects=detected_objs,
-                            annotation_set=annot_set
-                        )
-            except Exception as e:
-                print(f"[Orchestrator] Fine-tuned model endpoint offline ({e}). Running Fine-Tuned Specialist in-process.")
-                try:
-                    import importlib
-                    import sys
-                    backend_dir = os.path.dirname(os.path.abspath(__file__))
-                    if backend_dir not in sys.path:
-                        sys.path.insert(0, backend_dir)
-                    sft_module = importlib.import_module("serve_fine_tuned")
-                    data = sft_module._generate_structured_response(query)
-                    if data:
-                        answer_text = data.get("summary") or data.get("answer", "")
-                        bbox = data.get("bounding_box")
-                        conf = float(data.get("confidence", 0.94))
-                        detected_objs = data.get("detected_objects", []) or []
+            annot_set = base_res.annotation_set
+            if corr_bbox and annot_set and annot_set.layers:
+                annot_set.layers[0].boxes = [
+                    GroundingBox(id=1, bbox=corr_bbox, label="Verified Operator Target", confidence=0.98)
+                ]
 
-                        annot_set = None
-                        if bbox:
-                            q_lower = query.lower()
-                            is_count = any(w in q_lower for w in ["count", "how many", "number of"])
-                            primary_label = detected_objs[0] if detected_objs else "Feature"
-                            match = re.search(r"\b(\d+)\s+([a-zA-Z\-_]+)", answer_text)
-                            explicit_count = int(match.group(1)) if match and int(match.group(1)) <= 50 else (len(detected_objs) if detected_objs else 1)
+            return SpecialistResult(
+                answer=ans,
+                bounding_box=corr_bbox,
+                confidence=0.98,
+                evidence_type="bbox" if corr_bbox else base_res.evidence_type,
+                detail="Processed by Operator-Verified Exemplar Memory (Immediate Adaptation)",
+                detailed_analysis=base_res.detailed_analysis,
+                detected_objects=base_res.detected_objects or ["Verified Operator Target"],
+                annotation_set=annot_set
+            )
 
-                            if is_count and explicit_count > 1:
-                                layer_boxes = rs_vlm._generate_grounded_boxes_for_count(
-                                    bbox, count=explicit_count, label=primary_label.title(), base_confidence=conf
-                                )
-                                layer = AnnotationLayer(
-                                    layer_id="objects_count",
-                                    reasoning="count",
-                                    color="#2E7DD1",
-                                    boxes=layer_boxes
-                                )
-                            else:
-                                layer = AnnotationLayer(
-                                    layer_id="grounded_regions",
-                                    reasoning="grounding",
-                                    color="#00E5FF",
-                                    boxes=[
-                                        GroundingBox(
-                                            id=1,
-                                            bbox=bbox,
-                                            label=primary_label.title(),
-                                            confidence=conf
-                                        )
-                                    ]
-                                )
-                            annot_set = AnnotationSet(layers=[layer])
-
-                        print("[Orchestrator] Successfully processed via IN-PROCESS Fine-Tuned RS-VLM")
-                        return SpecialistResult(
-                            answer=answer_text,
-                            bounding_box=bbox,
-                            confidence=conf,
-                            evidence_type="bbox" if bbox else "none",
-                            detail=data.get("specialist", "Fine-Tuned RS-VLM (BigEarthNet.txt Specialist)"),
-                            detailed_analysis=data.get("detailed_analysis"),
-                            detected_objects=detected_objs,
-                            annotation_set=annot_set
-                        )
-                except Exception as inner_e:
-                    print(f"[Orchestrator] In-process fine-tuned specialist fallback failed: {inner_e}")
-
-        # Last Resort Tiers: Gemini 2.5 Flash -> Groq -> Mock
-        print("[Orchestrator] Using last-resort vision fallback (Gemini / Groq / Mock)...")
-        return await rs_vlm.analyze(image_bytes, query)
+        # Tier 3: Primary Local RS Vision Engine with human operator self-adaptation profile
+        return await rs_vlm.analyze(image_bytes, query, adaptation_profile)
 
     async def process_query(
         self,
@@ -316,10 +242,13 @@ class Orchestrator:
         metric_info = None
 
         try:
+            # For bi-temporal change detection, ground the evidence overlay on T2 (the monitoring image)
+            base_overlay_bytes = file_contents[1] if (intent == "change_detection" and len(file_contents) >= 2) else file_contents[0]
+
             # If multi-box annotation set has boxes, render multi-layer overlay with legend strip and scale bar
             if not fused_annotation_set.is_empty():
                 overlay_filename, overlay_base64, metric_info = multi_box_renderer.render(
-                    file_contents[0],
+                    base_overlay_bytes,
                     fused_annotation_set,
                     gsd_m=10.0,
                     draw_legend=True
@@ -348,7 +277,7 @@ class Orchestrator:
                 trace.end_stage("ok", f"Rendered Optical+SAR fusion overlay: {specialist_result.bounding_box}")
             elif specialist_result.bounding_box:
                 overlay_res = draw_bounding_box(
-                    file_contents[0],
+                    base_overlay_bytes,
                     specialist_result.bounding_box,
                     label="Detection"
                 )
@@ -356,10 +285,10 @@ class Orchestrator:
                 metric_info = getattr(overlay_res, "metric_info", None)
                 trace.end_stage("ok", f"Rendered bounding box overlay: {specialist_result.bounding_box}")
             else:
-                overlay_res = create_no_evidence_overlay(file_contents[0])
+                overlay_res = create_no_evidence_overlay(base_overlay_bytes)
                 overlay_filename, overlay_base64 = overlay_res[0], overlay_res[1]
                 metric_info = getattr(overlay_res, "metric_info", None)
-                trace.end_stage("ok", "No spatial coordinates returned, generated original base overlay")
+                trace.end_stage("ok", "No spatial coordinates returned, generated clean base overlay")
 
         except Exception as e:
             trace.end_stage("failed", f"Evidence rendering error: {str(e)}")

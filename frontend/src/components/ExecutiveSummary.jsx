@@ -15,7 +15,8 @@ export default function ExecutiveSummary({ resultData }) {
   const scorePct = Math.round((confidence.score || 0.94) * 100);
   const isHighConf = (confidence.score || 0.94) >= 0.8;
   const objects = resultData.detected_objects || resultData.objects;
-  const evidence = resultData.evidence || resultData.detailed_analysis;
+  const detailed = resultData.detailed_analysis;
+  const hasEvidence = Boolean(detailed || (resultData.evidence && typeof resultData.evidence === 'string'));
 
   return (
     <div className="executive-summary-card" style={{ display: 'flex', flexDirection: 'column', gap: '24px', background: 'transparent', border: 'none', padding: 0 }}>
@@ -54,26 +55,45 @@ export default function ExecutiveSummary({ resultData }) {
                 <span>{typeof obj === 'string' ? obj : obj.label || 'Object'}</span>
               </div>
             )) : (
-              <div style={{ fontSize: '13px', color: '#fff' }}>{JSON.stringify(objects)}</div>
+              <div style={{ fontSize: '13px', color: '#fff' }}>{String(objects)}</div>
             )}
           </div>
         </div>
       )}
 
       {/* 4. EVIDENCE (Conditional) */}
-      {evidence && (
+      {hasEvidence && (
         <div>
           <div className="summary-header-row" style={{ borderBottom: '1px solid var(--color-rule-subtle)', paddingBottom: '8px', marginBottom: '12px' }}>
             <span className="section-title" style={{ color: 'var(--color-muted)', letterSpacing: '0.1em' }}>EVIDENCE</span>
           </div>
           <div style={{ background: 'transparent', borderLeft: '2px solid #508CFF', padding: '0 0 0 12px', fontSize: '13px', color: 'var(--color-ink-2)', lineHeight: '1.5' }}>
-            {typeof evidence === 'string' ? evidence : (
-              evidence.land_cover ? (
-                <div>
-                  <div style={{ fontWeight: 600, color: '#508CFF', marginBottom: '4px', fontFamily: 'var(--font-mono)' }}>Land Cover Classification:</div>
-                  <div style={{ color: '#fff' }}>{evidence.land_cover}</div>
-                </div>
-              ) : JSON.stringify(evidence)
+            {detailed ? (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                {detailed.land_cover && (
+                  <div>
+                    <div style={{ fontWeight: 600, color: '#508CFF', marginBottom: '2px', fontFamily: 'var(--font-mono)', fontSize: '12px' }}>Land Cover Classification:</div>
+                    <div style={{ color: '#e2e8f0', fontSize: '12px' }}>{detailed.land_cover}</div>
+                  </div>
+                )}
+                {Array.isArray(detailed.key_objects) && detailed.key_objects.length > 0 && (
+                  <div>
+                    <div style={{ fontWeight: 600, color: '#508CFF', marginBottom: '4px', fontFamily: 'var(--font-mono)', fontSize: '12px' }}>Ground Observations:</div>
+                    <ul style={{ margin: 0, paddingLeft: '16px', color: '#cbd5e1', fontSize: '12px', lineHeight: '1.5' }}>
+                      {detailed.key_objects.map((ko, idx) => (
+                        <li key={idx} style={{ marginBottom: '2px' }}>{ko}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+                {detailed.spatial_patterns && (
+                  <div style={{ color: 'var(--color-muted)', fontSize: '11px', fontFamily: 'var(--font-mono)' }}>
+                    <span>Pattern: </span>{detailed.spatial_patterns}
+                  </div>
+                )}
+              </div>
+            ) : (
+              <div style={{ color: '#fff' }}>{String(resultData.evidence)}</div>
             )}
           </div>
         </div>

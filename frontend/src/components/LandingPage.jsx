@@ -40,7 +40,7 @@ export default function LandingPage({ onEnter, errorMessage }) {
                 <span className="lh-logo-sat">SAT</span> <span className="lh-logo-query">QUERY</span>
               </div>
               <div className="lh-taglines">
-                <div className="lh-tagline-1">Satellite Intelligence, Simplified.</div>
+                <div className="lh-tagline-1">Self-Adapting Multi-Modal Satellite Intelligence</div>
                 <div className="lh-tagline-2">Explore. Ask. Discover.</div>
               </div>
             </div>
@@ -51,12 +51,6 @@ export default function LandingPage({ onEnter, errorMessage }) {
         {/* Right: 3D Earth Scene */}
         <div className="landing-right">
           <EarthScene />
-
-          {/* Floating label below Earth */}
-          <div className="landing-earth-label" aria-hidden="true">
-            <span className="landing-earth-label-dot" />
-            <span>Live orbital tracking · 4 assets</span>
-          </div>
         </div>
       </div>
     </div>

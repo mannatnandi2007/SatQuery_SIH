@@ -25,7 +25,7 @@ export default function Header({ onOpenReport, hasResult, onBackToLanding }) {
             <span style={{ color: 'var(--color-accent)' }}> QUERY</span>
           </div>
           <div className="brand-subtitle" style={{ letterSpacing: '0.05em' }}>
-            Satellite Intelligence, Simplified.
+            Self-Adapting Multi-Modal Satellite Intelligence
           </div>
         </div>
       </div>

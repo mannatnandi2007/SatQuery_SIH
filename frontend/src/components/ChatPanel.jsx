@@ -4,66 +4,109 @@
  * Submitting transitions the app to the analysis workbench.
  */
 
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
   Satellite,
   Paperclip,
   Mic,
+  MicOff,
   SendHorizonal,
-  ScanEye,
-  GitCompare,
-  MapPin,
-  Database,
+  UploadCloud,
   X,
   FileImage,
 } from 'lucide-react';
 
-const QUICK_ACTIONS = [
-  {
-    id: 'analyze',
-    icon: ScanEye,
-    label: 'Analyze a satellite image',
-    prompt: 'Analyze this satellite image and identify key features, land cover types, and any notable structures or changes.',
-  },
-  {
-    id: 'compare',
-    icon: GitCompare,
-    label: 'Compare two time periods',
-    prompt: 'Compare these two satellite images from different time periods and detect any significant changes in the scene.',
-  },
-  {
-    id: 'find',
-    icon: MapPin,
-    label: 'Find objects or regions',
-    prompt: 'Identify and locate all objects, structures, or regions of interest in this satellite image.',
-  },
-  {
-    id: 'explain',
-    icon: Database,
-    label: 'Explain a dataset',
-    prompt: 'Explain what this satellite imagery dataset shows and provide an analysis of the observed patterns.',
-  },
-];
-
 export default function ChatPanel({ onSubmit, errorMessage }) {
   const [query, setQuery] = useState('');
   const [files, setFiles] = useState([]);
+  const [fileUrls, setFileUrls] = useState([]);
   const [isFocused, setIsFocused] = useState(false);
+  const [isListening, setIsListening] = useState(false);
   const fileInputRef = useRef(null);
   const textareaRef = useRef(null);
+  const recognitionRef = useRef(null);
 
-  const handleQuickAction = (action) => {
-    setQuery(action.prompt);
-    // Focus the input so user sees the text
-    setTimeout(() => textareaRef.current?.focus(), 50);
+  // Initialize Web Speech API SpeechRecognition
+  useEffect(() => {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (SpeechRecognition) {
+      const recognition = new SpeechRecognition();
+      recognition.continuous = true;
+      recognition.interimResults = true;
+      recognition.lang = 'en-US';
+
+      recognition.onstart = () => {
+        setIsListening(true);
+      };
+
+      recognition.onresult = (event) => {
+        let transcript = '';
+        for (let i = 0; i < event.results.length; i++) {
+          transcript += event.results[i][0].transcript;
+        }
+        if (transcript) {
+          setQuery(transcript);
+        }
+      };
+
+      recognition.onerror = (event) => {
+        console.warn('Speech recognition error:', event.error);
+        setIsListening(false);
+      };
+
+      recognition.onend = () => {
+        setIsListening(false);
+      };
+
+      recognitionRef.current = recognition;
+    }
+
+    return () => {
+      if (recognitionRef.current) {
+        try {
+          recognitionRef.current.stop();
+        } catch (e) {}
+      }
+    };
+  }, []);
+
+  const toggleListening = () => {
+    if (!recognitionRef.current) {
+      alert("Speech recognition is not supported in this browser. Please use Google Chrome, Microsoft Edge, or Safari.");
+      return;
+    }
+
+    if (isListening) {
+      recognitionRef.current.stop();
+      setIsListening(false);
+    } else {
+      try {
+        recognitionRef.current.start();
+        setIsListening(true);
+      } catch (err) {
+        console.error("Speech recognition start failed:", err);
+        setIsListening(false);
+      }
+    }
   };
+
+  // Maintain local object URLs for image preview thumbnails
+  useEffect(() => {
+    const urls = files.map((f) => URL.createObjectURL(f));
+    setFileUrls((prev) => {
+      prev.forEach((u) => URL.revokeObjectURL(u));
+      return urls;
+    });
+    return () => {
+      urls.forEach((u) => URL.revokeObjectURL(u));
+    };
+  }, [files]);
 
   const handleFileChange = (e) => {
     if (e.target.files) {
       const selected = Array.from(e.target.files);
       setFiles(prev => [...prev, ...selected].slice(0, 2));
     }
-    // Reset input so same file can be re-added after removal
     e.target.value = '';
   };
 
@@ -74,7 +117,6 @@ export default function ChatPanel({ onSubmit, errorMessage }) {
   const handleSubmit = () => {
     const trimmed = query.trim();
     if (!trimmed) return;
-    // Pass query text and files up — App will switch to workbench
     onSubmit({ queryText: trimmed, files });
   };
 
@@ -106,48 +148,65 @@ export default function ChatPanel({ onSubmit, errorMessage }) {
         <h1 className="cp-greeting-hi">Hi there! 👋</h1>
         <p className="cp-greeting-sub">How can I help you today?</p>
         <p className="cp-greeting-desc">
-          Ask anything about satellite data, earth observation, missions, or analysis.
+          Upload satellite imagery and ask anything about earth observation, infrastructure, or change analysis.
         </p>
       </div>
 
-      {/* ── Quick Actions ─────────────────────────────────────── */}
-      <div className="cp-quick-actions">
-        {QUICK_ACTIONS.map((action) => {
-          const Icon = action.icon;
-          return (
-            <button
-              key={action.id}
-              className="cp-quick-btn"
-              onClick={() => handleQuickAction(action)}
-              type="button"
-              aria-label={action.label}
-            >
-              <span className="cp-quick-icon">
-                <Icon size={14} strokeWidth={1.8} />
-              </span>
-              <span className="cp-quick-label">{action.label}</span>
-            </button>
-          );
-        })}
-      </div>
-
-      {/* ── Attached files ───────────────────────────────────── */}
-      {files.length > 0 && (
-        <div className="cp-files-list">
-          {files.map((f, idx) => (
-            <div key={idx} className="cp-file-pill">
-              <FileImage size={12} className="cp-file-icon" />
-              <span className="cp-file-name">{f.name}</span>
+      {/* ── Uploaded Imagery Preview (Shows what has been uploaded) ── */}
+      {files.length > 0 ? (
+        <div className="uploaded-imagery-preview">
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2px' }}>
+            <span style={{ fontSize: '11px', color: 'var(--color-muted)', fontFamily: 'var(--font-mono)', fontWeight: 600 }}>
+              UPLOADED IMAGERY ({files.length}/2)
+            </span>
+            {files.length < 2 && (
               <button
                 type="button"
-                className="cp-file-remove"
+                onClick={() => fileInputRef.current?.click()}
+                style={{ background: 'none', border: 'none', color: 'var(--color-accent)', fontSize: '11px', fontFamily: 'var(--font-mono)', cursor: 'pointer' }}
+              >
+                + Add Second Image (T2)
+              </button>
+            )}
+          </div>
+          {files.map((f, idx) => (
+            <div key={idx} className="uploaded-image-card">
+              <div className="uploaded-card-thumb">
+                {fileUrls[idx] ? (
+                  <img src={fileUrls[idx]} alt={f.name} />
+                ) : (
+                  <FileImage size={20} style={{ color: 'var(--color-accent)' }} />
+                )}
+                <span className="uploaded-card-badge">
+                  {idx === 0 ? 'T1' : 'T2'}
+                </span>
+              </div>
+              <div className="uploaded-card-details">
+                <span className="uploaded-card-filename" title={f.name}>{f.name}</span>
+                <span className="uploaded-card-meta">
+                  <span>{(f.size / 1024).toFixed(0)} KB</span>
+                  <span>·</span>
+                  <span style={{ color: 'var(--color-accent)' }}>{idx === 0 ? 'Baseline' : 'Monitoring'}</span>
+                </span>
+              </div>
+              <button
+                type="button"
+                className="uploaded-card-remove"
                 onClick={() => handleRemoveFile(idx)}
                 aria-label={`Remove ${f.name}`}
               >
-                <X size={11} />
+                <X size={14} />
               </button>
             </div>
           ))}
+        </div>
+      ) : (
+        <div
+          className="uploaded-attach-prompt"
+          onClick={() => fileInputRef.current?.click()}
+        >
+          <UploadCloud size={16} style={{ color: 'var(--color-accent)' }} />
+          <span>Click to attach satellite imagery (Sentinel-2, JPG, PNG)</span>
         </div>
       )}
 
@@ -166,7 +225,7 @@ export default function ChatPanel({ onSubmit, errorMessage }) {
           onKeyDown={handleKeyDown}
           onFocus={() => setIsFocused(true)}
           onBlur={() => setIsFocused(false)}
-          placeholder="Ask SAT Query anything..."
+          placeholder={isListening ? "🎙️ Listening... speak your query now..." : "Ask SAT Query anything..."}
           rows={3}
           aria-label="Query input"
         />
@@ -195,13 +254,18 @@ export default function ChatPanel({ onSubmit, errorMessage }) {
             </button>
             <button
               type="button"
-              className="cp-icon-btn"
-              title="Voice input"
-              aria-label="Voice input"
+              className={`cp-icon-btn ${isListening ? 'listening' : ''}`}
+              onClick={toggleListening}
+              title={isListening ? "Stop listening (Microphone recording active)" : "Speech-to-text voice input"}
+              aria-label={isListening ? "Stop voice input" : "Start voice input"}
             >
-              <Mic size={15} strokeWidth={1.8} />
+              {isListening ? (
+                <MicOff size={15} strokeWidth={2} />
+              ) : (
+                <Mic size={15} strokeWidth={1.8} />
+              )}
             </button>
-            <span className="cp-hint">Ctrl+Enter to send</span>
+            <span className="cp-hint">{isListening ? 'Recording speech...' : 'Ctrl+Enter to send'}</span>
           </div>
 
           <button
@@ -216,10 +280,6 @@ export default function ChatPanel({ onSubmit, errorMessage }) {
         </div>
       </div>
 
-      {/* ── Footer note ──────────────────────────────────────── */}
-      <p className="cp-footer-note">
-        Powered by multi-modal satellite intelligence · RS-VLM · JEV-JEPA
-      </p>
     </aside>
   );
 }

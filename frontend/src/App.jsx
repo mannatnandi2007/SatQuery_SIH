@@ -130,12 +130,11 @@ export default function App() {
         <IngestionPanel
           files={files}
           setFiles={setFiles}
+          rawImageUrls={rawImageUrls}
           queryText={queryText}
           setQueryText={setQueryText}
           isProcessing={isProcessing}
           onRunQuery={() => executeQuery(queryText)}
-          activePreset={activePreset}
-          setActivePreset={setActivePreset}
         />
 
         {/* Center Pane: Geospatial Canvas Inspector */}

@@ -1,0 +1,31 @@
+{
+  "exemplars": [
+    {
+      "id": "ex_f4d5462bd473f8b3_45ee6080",
+      "timestamp": "2026-09-23T14:52:19.899701+00:00",
+      "image_hash": "f4d5462bd473f8b3",
+      "query": "Count buildings in scene",
+      "rating": "corrected",
+      "notes": "Found 6 industrial buildings instead of 4",
+      "corrected_bbox": [
+        20,
+        20,
+        80,
+        80
+      ],
+      "original_answer": "",
+      "category": "general"
+    },
+    {
+      "id": "ex_unknown_86643eb1",
+      "timestamp": "2026-09-23T18:49:14.299283+00:00",
+      "image_hash": "unknown",
+      "query": "test_api_query_456",
+      "rating": "accept",
+      "notes": "Verified bounding coordinates.",
+      "corrected_bbox": null,
+      "original_answer": "",
+      "category": "general"
+    }
+  ]
+}

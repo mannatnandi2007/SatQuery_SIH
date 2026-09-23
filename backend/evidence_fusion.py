@@ -6,7 +6,11 @@ preserves high-confidence detections, and ensures consistent numbering per layer
 """
 
 from typing import List, Dict, Any, Optional, Tuple
-from annotation_schema import GroundingBox, AnnotationLayer, AnnotationSet
+
+try:
+    from annotation_schema import GroundingBox, AnnotationLayer, AnnotationSet
+except ImportError:
+    from backend.annotation_schema import GroundingBox, AnnotationLayer, AnnotationSet
 
 
 def compute_iou(boxA: List[float], boxB: List[float]) -> float:

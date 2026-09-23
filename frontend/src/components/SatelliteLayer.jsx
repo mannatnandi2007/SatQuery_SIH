@@ -12,6 +12,7 @@
 
 import React, { useRef, useMemo } from 'react';
 import { useFrame } from '@react-three/fiber';
+import { Html } from '@react-three/drei';
 import * as THREE from 'three';
 
 /* ── Reusable Glow Texture ─────────────────────────────────────── */
@@ -241,7 +242,7 @@ function FadingTrail({ semiMajor, semiMinor, inclination, raan, speed, phase, co
 }
 
 /* ── Single orbiting satellite ─────────────────────────────────── */
-function OrbitingSatellite({ semiMajor, semiMinor, inclination, raan, speed, phase, satScale, panelAngle, colorType }) {
+function OrbitingSatellite({ semiMajor, semiMinor, inclination, raan, speed, phase, satScale, panelAngle, colorType, label }) {
   const groupRef  = useRef();
   const satRef    = useRef();
 
@@ -281,6 +282,22 @@ function OrbitingSatellite({ semiMajor, semiMinor, inclination, raan, speed, pha
       <group ref={satRef}>
         <SatelliteModel scale={satScale} panelAngle={panelAngle} colorType={colorType} />
       </group>
+      {label && (
+        <Html
+          position={[0, 0.35, 0]}
+          center
+          distanceFactor={14}
+          style={{ pointerEvents: 'none' }}
+        >
+          <div className="sat-orbit-tag">
+            <span
+              className="sat-orbit-tag-dot"
+              style={{ background: colorType === 'warm' ? '#ff9933' : '#33bbff' }}
+            />
+            <span className="sat-orbit-tag-text">{label}</span>
+          </div>
+        </Html>
+      )}
     </group>
   );
 }
@@ -289,6 +306,7 @@ function OrbitingSatellite({ semiMajor, semiMinor, inclination, raan, speed, pha
 const SATS = [
   // Low, steeply inclined — polar-ish (Hero warm satellite)
   {
+    label: 'Self-Adapting',
     semiMajor: 2.72,
     semiMinor: 2.68,
     inclination: 1.38,   // ~79°
@@ -301,6 +319,7 @@ const SATS = [
   },
   // Medium, equatorial-ish (slight inclination)
   {
+    label: 'JEV-Like Decision Layer',
     semiMajor: 3.05,
     semiMinor: 2.95,
     inclination: 0.28,   // ~16°
@@ -313,6 +332,7 @@ const SATS = [
   },
   // Higher, retrograde-ish
   {
+    label: 'JEPA Architecture',
     semiMajor: 3.4,
     semiMinor: 3.25,
     inclination: 2.1,    // ~120°
@@ -325,6 +345,7 @@ const SATS = [
   },
   // Small, sun-sync-ish
   {
+    label: 'GSD Normalization',
     semiMajor: 2.55,
     semiMinor: 2.50,
     inclination: 1.6,    // ~92°

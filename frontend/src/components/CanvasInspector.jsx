@@ -7,6 +7,7 @@ export default function CanvasInspector({
   isProcessing,
 }) {
   const [viewMode, setViewMode] = useState('evidence');
+  const [rawActiveTab, setRawActiveTab] = useState('t1');
   const [reticleCoords, setReticleCoords] = useState({ x: null, y: null });
   const containerRef = useRef(null);
 
@@ -44,7 +45,7 @@ export default function CanvasInspector({
           GEOSPATIAL INSPECTOR
         </span>
 
-        <div className="view-mode-tabs">
+        <div className="view-mode-tabs" style={{ display: 'flex', alignItems: 'center' }}>
           <button
             className={`mode-tab-btn ${viewMode === 'evidence' ? 'active' : ''}`}
             onClick={() => setViewMode('evidence')}
@@ -66,6 +67,25 @@ export default function CanvasInspector({
             <Split size={11} />
             Dual
           </button>
+
+          {rawSecondSrc && viewMode === 'raw' && (
+            <div style={{ display: 'inline-flex', gap: '4px', marginLeft: '8px', borderLeft: '1px solid var(--color-rule)', paddingLeft: '8px' }}>
+              <button
+                className={`mode-tab-btn ${rawActiveTab === 't1' ? 'active' : ''}`}
+                style={{ padding: '2px 6px', fontSize: '10px' }}
+                onClick={() => setRawActiveTab('t1')}
+              >
+                T1 Baseline
+              </button>
+              <button
+                className={`mode-tab-btn ${rawActiveTab === 't2' ? 'active' : ''}`}
+                style={{ padding: '2px 6px', fontSize: '10px' }}
+                onClick={() => setRawActiveTab('t2')}
+              >
+                T2 Monitoring
+              </button>
+            </div>
+          )}
         </div>
       </div>
 
@@ -89,7 +109,9 @@ export default function CanvasInspector({
         {viewMode === 'dual' ? (
           <div className="dual-view-grid">
             <div className="dual-raster-panel">
-              <span className="raster-badge-tag">RAW INPUT (GSD 10m)</span>
+              <span className="raster-badge-tag">
+                {rawSecondSrc ? 'BASELINE (T1)' : 'RAW INPUT (GSD 10m)'}
+              </span>
               {rawSrc ? (
                 <img src={rawSrc} alt="Raw Scene T1" className="main-raster-img" />
               ) : (
@@ -98,7 +120,9 @@ export default function CanvasInspector({
             </div>
             <div className="dual-raster-panel">
               <span className="raster-badge-tag">
-                {rawSecondSrc && !resultData ? 'MONITORING INPUT T2' : 'EVIDENCE OVERLAY'}
+                {rawSecondSrc
+                  ? (resultData ? 'MONITORING (T2) — EVIDENCE OVERLAY' : 'MONITORING INPUT T2')
+                  : 'EVIDENCE OVERLAY'}
               </span>
               {evidenceSrc || rawSecondSrc ? (
                 <img
@@ -112,8 +136,12 @@ export default function CanvasInspector({
             </div>
           </div>
         ) : viewMode === 'raw' ? (
-          rawSrc ? (
-            <img src={rawSrc} alt="Raw Scene" className="main-raster-img" />
+          (rawActiveTab === 't2' && rawSecondSrc ? rawSecondSrc : rawSrc) ? (
+            <img
+              src={rawActiveTab === 't2' && rawSecondSrc ? rawSecondSrc : rawSrc}
+              alt={rawActiveTab === 't2' ? "Monitoring Scene T2" : "Baseline Scene T1"}
+              className="main-raster-img"
+            />
           ) : (
             <div className="empty-state-text">
               Select a benchmark preset or upload imagery to begin

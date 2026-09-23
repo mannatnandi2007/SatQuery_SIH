@@ -20,6 +20,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 from audit_store import audit_store
+from memory_store import memory_store
 
 
 from compatibility import run_compatibility_check
@@ -186,9 +187,26 @@ async def record_feedback(payload: FeedbackRequest):
         notes=payload.notes,
         corrected_bbox=payload.corrected_bbox
     )
+
+    # Automatically record into Exemplar Memory Store to aid future queries and Colab retraining
+    records = audit_store.get_latest_records(limit=30)
+    matched_query = ""
+    for r in records:
+        if r.get("query_id") == payload.query_id:
+            matched_query = r.get("query", {}).get("text", "")
+            break
+
+    memory_store.record_exemplar(
+        image_bytes=None,
+        query=matched_query or payload.query_id,
+        rating=payload.rating,
+        notes=payload.notes,
+        corrected_bbox=payload.corrected_bbox
+    )
+
     return {
         "status": "success",
-        "message": f"Feedback '{payload.rating}' logged for query {payload.query_id}"
+        "message": f"Feedback '{payload.rating}' logged for query {payload.query_id} (exemplar memory updated)"
     }
 
 
@@ -216,6 +234,83 @@ async def get_audit_trail(limit: int = 15):
     return {
         "count": len(records),
         "records": records
+    }
+
+
+@app.get("/active-learning/queue")
+async def get_active_learning_queue(limit: int = 25):
+    """
+    Active Learning & Uncertainty Triage Endpoint (Task 3.4).
+    Returns prioritized high-entropy and operator-flagged queries for fine-tuning triage.
+    """
+    queue = audit_store.get_active_learning_queue(limit=limit)
+    return {
+        "status": "ready",
+        "count": len(queue),
+        "queue": queue
+    }
+
+
+@app.get("/active-learning/export-dataset")
+async def export_active_learning_dataset():
+    """
+    Exports queued active learning exemplars as a Colab-ready BigEarthNet JSON dataset.
+    One-click export directly loadable into training/finetune_rsvlm_colab.ipynb!
+    """
+    export_path = memory_store.export_colab_dataset()
+    if not os.path.exists(export_path):
+        raise HTTPException(status_code=404, detail="Dataset not ready")
+    return FileResponse(
+        export_path,
+        media_type="application/json",
+        filename="active_learning_colab_dataset.json"
+    )
+
+
+@app.get("/memory/stats")
+async def get_memory_stats():
+    """Returns instant exemplar memory cache statistics."""
+    return {
+        "status": "ready",
+        "stats": memory_store.get_stats()
+    }
+
+
+@app.get("/self-adapt/status")
+async def get_self_adaptation_status():
+    """
+    Returns current self-adapting calibration profile and operator metrics.
+    """
+    profile = audit_store.get_adaptation_profile()
+    mem_stats = memory_store.get_stats()
+    return {
+        "status": "active",
+        "profile": profile,
+        "exemplar_memory": mem_stats
+    }
+
+
+@app.post("/compare-baseline")
+async def compare_baseline(
+    image: UploadFile = File(...),
+    query: str = Form(...)
+):
+    """
+    Optional baseline comparison endpoint:
+    Runs external Gemini Vision strictly for comparing against local SatQuery output.
+    Does NOT affect normal /query execution.
+    """
+    image_bytes = await image.read()
+    baseline_result = await rs_vlm.compare_with_baseline(image_bytes, query)
+    if not baseline_result:
+        return {
+            "available": False,
+            "message": "Baseline Gemini API is not configured or reached quota."
+        }
+    return {
+        "available": True,
+        "baseline_model": "Gemini 2.5 Flash",
+        "result": baseline_result
     }
 
 

@@ -96,6 +96,24 @@ class TestAPIEndpoints(unittest.TestCase):
         self.assertIn("records", data)
         self.assertIsInstance(data["records"], list)
 
+    def test_active_learning_queue_endpoint(self):
+        """Test GET /active-learning/queue returns prioritized triage queue."""
+        response = self.client.get("/active-learning/queue?limit=10")
+        self.assertEqual(response.status_code, 200)
+        data = response.json()
+        self.assertEqual(data["status"], "ready")
+        self.assertIn("queue", data)
+        self.assertIsInstance(data["queue"], list)
+
+    def test_self_adapt_status_endpoint(self):
+        """Test GET /self-adapt/status returns calibration profile."""
+        response = self.client.get("/self-adapt/status")
+        self.assertEqual(response.status_code, 200)
+        data = response.json()
+        self.assertEqual(data["status"], "active")
+        self.assertIn("profile", data)
+        self.assertIn("acceptance_rate", data["profile"])
+
 
 if __name__ == "__main__":
     unittest.main()

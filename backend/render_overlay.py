@@ -16,8 +16,15 @@ from io import BytesIO
 from typing import Optional, List, Dict, Tuple, Any
 from PIL import Image, ImageDraw, ImageFont
 
-from annotation_schema import AnnotationSet, AnnotationLayer, GroundingBox
-from gsd_normalizer import gsd_normalizer
+try:
+    from annotation_schema import AnnotationSet, AnnotationLayer, GroundingBox
+except ImportError:
+    from backend.annotation_schema import AnnotationSet, AnnotationLayer, GroundingBox
+
+try:
+    from gsd_normalizer import gsd_normalizer
+except ImportError:
+    from backend.gsd_normalizer import gsd_normalizer
 
 OVERLAYS_DIR = os.path.join(os.path.dirname(__file__), "static", "overlays")
 os.makedirs(OVERLAYS_DIR, exist_ok=True)
@@ -132,8 +139,15 @@ class MultiBoxOverlayRenderer:
                 draw.line([(x2, y2), (x2 - tick_len, y2)], fill=(255, 255, 255), width=2)
                 draw.line([(x2, y2), (x2, y2 - tick_len)], fill=(255, 255, 255), width=2)
 
-                # Numbered Tag Label: e.g. "#1 0.94" or "Building 1"
-                box_title = f"#{box.id} {box.label}" if box.label else f"#{box.id}"
+                # Numbered Tag Label: e.g. "#1 Agricultural Parcel (0.94)"
+                if box.label:
+                    if f"#{box.id}" in box.label or box.label.startswith("#"):
+                        box_title = box.label
+                    else:
+                        box_title = f"#{box.id} {box.label}"
+                else:
+                    box_title = f"#{box.id}"
+
                 if box.confidence and box.confidence < 1.0:
                     box_title += f" ({box.confidence:.2f})"
 
@@ -147,7 +161,10 @@ class MultiBoxOverlayRenderer:
                 draw.text((x1 + 3, max(0, y1 - th) + 1), box_title, fill=color_rgb, font=font_label)
 
         # Step 3: Draw Calibrated Metric Scale Bar
-        from evidence import draw_metric_scale_bar
+        try:
+            from evidence import draw_metric_scale_bar
+        except ImportError:
+            from backend.evidence import draw_metric_scale_bar
         draw_metric_scale_bar(draw, w, h, gsd_m)
 
         # Step 4: Draw Legend Strip if multiple layers or requested
