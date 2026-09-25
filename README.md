@@ -21,6 +21,25 @@ SatQuery AI transforms satellite imagery analysis from a specialized GIS task in
 
 ---
 
+## 📖 Judge's Technical Glossary — Key Concepts Demystified
+
+> *A quick-reference guide designed for evaluators and judges reviewing our architectural and machine learning terminology:*
+
+| Term | Plain-English Explanation | What SatQuery AI Actually Does |
+|---|---|---|
+| **JEV-Style Decision Layer** | Borrowed from Yann LeCun's **JEPA** (*Joint Embedding Predictive Architecture*) formulation — reasoning over compact mathematical features rather than predicting raw pixels. | Instead of hallucinating text or pixels, this layer evaluates the feature compatibility between visual tokens and user intent to decide whether an answer is solidly verified, requires fallback, or should be flagged with uncertainty. |
+| **JEPA-Styled Latent World Model** | **Latent prediction vs. pixel-level detection**: Pixel subtraction compares raw colors (which triggers false alarms from cloud shadows or sunlight angles). Latent prediction encodes scenes into high-level semantic concepts (*"water"*, *"dense forest"*, *"built-up area"*). | Compares semantic embedding vectors across bi-temporal scenes ($T_1$ and $T_2$) to detect real structural and land-use changes while ignoring cosmetic atmospheric lighting variations. |
+| **Exemplar Memory Cache** | A localized vector store of verified analyses and domain operator feedback. | Stores query text, visual embeddings, verified answers, and bounding boxes. When a new similar scene or question is submitted, it retrieves matching exemplars to ground reasoning, ensure consistency, and prevent repeating past mistakes. |
+| **GSD / GSD-Score / GSD-Aware Normalization** | **Ground Sample Distance (GSD)** is the physical ground area represented by a single pixel (e.g., $10\,\text{m}/\text{px}$ in Sentinel-2 vs. $0.5\,\text{m}/\text{px}$ in commercial satellites). | Without GSD normalization, a $10$-pixel building in Sentinel-2 looks the same size as a $10$-pixel car in WorldView. The system rescales imagery to a unified metric scale so models never calculate incorrect ground areas or compare apples to oranges. |
+| **Self-Adapting Loop (Rollback-Gated)** | A continuous learning mechanism with an automated safety brake. | **Trigger update:** An operator submits a correction or annotation on a query. **Trigger rollback:** If the newly added exemplar causes regression scores on baseline test benchmarks to drop, the update is automatically rolled back to preserve system integrity. |
+| **QLoRA (Quantized Low-Rank Adaptation)** | An ultra-efficient fine-tuning method — **not** costly retraining from scratch. | Freezes the massive base vision model (7-billion parameter Qwen2-VL) in 4-bit precision and only trains lightweight adapter layers ($<1\%$ of total weights). Achieves high-tier remote sensing accuracy on modest hardware at a fraction of the compute cost. |
+| **Comparator / Compatibility Checker** | A pre-flight validation module that evaluates input pairs before running inference. | Checks whether two satellite scenes are mathematically fit to be compared — validating spatial overlap, aspect ratios, sensor modality compatibility, and the **GSD-score** (ensuring resolution disparity is within permissible thresholds before change detection runs). |
+| **Specialist Cascade / Tool Registry** | Concrete, multi-tiered routing that selects the best model for the task. | An intent classifier determines what the user is asking, then steps through a prioritized cascade: **(1)** Fine-Tuned RS-VLM adapter if running $\rightarrow$ **(2)** Exemplar Memory cache $\rightarrow$ **(3)** Cloud VLM (Gemini/Groq) $\rightarrow$ **(4)** Deterministic OpenCV spectral engine. |
+| **Co-Registered (Optical + SAR Pair)** | Two distinct satellite images of the exact same geographic footprint aligned pixel-for-pixel. | One image captures visible light (RGB camera photo) and the other captures radar microwave reflections (Sentinel-1 SAR), geometrically locked together so they can be analyzed as a unified dual-modality input. |
+| **SAR Backscatter** | Physical microwave radar pulses reflected back to the satellite sensor. | Distinguishes real radar physics from plain grayscale photos. While grayscale only shows reflected sunlight, SAR backscatter measures physical surface roughness, soil moisture, and structural geometry — penetrating cloud cover, smoke, and complete darkness. |
+
+---
+
 ## 🏗️ Architecture
 
 SatQuery AI runs an **11-node orchestrated pipeline**:
