@@ -16,8 +16,9 @@ env.bak/
 venv.bak/
 
 # Machine Learning, Model Weights & Large Checkpoints
-backend/weights/
-*.safetensors
+# Tracked via Git LFS where specified (.safetensors in .gitattributes)
+backend/weights/*
+!backend/weights/satquery_rsvlm_lora/
 *.bin
 *.pt
 *.pth
@@ -25,7 +26,6 @@ backend/weights/
 *.tar.gz
 *.onnx
 rsvlm_adapter/
-satquery_rsvlm_lora/
 
 # Generated Runtime Artifacts
 backend/static/overlays/*

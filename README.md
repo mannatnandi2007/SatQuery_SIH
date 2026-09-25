@@ -78,6 +78,7 @@ For the full technology reference, see [`docs/technology_stack.md`](docs/technol
 ## 🚀 Getting Started
 
 ### Prerequisites
+- **Git** and **Git LFS** ([https://git-lfs.com/](https://git-lfs.com/))
 - **Python 3.10+**
 - **Node.js 18+** and **npm**
 - A modern browser (Chrome, Edge, Firefox)
@@ -86,9 +87,13 @@ For the full technology reference, see [`docs/technology_stack.md`](docs/technol
 ### Quick Start (Windows)
 
 ```bash
-# 1. Clone the repository
+# 1. Ensure Git LFS is initialized and clone the repository
+git lfs install
 git clone https://github.com/mannatnandi2007/SatQuery_SIH.git
 cd SatQuery_SIH
+
+# (If cloned without Git LFS previously, pull the weights now)
+# git lfs pull
 
 # 2. Install backend dependencies
 cd backend
