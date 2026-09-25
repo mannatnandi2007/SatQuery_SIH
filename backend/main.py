@@ -16,8 +16,12 @@ from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from dotenv import load_dotenv
 
-# Load environment variables
-load_dotenv()
+# Load environment variables (checking both backend/.env and current dir)
+_env_path = os.path.join(os.path.dirname(__file__), ".env")
+if os.path.exists(_env_path):
+    load_dotenv(_env_path)
+else:
+    load_dotenv()
 
 from audit_store import audit_store
 from memory_store import memory_store

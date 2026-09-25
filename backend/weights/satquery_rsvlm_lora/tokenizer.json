@@ -1,7 +1,14 @@
 {
   "version": "1.0",
   "truncation": null,
-  "padding": null,
+  "padding": {
+    "strategy": "BatchLongest",
+    "direction": "Left",
+    "pad_to_multiple_of": null,
+    "pad_id": 151643,
+    "pad_type_id": 0,
+    "pad_token": "<|endoftext|>"
+  },
   "added_tokens": [
     {
       "id": 151643,

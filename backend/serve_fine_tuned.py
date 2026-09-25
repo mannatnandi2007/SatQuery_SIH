@@ -12,6 +12,14 @@ from typing import Optional, List, Dict, Any
 from fastapi import FastAPI, Request, File, UploadFile, Form
 from pydantic import BaseModel
 from PIL import Image
+from dotenv import load_dotenv
+
+# Load environment variables
+_env_path = os.path.join(os.path.dirname(__file__), ".env")
+if os.path.exists(_env_path):
+    load_dotenv(_env_path)
+else:
+    load_dotenv()
 
 app = FastAPI(
     title="SatQuery AI - Fine-Tuned RS-VLM Specialist",

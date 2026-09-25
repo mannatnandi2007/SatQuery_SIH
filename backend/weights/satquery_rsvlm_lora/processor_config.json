@@ -15,7 +15,9 @@
       0.26130258,
       0.27577711
     ],
+    "max_pixels": 401408,
     "merge_size": 2,
+    "min_pixels": 200704,
     "patch_size": 14,
     "resample": 3,
     "rescale_factor": 0.00392156862745098,

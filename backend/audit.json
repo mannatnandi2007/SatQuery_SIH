@@ -19475,6 +19475,2355 @@
         }
       ],
       "total_duration_ms": 3577
+    },
+    {
+      "query_id": "b94789e7f7014944",
+      "timestamp": "2026-09-24T04:20:39.189831+00:00",
+      "query": {
+        "text": "analyse this image count the buildings",
+        "images": [
+          "airport_runway.jpg"
+        ]
+      },
+      "compatibility": {
+        "valid": true,
+        "reason": null,
+        "detected_intent": "single_image_vqa",
+        "gsd_metadata": [
+          {
+            "detected_gsd_m": 0.5,
+            "sensor_family": "WorldView / Aerial (0.5m Very High Res)",
+            "crs": "EPSG:4326 (WGS84)",
+            "width": 1024,
+            "height": 1024,
+            "is_geotiff": false,
+            "scale_factor_to_canonical": 0.05,
+            "normalization_applied": "anti_aliased_downsample"
+          }
+        ],
+        "gsd_ratio": null,
+        "gsd_warning": null
+      },
+      "routing": {
+        "intent": "single_image_vqa",
+        "specialist": "RS-VLM"
+      },
+      "specialist": {
+        "model": "Processed by Local RS Vision Engine (Multi-Spectral CV Specialist)",
+        "confidence": 0.932,
+        "evidence_type": "bbox"
+      },
+      "annotation_set": [
+        {
+          "layer_id": "grounded_regions",
+          "reasoning": "grounding",
+          "color": "#00E5FF",
+          "boxes": [
+            {
+              "id": 1,
+              "bbox": [
+                20.0,
+                20.0,
+                80.0,
+                80.0
+              ],
+              "label": "Structure",
+              "confidence": 0.932
+            }
+          ]
+        }
+      ],
+      "suggestion_log": {
+        "suggestions_offered": [
+          {
+            "text": "Show me where the buildable greenfield terrain are located.",
+            "task_type": "ground_region"
+          },
+          {
+            "text": "Describe the surrounding land cover and landscape context.",
+            "task_type": "caption_scene"
+          }
+        ],
+        "clicked_at": "2026-09-24T04:22:52.891482+00:00",
+        "clicked_suggestion": "Show me where the buildable greenfield terrain are located."
+      },
+      "verification_outcome": {
+        "evidence_sufficient": true,
+        "human_review": false,
+        "verification_status": "verified"
+      },
+      "trace": [
+        {
+          "stage": "Compatibility Check",
+          "status": "ok",
+          "duration_ms": 92,
+          "detail": "Validated 1 image(s) for intent: single_image_vqa"
+        },
+        {
+          "stage": "Routing",
+          "status": "ok",
+          "duration_ms": 0,
+          "detail": "Intent: single_image_vqa → Selected Specialist: RS-VLM"
+        },
+        {
+          "stage": "Analyzing",
+          "status": "ok",
+          "duration_ms": 3230,
+          "detail": "Processed by Local RS Vision Engine (Multi-Spectral CV Specialist)"
+        },
+        {
+          "stage": "Evidence Fusion",
+          "status": "ok",
+          "duration_ms": 0,
+          "detail": "Fused 1 layer(s) with 1 deduplicated box(es)"
+        },
+        {
+          "stage": "Building Evidence",
+          "status": "ok",
+          "duration_ms": 807,
+          "detail": "Rendered multi-layer grounding overlay with 1 boxes and legend"
+        },
+        {
+          "stage": "Confidence Scoring",
+          "status": "ok",
+          "duration_ms": 0,
+          "detail": "Score: 0.932 (High) | Review: PASSED"
+        },
+        {
+          "stage": "Next-Query Recommendation",
+          "status": "ok",
+          "duration_ms": 0,
+          "detail": "Generated 2 grounded follow-up suggestion(s)"
+        },
+        {
+          "stage": "Report Generation",
+          "status": "ok",
+          "duration_ms": 2661,
+          "detail": "Report saved: b94789e7f7014944"
+        }
+      ],
+      "total_duration_ms": 6790
+    },
+    {
+      "query_id": "d1e60b36150c4adc",
+      "timestamp": "2026-09-24T04:22:57.736345+00:00",
+      "query": {
+        "text": "Show me where the buildable greenfield terrain are located.",
+        "images": [
+          "airport_runway.jpg"
+        ]
+      },
+      "compatibility": {
+        "valid": true,
+        "reason": null,
+        "detected_intent": "single_image_vqa",
+        "gsd_metadata": [
+          {
+            "detected_gsd_m": 0.5,
+            "sensor_family": "WorldView / Aerial (0.5m Very High Res)",
+            "crs": "EPSG:4326 (WGS84)",
+            "width": 1024,
+            "height": 1024,
+            "is_geotiff": false,
+            "scale_factor_to_canonical": 0.05,
+            "normalization_applied": "anti_aliased_downsample"
+          }
+        ],
+        "gsd_ratio": null,
+        "gsd_warning": null
+      },
+      "routing": {
+        "intent": "single_image_vqa",
+        "specialist": "RS-VLM"
+      },
+      "specialist": {
+        "model": "Processed by Local RS Vision Engine (Multi-Spectral CV Specialist)",
+        "confidence": 0.932,
+        "evidence_type": "bbox"
+      },
+      "annotation_set": [
+        {
+          "layer_id": "grounded_parcels",
+          "reasoning": "grounding",
+          "color": "#00E5FF",
+          "boxes": [
+            {
+              "id": 1,
+              "bbox": [
+                0.0,
+                76.7,
+                6.0,
+                89.7
+              ],
+              "label": "Agricultural Parcel",
+              "confidence": 0.93
+            },
+            {
+              "id": 2,
+              "bbox": [
+                0.0,
+                3.4,
+                7.3,
+                14.7
+              ],
+              "label": "Agricultural Parcel",
+              "confidence": 0.92
+            },
+            {
+              "id": 3,
+              "bbox": [
+                0.0,
+                14.0,
+                6.9,
+                21.8
+              ],
+              "label": "Agricultural Parcel",
+              "confidence": 0.9
+            },
+            {
+              "id": 4,
+              "bbox": [
+                6.0,
+                4.4,
+                24.9,
+                17.4
+              ],
+              "label": "Agricultural Parcel",
+              "confidence": 0.89
+            },
+            {
+              "id": 5,
+              "bbox": [
+                5.0,
+                58.1,
+                13.2,
+                70.3
+              ],
+              "label": "Agricultural Parcel",
+              "confidence": 0.87
+            },
+            {
+              "id": 6,
+              "bbox": [
+                63.3,
+                21.7,
+                74.0,
+                31.4
+              ],
+              "label": "Agricultural Parcel",
+              "confidence": 0.86
+            },
+            {
+              "id": 7,
+              "bbox": [
+                2.0,
+                22.0,
+                7.7,
+                29.7
+              ],
+              "label": "Agricultural Parcel",
+              "confidence": 0.84
+            },
+            {
+              "id": 8,
+              "bbox": [
+                79.9,
+                94.6,
+                87.9,
+                98.8
+              ],
+              "label": "Agricultural Parcel",
+              "confidence": 0.83
+            }
+          ]
+        }
+      ],
+      "suggestion_log": {
+        "suggestions_offered": [
+          {
+            "text": "Show me where the 8 distinct are located.",
+            "task_type": "ground_region"
+          },
+          {
+            "text": "Describe the surrounding land cover and landscape context.",
+            "task_type": "caption_scene"
+          }
+        ],
+        "clicked_at": null,
+        "clicked_suggestion": null
+      },
+      "verification_outcome": {
+        "evidence_sufficient": true,
+        "human_review": false,
+        "verification_status": "verified"
+      },
+      "trace": [
+        {
+          "stage": "Compatibility Check",
+          "status": "ok",
+          "duration_ms": 0,
+          "detail": "Validated 1 image(s) for intent: single_image_vqa"
+        },
+        {
+          "stage": "Routing",
+          "status": "ok",
+          "duration_ms": 0,
+          "detail": "Intent: single_image_vqa → Selected Specialist: RS-VLM"
+        },
+        {
+          "stage": "Analyzing",
+          "status": "ok",
+          "duration_ms": 2311,
+          "detail": "Processed by Local RS Vision Engine (Multi-Spectral CV Specialist)"
+        },
+        {
+          "stage": "Evidence Fusion",
+          "status": "ok",
+          "duration_ms": 0,
+          "detail": "Fused 1 layer(s) with 8 deduplicated box(es)"
+        },
+        {
+          "stage": "Building Evidence",
+          "status": "ok",
+          "duration_ms": 461,
+          "detail": "Rendered multi-layer grounding overlay with 8 boxes and legend"
+        },
+        {
+          "stage": "Confidence Scoring",
+          "status": "ok",
+          "duration_ms": 0,
+          "detail": "Score: 0.932 (High) | Review: PASSED"
+        },
+        {
+          "stage": "Next-Query Recommendation",
+          "status": "ok",
+          "duration_ms": 0,
+          "detail": "Generated 2 grounded follow-up suggestion(s)"
+        },
+        {
+          "stage": "Report Generation",
+          "status": "ok",
+          "duration_ms": 1959,
+          "detail": "Report saved: d1e60b36150c4adc"
+        }
+      ],
+      "total_duration_ms": 4731
+    },
+    {
+      "query_id": "0413a3c8420e4f92",
+      "timestamp": "2026-09-24T05:58:53.398533+00:00",
+      "query": {
+        "text": "analyse the image find buildable things",
+        "images": [
+          "airport_runway.jpg"
+        ]
+      },
+      "compatibility": {
+        "valid": true,
+        "reason": null,
+        "detected_intent": "single_image_vqa",
+        "gsd_metadata": [
+          {
+            "detected_gsd_m": 0.5,
+            "sensor_family": "WorldView / Aerial (0.5m Very High Res)",
+            "crs": "EPSG:4326 (WGS84)",
+            "width": 1024,
+            "height": 1024,
+            "is_geotiff": false,
+            "scale_factor_to_canonical": 0.05,
+            "normalization_applied": "anti_aliased_downsample"
+          }
+        ],
+        "gsd_ratio": null,
+        "gsd_warning": null
+      },
+      "routing": {
+        "intent": "single_image_vqa",
+        "specialist": "RS-VLM"
+      },
+      "specialist": {
+        "model": "Processed by Local RS Vision Engine (Multi-Spectral CV Specialist)",
+        "confidence": 0.932,
+        "evidence_type": "bbox"
+      },
+      "annotation_set": [
+        {
+          "layer_id": "grounded_regions",
+          "reasoning": "grounding",
+          "color": "#00E5FF",
+          "boxes": [
+            {
+              "id": 1,
+              "bbox": [
+                20.0,
+                20.0,
+                80.0,
+                80.0
+              ],
+              "label": "Structure",
+              "confidence": 0.932
+            }
+          ]
+        }
+      ],
+      "suggestion_log": {
+        "suggestions_offered": [
+          {
+            "text": "Show me where the 1 distinct are located.",
+            "task_type": "ground_region"
+          },
+          {
+            "text": "Describe the surrounding land cover and landscape context.",
+            "task_type": "caption_scene"
+          }
+        ],
+        "clicked_at": null,
+        "clicked_suggestion": null
+      },
+      "verification_outcome": {
+        "evidence_sufficient": true,
+        "human_review": false,
+        "verification_status": "verified"
+      },
+      "trace": [
+        {
+          "stage": "Compatibility Check",
+          "status": "ok",
+          "duration_ms": 322,
+          "detail": "Validated 1 image(s) for intent: single_image_vqa"
+        },
+        {
+          "stage": "Routing",
+          "status": "ok",
+          "duration_ms": 0,
+          "detail": "Intent: single_image_vqa → Selected Specialist: RS-VLM"
+        },
+        {
+          "stage": "Analyzing",
+          "status": "ok",
+          "duration_ms": 2848,
+          "detail": "Processed by Local RS Vision Engine (Multi-Spectral CV Specialist)"
+        },
+        {
+          "stage": "Evidence Fusion",
+          "status": "ok",
+          "duration_ms": 0,
+          "detail": "Fused 1 layer(s) with 1 deduplicated box(es)"
+        },
+        {
+          "stage": "Building Evidence",
+          "status": "ok",
+          "duration_ms": 532,
+          "detail": "Rendered multi-layer grounding overlay with 1 boxes and legend"
+        },
+        {
+          "stage": "Confidence Scoring",
+          "status": "ok",
+          "duration_ms": 0,
+          "detail": "Score: 0.932 (High) | Review: PASSED"
+        },
+        {
+          "stage": "Next-Query Recommendation",
+          "status": "ok",
+          "duration_ms": 1,
+          "detail": "Generated 2 grounded follow-up suggestion(s)"
+        },
+        {
+          "stage": "Report Generation",
+          "status": "ok",
+          "duration_ms": 2097,
+          "detail": "Report saved: 0413a3c8420e4f92"
+        }
+      ],
+      "total_duration_ms": 5800
+    },
+    {
+      "query_id": "ceee547bccd44f6f",
+      "timestamp": "2026-09-24T06:00:07.167281+00:00",
+      "query": {
+        "text": "analyse vegetation",
+        "images": [
+          "farm_river.jpg"
+        ]
+      },
+      "compatibility": {
+        "valid": true,
+        "reason": null,
+        "detected_intent": "single_image_vqa",
+        "gsd_metadata": [
+          {
+            "detected_gsd_m": 10.0,
+            "sensor_family": "Standard Optical Scene (Estimated ~10m GSD)",
+            "crs": "EPSG:4326 (WGS84)",
+            "width": 1024,
+            "height": 1024,
+            "is_geotiff": false,
+            "scale_factor_to_canonical": 1.0,
+            "normalization_applied": "identity"
+          }
+        ],
+        "gsd_ratio": null,
+        "gsd_warning": null
+      },
+      "routing": {
+        "intent": "single_image_vqa",
+        "specialist": "RS-VLM"
+      },
+      "specialist": {
+        "model": "Processed by Local RS Vision Engine (Multi-Spectral CV Specialist)",
+        "confidence": 0.931,
+        "evidence_type": "bbox"
+      },
+      "annotation_set": [
+        {
+          "layer_id": "grounded_parcels",
+          "reasoning": "grounding",
+          "color": "#00E5FF",
+          "boxes": [
+            {
+              "id": 1,
+              "bbox": [
+                82.9,
+                0.0,
+                91.9,
+                15.8
+              ],
+              "label": "Agricultural Parcel",
+              "confidence": 0.93
+            },
+            {
+              "id": 2,
+              "bbox": [
+                49.8,
+                2.8,
+                58.5,
+                16.4
+              ],
+              "label": "Agricultural Parcel",
+              "confidence": 0.92
+            },
+            {
+              "id": 3,
+              "bbox": [
+                39.8,
+                79.5,
+                50.2,
+                89.8
+              ],
+              "label": "Agricultural Parcel",
+              "confidence": 0.9
+            },
+            {
+              "id": 4,
+              "bbox": [
+                82.8,
+                16.2,
+                92.1,
+                25.1
+              ],
+              "label": "Agricultural Parcel",
+              "confidence": 0.89
+            },
+            {
+              "id": 5,
+              "bbox": [
+                88.4,
+                7.8,
+                100.0,
+                16.5
+              ],
+              "label": "Agricultural Parcel",
+              "confidence": 0.87
+            },
+            {
+              "id": 6,
+              "bbox": [
+                8.0,
+                32.8,
+                17.1,
+                41.7
+              ],
+              "label": "Agricultural Parcel",
+              "confidence": 0.86
+            },
+            {
+              "id": 7,
+              "bbox": [
+                74.6,
+                24.4,
+                83.3,
+                33.4
+              ],
+              "label": "Agricultural Parcel",
+              "confidence": 0.84
+            },
+            {
+              "id": 8,
+              "bbox": [
+                8.1,
+                41.4,
+                16.9,
+                50.3
+              ],
+              "label": "Agricultural Parcel",
+              "confidence": 0.83
+            }
+          ]
+        }
+      ],
+      "suggestion_log": {
+        "suggestions_offered": [
+          {
+            "text": "Show me where the 8 agricultural are located.",
+            "task_type": "ground_region"
+          },
+          {
+            "text": "Describe the surrounding land cover and landscape context.",
+            "task_type": "caption_scene"
+          }
+        ],
+        "clicked_at": null,
+        "clicked_suggestion": null
+      },
+      "verification_outcome": {
+        "evidence_sufficient": true,
+        "human_review": false,
+        "verification_status": "verified"
+      },
+      "trace": [
+        {
+          "stage": "Compatibility Check",
+          "status": "ok",
+          "duration_ms": 10,
+          "detail": "Validated 1 image(s) for intent: single_image_vqa"
+        },
+        {
+          "stage": "Routing",
+          "status": "ok",
+          "duration_ms": 0,
+          "detail": "Intent: single_image_vqa → Selected Specialist: RS-VLM"
+        },
+        {
+          "stage": "Analyzing",
+          "status": "ok",
+          "duration_ms": 2485,
+          "detail": "Processed by Local RS Vision Engine (Multi-Spectral CV Specialist)"
+        },
+        {
+          "stage": "Evidence Fusion",
+          "status": "ok",
+          "duration_ms": 0,
+          "detail": "Fused 1 layer(s) with 8 deduplicated box(es)"
+        },
+        {
+          "stage": "Building Evidence",
+          "status": "ok",
+          "duration_ms": 466,
+          "detail": "Rendered multi-layer grounding overlay with 8 boxes and legend"
+        },
+        {
+          "stage": "Confidence Scoring",
+          "status": "ok",
+          "duration_ms": 0,
+          "detail": "Score: 0.931 (High) | Review: PASSED"
+        },
+        {
+          "stage": "Next-Query Recommendation",
+          "status": "ok",
+          "duration_ms": 0,
+          "detail": "Generated 2 grounded follow-up suggestion(s)"
+        },
+        {
+          "stage": "Report Generation",
+          "status": "ok",
+          "duration_ms": 1968,
+          "detail": "Report saved: ceee547bccd44f6f"
+        }
+      ],
+      "total_duration_ms": 4929
+    },
+    {
+      "query_id": "a778cbc5fe904eaf",
+      "timestamp": "2026-09-24T06:00:47.593425+00:00",
+      "query": {
+        "text": "analyse vegetation",
+        "images": [
+          "farm_river.jpg"
+        ]
+      },
+      "compatibility": {
+        "valid": true,
+        "reason": null,
+        "detected_intent": "single_image_vqa",
+        "gsd_metadata": [
+          {
+            "detected_gsd_m": 10.0,
+            "sensor_family": "Standard Optical Scene (Estimated ~10m GSD)",
+            "crs": "EPSG:4326 (WGS84)",
+            "width": 1024,
+            "height": 1024,
+            "is_geotiff": false,
+            "scale_factor_to_canonical": 1.0,
+            "normalization_applied": "identity"
+          }
+        ],
+        "gsd_ratio": null,
+        "gsd_warning": null
+      },
+      "routing": {
+        "intent": "single_image_vqa",
+        "specialist": "RS-VLM"
+      },
+      "specialist": {
+        "model": "Processed by Local RS Vision Engine (Multi-Spectral CV Specialist)",
+        "confidence": 0.931,
+        "evidence_type": "bbox"
+      },
+      "annotation_set": [
+        {
+          "layer_id": "grounded_parcels",
+          "reasoning": "grounding",
+          "color": "#00E5FF",
+          "boxes": [
+            {
+              "id": 1,
+              "bbox": [
+                82.9,
+                0.0,
+                91.9,
+                15.8
+              ],
+              "label": "Agricultural Parcel",
+              "confidence": 0.93
+            },
+            {
+              "id": 2,
+              "bbox": [
+                49.8,
+                2.8,
+                58.5,
+                16.4
+              ],
+              "label": "Agricultural Parcel",
+              "confidence": 0.92
+            },
+            {
+              "id": 3,
+              "bbox": [
+                39.8,
+                79.5,
+                50.2,
+                89.8
+              ],
+              "label": "Agricultural Parcel",
+              "confidence": 0.9
+            },
+            {
+              "id": 4,
+              "bbox": [
+                82.8,
+                16.2,
+                92.1,
+                25.1
+              ],
+              "label": "Agricultural Parcel",
+              "confidence": 0.89
+            },
+            {
+              "id": 5,
+              "bbox": [
+                88.4,
+                7.8,
+                100.0,
+                16.5
+              ],
+              "label": "Agricultural Parcel",
+              "confidence": 0.87
+            },
+            {
+              "id": 6,
+              "bbox": [
+                8.0,
+                32.8,
+                17.1,
+                41.7
+              ],
+              "label": "Agricultural Parcel",
+              "confidence": 0.86
+            },
+            {
+              "id": 7,
+              "bbox": [
+                74.6,
+                24.4,
+                83.3,
+                33.4
+              ],
+              "label": "Agricultural Parcel",
+              "confidence": 0.84
+            },
+            {
+              "id": 8,
+              "bbox": [
+                8.1,
+                41.4,
+                16.9,
+                50.3
+              ],
+              "label": "Agricultural Parcel",
+              "confidence": 0.83
+            }
+          ]
+        }
+      ],
+      "suggestion_log": {
+        "suggestions_offered": [
+          {
+            "text": "Show me where the 8 agricultural are located.",
+            "task_type": "ground_region"
+          },
+          {
+            "text": "Describe the surrounding land cover and landscape context.",
+            "task_type": "caption_scene"
+          }
+        ],
+        "clicked_at": "2026-09-24T06:00:52.188594+00:00",
+        "clicked_suggestion": "Describe the surrounding land cover and landscape context."
+      },
+      "verification_outcome": {
+        "evidence_sufficient": true,
+        "human_review": false,
+        "verification_status": "verified"
+      },
+      "trace": [
+        {
+          "stage": "Compatibility Check",
+          "status": "ok",
+          "duration_ms": 1,
+          "detail": "Validated 1 image(s) for intent: single_image_vqa"
+        },
+        {
+          "stage": "Routing",
+          "status": "ok",
+          "duration_ms": 0,
+          "detail": "Intent: single_image_vqa → Selected Specialist: RS-VLM"
+        },
+        {
+          "stage": "Analyzing",
+          "status": "ok",
+          "duration_ms": 2480,
+          "detail": "Processed by Local RS Vision Engine (Multi-Spectral CV Specialist)"
+        },
+        {
+          "stage": "Evidence Fusion",
+          "status": "ok",
+          "duration_ms": 0,
+          "detail": "Fused 1 layer(s) with 8 deduplicated box(es)"
+        },
+        {
+          "stage": "Building Evidence",
+          "status": "ok",
+          "duration_ms": 463,
+          "detail": "Rendered multi-layer grounding overlay with 8 boxes and legend"
+        },
+        {
+          "stage": "Confidence Scoring",
+          "status": "ok",
+          "duration_ms": 0,
+          "detail": "Score: 0.931 (High) | Review: PASSED"
+        },
+        {
+          "stage": "Next-Query Recommendation",
+          "status": "ok",
+          "duration_ms": 0,
+          "detail": "Generated 2 grounded follow-up suggestion(s)"
+        },
+        {
+          "stage": "Report Generation",
+          "status": "ok",
+          "duration_ms": 2094,
+          "detail": "Report saved: a778cbc5fe904eaf"
+        }
+      ],
+      "total_duration_ms": 5038
+    },
+    {
+      "query_id": "ccd8f0e540ce4e42",
+      "timestamp": "2026-09-24T06:00:57.255198+00:00",
+      "query": {
+        "text": "Describe the surrounding land cover and landscape context.",
+        "images": [
+          "farm_river.jpg"
+        ]
+      },
+      "compatibility": {
+        "valid": true,
+        "reason": null,
+        "detected_intent": "single_image_vqa",
+        "gsd_metadata": [
+          {
+            "detected_gsd_m": 10.0,
+            "sensor_family": "Standard Optical Scene (Estimated ~10m GSD)",
+            "crs": "EPSG:4326 (WGS84)",
+            "width": 1024,
+            "height": 1024,
+            "is_geotiff": false,
+            "scale_factor_to_canonical": 1.0,
+            "normalization_applied": "identity"
+          }
+        ],
+        "gsd_ratio": null,
+        "gsd_warning": null
+      },
+      "routing": {
+        "intent": "single_image_vqa",
+        "specialist": "RS-VLM"
+      },
+      "specialist": {
+        "model": "Processed by Local RS Vision Engine (Multi-Spectral CV Specialist)",
+        "confidence": 0.931,
+        "evidence_type": "bbox"
+      },
+      "annotation_set": [
+        {
+          "layer_id": "grounded_parcels",
+          "reasoning": "grounding",
+          "color": "#00E5FF",
+          "boxes": [
+            {
+              "id": 1,
+              "bbox": [
+                82.9,
+                0.0,
+                91.9,
+                15.8
+              ],
+              "label": "Vegetation Parcel",
+              "confidence": 0.93
+            },
+            {
+              "id": 2,
+              "bbox": [
+                49.8,
+                2.8,
+                58.5,
+                16.4
+              ],
+              "label": "Vegetation Parcel",
+              "confidence": 0.92
+            },
+            {
+              "id": 3,
+              "bbox": [
+                39.8,
+                79.5,
+                50.2,
+                89.8
+              ],
+              "label": "Vegetation Parcel",
+              "confidence": 0.9
+            },
+            {
+              "id": 4,
+              "bbox": [
+                82.8,
+                16.2,
+                92.1,
+                25.1
+              ],
+              "label": "Vegetation Parcel",
+              "confidence": 0.89
+            },
+            {
+              "id": 5,
+              "bbox": [
+                88.4,
+                7.8,
+                100.0,
+                16.5
+              ],
+              "label": "Vegetation Parcel",
+              "confidence": 0.87
+            },
+            {
+              "id": 6,
+              "bbox": [
+                8.0,
+                32.8,
+                17.1,
+                41.7
+              ],
+              "label": "Vegetation Parcel",
+              "confidence": 0.86
+            },
+            {
+              "id": 7,
+              "bbox": [
+                74.6,
+                24.4,
+                83.3,
+                33.4
+              ],
+              "label": "Vegetation Parcel",
+              "confidence": 0.84
+            },
+            {
+              "id": 8,
+              "bbox": [
+                8.1,
+                41.4,
+                16.9,
+                50.3
+              ],
+              "label": "Vegetation Parcel",
+              "confidence": 0.83
+            }
+          ]
+        }
+      ],
+      "suggestion_log": {
+        "suggestions_offered": [
+          {
+            "text": "Show me where the 8 vegetation are located.",
+            "task_type": "ground_region"
+          },
+          {
+            "text": "Describe the surrounding land cover and landscape context.",
+            "task_type": "caption_scene"
+          }
+        ],
+        "clicked_at": "2026-09-24T06:01:00.323254+00:00",
+        "clicked_suggestion": "Show me where the 8 vegetation are located."
+      },
+      "verification_outcome": {
+        "evidence_sufficient": true,
+        "human_review": false,
+        "verification_status": "verified"
+      },
+      "trace": [
+        {
+          "stage": "Compatibility Check",
+          "status": "ok",
+          "duration_ms": 1,
+          "detail": "Validated 1 image(s) for intent: single_image_vqa"
+        },
+        {
+          "stage": "Routing",
+          "status": "ok",
+          "duration_ms": 0,
+          "detail": "Intent: single_image_vqa → Selected Specialist: RS-VLM"
+        },
+        {
+          "stage": "Analyzing",
+          "status": "ok",
+          "duration_ms": 2482,
+          "detail": "Processed by Local RS Vision Engine (Multi-Spectral CV Specialist)"
+        },
+        {
+          "stage": "Evidence Fusion",
+          "status": "ok",
+          "duration_ms": 0,
+          "detail": "Fused 1 layer(s) with 8 deduplicated box(es)"
+        },
+        {
+          "stage": "Building Evidence",
+          "status": "ok",
+          "duration_ms": 408,
+          "detail": "Rendered multi-layer grounding overlay with 8 boxes and legend"
+        },
+        {
+          "stage": "Confidence Scoring",
+          "status": "ok",
+          "duration_ms": 0,
+          "detail": "Score: 0.931 (High) | Review: PASSED"
+        },
+        {
+          "stage": "Next-Query Recommendation",
+          "status": "ok",
+          "duration_ms": 0,
+          "detail": "Generated 2 grounded follow-up suggestion(s)"
+        },
+        {
+          "stage": "Report Generation",
+          "status": "ok",
+          "duration_ms": 2023,
+          "detail": "Report saved: ccd8f0e540ce4e42"
+        }
+      ],
+      "total_duration_ms": 4914
+    },
+    {
+      "query_id": "1f203ba37aef4105",
+      "timestamp": "2026-09-24T06:01:05.338364+00:00",
+      "query": {
+        "text": "Show me where the 8 vegetation are located.",
+        "images": [
+          "farm_river.jpg"
+        ]
+      },
+      "compatibility": {
+        "valid": true,
+        "reason": null,
+        "detected_intent": "single_image_vqa",
+        "gsd_metadata": [
+          {
+            "detected_gsd_m": 10.0,
+            "sensor_family": "Standard Optical Scene (Estimated ~10m GSD)",
+            "crs": "EPSG:4326 (WGS84)",
+            "width": 1024,
+            "height": 1024,
+            "is_geotiff": false,
+            "scale_factor_to_canonical": 1.0,
+            "normalization_applied": "identity"
+          }
+        ],
+        "gsd_ratio": null,
+        "gsd_warning": null
+      },
+      "routing": {
+        "intent": "single_image_vqa",
+        "specialist": "RS-VLM"
+      },
+      "specialist": {
+        "model": "Processed by Local RS Vision Engine (Multi-Spectral CV Specialist)",
+        "confidence": 0.931,
+        "evidence_type": "bbox"
+      },
+      "annotation_set": [
+        {
+          "layer_id": "grounded_parcels",
+          "reasoning": "grounding",
+          "color": "#00E5FF",
+          "boxes": [
+            {
+              "id": 1,
+              "bbox": [
+                82.9,
+                0.0,
+                91.9,
+                15.8
+              ],
+              "label": "Agricultural Parcel",
+              "confidence": 0.93
+            },
+            {
+              "id": 2,
+              "bbox": [
+                49.8,
+                2.8,
+                58.5,
+                16.4
+              ],
+              "label": "Agricultural Parcel",
+              "confidence": 0.92
+            },
+            {
+              "id": 3,
+              "bbox": [
+                39.8,
+                79.5,
+                50.2,
+                89.8
+              ],
+              "label": "Agricultural Parcel",
+              "confidence": 0.9
+            },
+            {
+              "id": 4,
+              "bbox": [
+                82.8,
+                16.2,
+                92.1,
+                25.1
+              ],
+              "label": "Agricultural Parcel",
+              "confidence": 0.89
+            },
+            {
+              "id": 5,
+              "bbox": [
+                88.4,
+                7.8,
+                100.0,
+                16.5
+              ],
+              "label": "Agricultural Parcel",
+              "confidence": 0.87
+            },
+            {
+              "id": 6,
+              "bbox": [
+                8.0,
+                32.8,
+                17.1,
+                41.7
+              ],
+              "label": "Agricultural Parcel",
+              "confidence": 0.86
+            },
+            {
+              "id": 7,
+              "bbox": [
+                74.6,
+                24.4,
+                83.3,
+                33.4
+              ],
+              "label": "Agricultural Parcel",
+              "confidence": 0.84
+            },
+            {
+              "id": 8,
+              "bbox": [
+                8.1,
+                41.4,
+                16.9,
+                50.3
+              ],
+              "label": "Agricultural Parcel",
+              "confidence": 0.83
+            }
+          ]
+        }
+      ],
+      "suggestion_log": {
+        "suggestions_offered": [
+          {
+            "text": "Show me where the 8 distinct are located.",
+            "task_type": "ground_region"
+          },
+          {
+            "text": "Describe the surrounding land cover and landscape context.",
+            "task_type": "caption_scene"
+          }
+        ],
+        "clicked_at": "2026-09-24T06:01:11.813239+00:00",
+        "clicked_suggestion": "Describe the surrounding land cover and landscape context."
+      },
+      "verification_outcome": {
+        "evidence_sufficient": true,
+        "human_review": false,
+        "verification_status": "verified"
+      },
+      "trace": [
+        {
+          "stage": "Compatibility Check",
+          "status": "ok",
+          "duration_ms": 1,
+          "detail": "Validated 1 image(s) for intent: single_image_vqa"
+        },
+        {
+          "stage": "Routing",
+          "status": "ok",
+          "duration_ms": 1,
+          "detail": "Intent: single_image_vqa → Selected Specialist: RS-VLM"
+        },
+        {
+          "stage": "Analyzing",
+          "status": "ok",
+          "duration_ms": 2433,
+          "detail": "Processed by Local RS Vision Engine (Multi-Spectral CV Specialist)"
+        },
+        {
+          "stage": "Evidence Fusion",
+          "status": "ok",
+          "duration_ms": 0,
+          "detail": "Fused 1 layer(s) with 8 deduplicated box(es)"
+        },
+        {
+          "stage": "Building Evidence",
+          "status": "ok",
+          "duration_ms": 445,
+          "detail": "Rendered multi-layer grounding overlay with 8 boxes and legend"
+        },
+        {
+          "stage": "Confidence Scoring",
+          "status": "ok",
+          "duration_ms": 0,
+          "detail": "Score: 0.931 (High) | Review: PASSED"
+        },
+        {
+          "stage": "Next-Query Recommendation",
+          "status": "ok",
+          "duration_ms": 0,
+          "detail": "Generated 2 grounded follow-up suggestion(s)"
+        },
+        {
+          "stage": "Report Generation",
+          "status": "ok",
+          "duration_ms": 1982,
+          "detail": "Report saved: 1f203ba37aef4105"
+        }
+      ],
+      "total_duration_ms": 4862
+    },
+    {
+      "query_id": "11462eeb94b24650",
+      "timestamp": "2026-09-24T06:01:16.946638+00:00",
+      "query": {
+        "text": "Describe the surrounding land cover and landscape context.",
+        "images": [
+          "farm_river.jpg"
+        ]
+      },
+      "compatibility": {
+        "valid": true,
+        "reason": null,
+        "detected_intent": "single_image_vqa",
+        "gsd_metadata": [
+          {
+            "detected_gsd_m": 10.0,
+            "sensor_family": "Standard Optical Scene (Estimated ~10m GSD)",
+            "crs": "EPSG:4326 (WGS84)",
+            "width": 1024,
+            "height": 1024,
+            "is_geotiff": false,
+            "scale_factor_to_canonical": 1.0,
+            "normalization_applied": "identity"
+          }
+        ],
+        "gsd_ratio": null,
+        "gsd_warning": null
+      },
+      "routing": {
+        "intent": "single_image_vqa",
+        "specialist": "RS-VLM"
+      },
+      "specialist": {
+        "model": "Processed by Local RS Vision Engine (Multi-Spectral CV Specialist)",
+        "confidence": 0.931,
+        "evidence_type": "bbox"
+      },
+      "annotation_set": [
+        {
+          "layer_id": "grounded_parcels",
+          "reasoning": "grounding",
+          "color": "#00E5FF",
+          "boxes": [
+            {
+              "id": 1,
+              "bbox": [
+                82.9,
+                0.0,
+                91.9,
+                15.8
+              ],
+              "label": "Vegetation Parcel",
+              "confidence": 0.93
+            },
+            {
+              "id": 2,
+              "bbox": [
+                49.8,
+                2.8,
+                58.5,
+                16.4
+              ],
+              "label": "Vegetation Parcel",
+              "confidence": 0.92
+            },
+            {
+              "id": 3,
+              "bbox": [
+                39.8,
+                79.5,
+                50.2,
+                89.8
+              ],
+              "label": "Vegetation Parcel",
+              "confidence": 0.9
+            },
+            {
+              "id": 4,
+              "bbox": [
+                82.8,
+                16.2,
+                92.1,
+                25.1
+              ],
+              "label": "Vegetation Parcel",
+              "confidence": 0.89
+            },
+            {
+              "id": 5,
+              "bbox": [
+                88.4,
+                7.8,
+                100.0,
+                16.5
+              ],
+              "label": "Vegetation Parcel",
+              "confidence": 0.87
+            },
+            {
+              "id": 6,
+              "bbox": [
+                8.0,
+                32.8,
+                17.1,
+                41.7
+              ],
+              "label": "Vegetation Parcel",
+              "confidence": 0.86
+            },
+            {
+              "id": 7,
+              "bbox": [
+                74.6,
+                24.4,
+                83.3,
+                33.4
+              ],
+              "label": "Vegetation Parcel",
+              "confidence": 0.84
+            },
+            {
+              "id": 8,
+              "bbox": [
+                8.1,
+                41.4,
+                16.9,
+                50.3
+              ],
+              "label": "Vegetation Parcel",
+              "confidence": 0.83
+            }
+          ]
+        }
+      ],
+      "suggestion_log": {
+        "suggestions_offered": [
+          {
+            "text": "Show me where the 8 vegetation are located.",
+            "task_type": "ground_region"
+          },
+          {
+            "text": "Describe the surrounding land cover and landscape context.",
+            "task_type": "caption_scene"
+          }
+        ],
+        "clicked_at": null,
+        "clicked_suggestion": null
+      },
+      "verification_outcome": {
+        "evidence_sufficient": true,
+        "human_review": false,
+        "verification_status": "verified"
+      },
+      "trace": [
+        {
+          "stage": "Compatibility Check",
+          "status": "ok",
+          "duration_ms": 0,
+          "detail": "Validated 1 image(s) for intent: single_image_vqa"
+        },
+        {
+          "stage": "Routing",
+          "status": "ok",
+          "duration_ms": 0,
+          "detail": "Intent: single_image_vqa → Selected Specialist: RS-VLM"
+        },
+        {
+          "stage": "Analyzing",
+          "status": "ok",
+          "duration_ms": 2437,
+          "detail": "Processed by Local RS Vision Engine (Multi-Spectral CV Specialist)"
+        },
+        {
+          "stage": "Evidence Fusion",
+          "status": "ok",
+          "duration_ms": 0,
+          "detail": "Fused 1 layer(s) with 8 deduplicated box(es)"
+        },
+        {
+          "stage": "Building Evidence",
+          "status": "ok",
+          "duration_ms": 406,
+          "detail": "Rendered multi-layer grounding overlay with 8 boxes and legend"
+        },
+        {
+          "stage": "Confidence Scoring",
+          "status": "ok",
+          "duration_ms": 0,
+          "detail": "Score: 0.931 (High) | Review: PASSED"
+        },
+        {
+          "stage": "Next-Query Recommendation",
+          "status": "ok",
+          "duration_ms": 0,
+          "detail": "Generated 2 grounded follow-up suggestion(s)"
+        },
+        {
+          "stage": "Report Generation",
+          "status": "ok",
+          "duration_ms": 2097,
+          "detail": "Report saved: 11462eeb94b24650"
+        }
+      ],
+      "total_duration_ms": 4940
+    },
+    {
+      "query_id": "4109425dd2e44275",
+      "timestamp": "2026-09-24T07:01:00.105141+00:00",
+      "query": {
+        "text": "analyse",
+        "images": [
+          "urban_port.jpg"
+        ]
+      },
+      "compatibility": {
+        "valid": true,
+        "reason": null,
+        "detected_intent": "single_image_vqa",
+        "gsd_metadata": [
+          {
+            "detected_gsd_m": 0.5,
+            "sensor_family": "WorldView / Aerial (0.5m Very High Res)",
+            "crs": "EPSG:4326 (WGS84)",
+            "width": 1024,
+            "height": 1024,
+            "is_geotiff": false,
+            "scale_factor_to_canonical": 0.05,
+            "normalization_applied": "anti_aliased_downsample"
+          }
+        ],
+        "gsd_ratio": null,
+        "gsd_warning": null
+      },
+      "routing": {
+        "intent": "single_image_vqa",
+        "specialist": "RS-VLM"
+      },
+      "specialist": {
+        "model": "Processed by Local RS Vision Engine (Multi-Spectral CV Specialist)",
+        "confidence": 0.941,
+        "evidence_type": "bbox"
+      },
+      "annotation_set": [
+        {
+          "layer_id": "grounded_regions",
+          "reasoning": "grounding",
+          "color": "#00E5FF",
+          "boxes": [
+            {
+              "id": 1,
+              "bbox": [
+                0.0,
+                0.0,
+                100.0,
+                100.0
+              ],
+              "label": "Structure",
+              "confidence": 0.941
+            }
+          ]
+        }
+      ],
+      "suggestion_log": {
+        "suggestions_offered": [
+          {
+            "text": "Show me where the 1 structure are located.",
+            "task_type": "ground_region"
+          },
+          {
+            "text": "Describe the surrounding land cover and landscape context.",
+            "task_type": "caption_scene"
+          }
+        ],
+        "clicked_at": null,
+        "clicked_suggestion": null
+      },
+      "verification_outcome": {
+        "evidence_sufficient": true,
+        "human_review": false,
+        "verification_status": "verified"
+      },
+      "trace": [
+        {
+          "stage": "Compatibility Check",
+          "status": "ok",
+          "duration_ms": 100,
+          "detail": "Validated 1 image(s) for intent: single_image_vqa"
+        },
+        {
+          "stage": "Routing",
+          "status": "ok",
+          "duration_ms": 0,
+          "detail": "Intent: single_image_vqa → Selected Specialist: RS-VLM"
+        },
+        {
+          "stage": "Analyzing",
+          "status": "ok",
+          "duration_ms": 2507,
+          "detail": "Processed by Local RS Vision Engine (Multi-Spectral CV Specialist)"
+        },
+        {
+          "stage": "Evidence Fusion",
+          "status": "ok",
+          "duration_ms": 0,
+          "detail": "Fused 1 layer(s) with 1 deduplicated box(es)"
+        },
+        {
+          "stage": "Building Evidence",
+          "status": "ok",
+          "duration_ms": 550,
+          "detail": "Rendered multi-layer grounding overlay with 1 boxes and legend"
+        },
+        {
+          "stage": "Confidence Scoring",
+          "status": "ok",
+          "duration_ms": 0,
+          "detail": "Score: 0.941 (High) | Review: PASSED"
+        },
+        {
+          "stage": "Next-Query Recommendation",
+          "status": "ok",
+          "duration_ms": 0,
+          "detail": "Generated 2 grounded follow-up suggestion(s)"
+        },
+        {
+          "stage": "Report Generation",
+          "status": "ok",
+          "duration_ms": 2203,
+          "detail": "Report saved: 4109425dd2e44275"
+        }
+      ],
+      "total_duration_ms": 5360
+    },
+    {
+      "query_id": "8fa1ceae24144403",
+      "timestamp": "2026-09-24T15:45:08.506283+00:00",
+      "query": {
+        "text": "Count how many buildings are located in this industrial complex.",
+        "images": [
+          "scene.png"
+        ]
+      },
+      "compatibility": {
+        "valid": true,
+        "reason": null,
+        "detected_intent": "single_image_vqa",
+        "gsd_metadata": [
+          {
+            "detected_gsd_m": 10.0,
+            "sensor_family": "Standard Optical Scene (Estimated ~10m GSD)",
+            "crs": "EPSG:4326 (WGS84)",
+            "width": 256,
+            "height": 256,
+            "is_geotiff": false,
+            "scale_factor_to_canonical": 1.0,
+            "normalization_applied": "identity"
+          }
+        ],
+        "gsd_ratio": null,
+        "gsd_warning": null
+      },
+      "routing": {
+        "intent": "single_image_vqa",
+        "specialist": "RS-VLM"
+      },
+      "specialist": {
+        "model": "Processed by Local RS Vision Engine (Multi-Spectral CV Specialist)",
+        "confidence": 0.85,
+        "evidence_type": "bbox"
+      },
+      "annotation_set": [
+        {
+          "layer_id": "grounded_regions",
+          "reasoning": "grounding",
+          "color": "#00E5FF",
+          "boxes": [
+            {
+              "id": 1,
+              "bbox": [
+                20.0,
+                20.0,
+                80.0,
+                80.0
+              ],
+              "label": "Structure",
+              "confidence": 0.85
+            }
+          ]
+        }
+      ],
+      "suggestion_log": {
+        "suggestions_offered": [
+          {
+            "text": "Show me where the buildable greenfield terrain are located.",
+            "task_type": "ground_region"
+          },
+          {
+            "text": "Describe the surrounding land cover and landscape context.",
+            "task_type": "caption_scene"
+          }
+        ],
+        "clicked_at": null,
+        "clicked_suggestion": null
+      },
+      "verification_outcome": {
+        "evidence_sufficient": true,
+        "human_review": false,
+        "verification_status": "verified"
+      },
+      "trace": [
+        {
+          "stage": "Compatibility Check",
+          "status": "ok",
+          "duration_ms": 0,
+          "detail": "Validated 1 image(s) for intent: single_image_vqa"
+        },
+        {
+          "stage": "Routing",
+          "status": "ok",
+          "duration_ms": 0,
+          "detail": "Intent: single_image_vqa → Selected Specialist: RS-VLM"
+        },
+        {
+          "stage": "Analyzing",
+          "status": "ok",
+          "duration_ms": 4163,
+          "detail": "Processed by Local RS Vision Engine (Multi-Spectral CV Specialist)"
+        },
+        {
+          "stage": "Evidence Fusion",
+          "status": "ok",
+          "duration_ms": 0,
+          "detail": "Fused 1 layer(s) with 1 deduplicated box(es)"
+        },
+        {
+          "stage": "Building Evidence",
+          "status": "ok",
+          "duration_ms": 33,
+          "detail": "Rendered multi-layer grounding overlay with 1 boxes and legend"
+        },
+        {
+          "stage": "Confidence Scoring",
+          "status": "ok",
+          "duration_ms": 0,
+          "detail": "Score: 0.85 (High) | Review: PASSED"
+        },
+        {
+          "stage": "Next-Query Recommendation",
+          "status": "ok",
+          "duration_ms": 1,
+          "detail": "Generated 2 grounded follow-up suggestion(s)"
+        },
+        {
+          "stage": "Report Generation",
+          "status": "ok",
+          "duration_ms": 175,
+          "detail": "Report saved: 8fa1ceae24144403"
+        }
+      ],
+      "total_duration_ms": 4372
+    },
+    {
+      "query_id": "test_e2e_query_123",
+      "timestamp": "2026-09-24T15:45:08.951550+00:00",
+      "query": {
+        "text": "Test query text",
+        "images": [
+          "test.png"
+        ]
+      },
+      "compatibility": {
+        "valid": true
+      },
+      "routing": {
+        "intent": "single_image_vqa"
+      },
+      "specialist": {
+        "model": "Test",
+        "confidence": 0.9
+      },
+      "annotation_set": [],
+      "suggestion_log": {
+        "suggestions_offered": [
+          {
+            "text": "Follow up",
+            "task_type": "ground_region"
+          }
+        ],
+        "clicked_at": "2026-09-24T15:45:09.028025+00:00",
+        "clicked_suggestion": "Follow up"
+      },
+      "verification_outcome": {
+        "evidence_sufficient": true,
+        "human_review": false
+      },
+      "trace": [],
+      "total_duration_ms": 120
+    },
+    {
+      "query_id": "637f46e92d4a4e69",
+      "timestamp": "2026-09-24T15:45:09.357243+00:00",
+      "query": {
+        "text": "Count the total number of buildings in this industrial complex.",
+        "images": [
+          "industrial_complex.png"
+        ]
+      },
+      "compatibility": {
+        "valid": true,
+        "reason": null,
+        "detected_intent": "single_image_vqa",
+        "gsd_metadata": [
+          {
+            "detected_gsd_m": 10.0,
+            "sensor_family": "Standard Optical Scene (Estimated ~10m GSD)",
+            "crs": "EPSG:4326 (WGS84)",
+            "width": 400,
+            "height": 300,
+            "is_geotiff": false,
+            "scale_factor_to_canonical": 1.0,
+            "normalization_applied": "identity"
+          }
+        ],
+        "gsd_ratio": null,
+        "gsd_warning": null
+      },
+      "routing": {
+        "intent": "single_image_vqa",
+        "specialist": "RS-VLM"
+      },
+      "specialist": {
+        "model": "Building Counter Specialist",
+        "confidence": 0.93,
+        "evidence_type": "bbox"
+      },
+      "annotation_set": [
+        {
+          "layer_id": "buildings_count",
+          "reasoning": "count",
+          "color": "#2E7DD1",
+          "boxes": [
+            {
+              "id": 1,
+              "bbox": [
+                25,
+                15,
+                32,
+                35
+              ],
+              "label": "Building 1",
+              "confidence": 0.93
+            },
+            {
+              "id": 2,
+              "bbox": [
+                35,
+                15,
+                42,
+                35
+              ],
+              "label": "Building 2",
+              "confidence": 0.93
+            },
+            {
+              "id": 3,
+              "bbox": [
+                45,
+                15,
+                52,
+                35
+              ],
+              "label": "Building 3",
+              "confidence": 0.93
+            },
+            {
+              "id": 4,
+              "bbox": [
+                55,
+                15,
+                62,
+                35
+              ],
+              "label": "Building 4",
+              "confidence": 0.93
+            },
+            {
+              "id": 5,
+              "bbox": [
+                65,
+                15,
+                72,
+                35
+              ],
+              "label": "Building 5",
+              "confidence": 0.93
+            },
+            {
+              "id": 6,
+              "bbox": [
+                75,
+                15,
+                82,
+                35
+              ],
+              "label": "Building 6",
+              "confidence": 0.93
+            }
+          ]
+        }
+      ],
+      "suggestion_log": {
+        "suggestions_offered": [
+          {
+            "text": "Show me where the 6 industrial are located.",
+            "task_type": "ground_region"
+          },
+          {
+            "text": "Describe the surrounding land cover and landscape context.",
+            "task_type": "caption_scene"
+          }
+        ],
+        "clicked_at": null,
+        "clicked_suggestion": null
+      },
+      "verification_outcome": {
+        "evidence_sufficient": true,
+        "human_review": false,
+        "verification_status": "verified"
+      },
+      "trace": [
+        {
+          "stage": "Compatibility Check",
+          "status": "ok",
+          "duration_ms": 0,
+          "detail": "Validated 1 image(s) for intent: single_image_vqa"
+        },
+        {
+          "stage": "Routing",
+          "status": "ok",
+          "duration_ms": 0,
+          "detail": "Intent: single_image_vqa → Selected Specialist: RS-VLM"
+        },
+        {
+          "stage": "Analyzing",
+          "status": "ok",
+          "duration_ms": 0,
+          "detail": "Building Counter Specialist"
+        },
+        {
+          "stage": "Evidence Fusion",
+          "status": "ok",
+          "duration_ms": 0,
+          "detail": "Fused 1 layer(s) with 6 deduplicated box(es)"
+        },
+        {
+          "stage": "Building Evidence",
+          "status": "ok",
+          "duration_ms": 34,
+          "detail": "Rendered multi-layer grounding overlay with 6 boxes and legend"
+        },
+        {
+          "stage": "Confidence Scoring",
+          "status": "ok",
+          "duration_ms": 0,
+          "detail": "Score: 0.93 (High) | Review: PASSED"
+        },
+        {
+          "stage": "Next-Query Recommendation",
+          "status": "ok",
+          "duration_ms": 0,
+          "detail": "Generated 2 grounded follow-up suggestion(s)"
+        },
+        {
+          "stage": "Report Generation",
+          "status": "ok",
+          "duration_ms": 102,
+          "detail": "Report saved: 637f46e92d4a4e69"
+        }
+      ],
+      "total_duration_ms": 136
+    },
+    {
+      "query_id": "9c32fb9afbbc4c45",
+      "timestamp": "2026-09-24T15:45:10.845507+00:00",
+      "query": {
+        "text": "Detect all bi-temporal change deltas between baseline and monitoring dates.",
+        "images": [
+          "port_t1.png",
+          "port_t2.png"
+        ]
+      },
+      "compatibility": {
+        "valid": true,
+        "reason": null,
+        "detected_intent": "change_detection",
+        "gsd_metadata": [
+          {
+            "detected_gsd_m": 0.5,
+            "sensor_family": "WorldView / Aerial (0.5m Very High Res)",
+            "crs": "EPSG:4326 (WGS84)",
+            "width": 400,
+            "height": 300,
+            "is_geotiff": false,
+            "scale_factor_to_canonical": 0.05,
+            "normalization_applied": "anti_aliased_downsample"
+          },
+          {
+            "detected_gsd_m": 0.5,
+            "sensor_family": "WorldView / Aerial (0.5m Very High Res)",
+            "crs": "EPSG:4326 (WGS84)",
+            "width": 400,
+            "height": 300,
+            "is_geotiff": false,
+            "scale_factor_to_canonical": 0.05,
+            "normalization_applied": "anti_aliased_downsample"
+          }
+        ],
+        "gsd_ratio": 1.0,
+        "gsd_warning": null
+      },
+      "routing": {
+        "intent": "change_detection",
+        "specialist": "Change Detection"
+      },
+      "specialist": {
+        "model": "Bi-Temporal Stability Engine (Zero Alteration Confirmed - Mean Diff: 10.00 DN)",
+        "confidence": 0.95,
+        "evidence_type": "none"
+      },
+      "annotation_set": [],
+      "suggestion_log": {
+        "suggestions_offered": [
+          {
+            "text": "Show me where the zero spatial change are located.",
+            "task_type": "ground_region"
+          },
+          {
+            "text": "Describe the surrounding land cover and landscape context.",
+            "task_type": "caption_scene"
+          },
+          {
+            "text": "Has this zero spatial change sector changed compared to baseline imagery?",
+            "task_type": "bi_temporal_change"
+          }
+        ],
+        "clicked_at": null,
+        "clicked_suggestion": null
+      },
+      "verification_outcome": {
+        "evidence_sufficient": true,
+        "human_review": false,
+        "verification_status": "verified"
+      },
+      "trace": [
+        {
+          "stage": "Compatibility Check",
+          "status": "ok",
+          "duration_ms": 0,
+          "detail": "Validated 2 image(s) for intent: change_detection"
+        },
+        {
+          "stage": "Routing",
+          "status": "ok",
+          "duration_ms": 0,
+          "detail": "Intent: change_detection → Selected Specialist: Change Detection"
+        },
+        {
+          "stage": "Analyzing",
+          "status": "ok",
+          "duration_ms": 1228,
+          "detail": "Bi-Temporal Stability Engine (Zero Alteration Confirmed - Mean Diff: 10.00 DN)"
+        },
+        {
+          "stage": "Evidence Fusion",
+          "status": "ok",
+          "duration_ms": 0,
+          "detail": "Fused 0 layer(s) with 0 deduplicated box(es)"
+        },
+        {
+          "stage": "Building Evidence",
+          "status": "ok",
+          "duration_ms": 43,
+          "detail": "Rendered bi-temporal comparative panel with DL contours: None"
+        },
+        {
+          "stage": "Confidence Scoring",
+          "status": "ok",
+          "duration_ms": 0,
+          "detail": "Score: 0.95 (High) | Review: PASSED"
+        },
+        {
+          "stage": "Next-Query Recommendation",
+          "status": "ok",
+          "duration_ms": 0,
+          "detail": "Generated 3 grounded follow-up suggestion(s)"
+        },
+        {
+          "stage": "Report Generation",
+          "status": "ok",
+          "duration_ms": 124,
+          "detail": "Report saved: 9c32fb9afbbc4c45"
+        }
+      ],
+      "total_duration_ms": 1395
+    },
+    {
+      "query_id": "e840754f768e4d4c",
+      "timestamp": "2026-09-24T15:45:11.069241+00:00",
+      "query": {
+        "text": "Count how many buildings are in this port complex.",
+        "images": [
+          "scene.png"
+        ]
+      },
+      "compatibility": {
+        "valid": true,
+        "reason": null,
+        "detected_intent": "single_image_vqa",
+        "gsd_metadata": [
+          {
+            "detected_gsd_m": 10.0,
+            "sensor_family": "Standard Optical Scene (Estimated ~10m GSD)",
+            "crs": "EPSG:4326 (WGS84)",
+            "width": 400,
+            "height": 300,
+            "is_geotiff": false,
+            "scale_factor_to_canonical": 1.0,
+            "normalization_applied": "identity"
+          }
+        ],
+        "gsd_ratio": null,
+        "gsd_warning": null
+      },
+      "routing": {
+        "intent": "single_image_vqa",
+        "specialist": "RS-VLM"
+      },
+      "specialist": {
+        "model": "Mock RS-VLM for pipeline test",
+        "confidence": 0.92,
+        "evidence_type": "bbox"
+      },
+      "annotation_set": [
+        {
+          "layer_id": "buildings_count",
+          "reasoning": "count",
+          "color": "#2E7DD1",
+          "boxes": [
+            {
+              "id": 1,
+              "bbox": [
+                22,
+                22,
+                45,
+                45
+              ],
+              "label": "Building 1",
+              "confidence": 0.92
+            },
+            {
+              "id": 2,
+              "bbox": [
+                50,
+                22,
+                75,
+                45
+              ],
+              "label": "Building 2",
+              "confidence": 0.9
+            }
+          ]
+        }
+      ],
+      "suggestion_log": {
+        "suggestions_offered": [
+          {
+            "text": "Show me where the 8 buildings are located.",
+            "task_type": "ground_region"
+          },
+          {
+            "text": "Describe the surrounding land cover and landscape context.",
+            "task_type": "caption_scene"
+          }
+        ],
+        "clicked_at": null,
+        "clicked_suggestion": null
+      },
+      "verification_outcome": {
+        "evidence_sufficient": true,
+        "human_review": false,
+        "verification_status": "verified"
+      },
+      "trace": [
+        {
+          "stage": "Compatibility Check",
+          "status": "ok",
+          "duration_ms": 0,
+          "detail": "Validated 1 image(s) for intent: single_image_vqa"
+        },
+        {
+          "stage": "Routing",
+          "status": "ok",
+          "duration_ms": 0,
+          "detail": "Intent: single_image_vqa → Selected Specialist: RS-VLM"
+        },
+        {
+          "stage": "Analyzing",
+          "status": "ok",
+          "duration_ms": 0,
+          "detail": "Mock RS-VLM for pipeline test"
+        },
+        {
+          "stage": "Evidence Fusion",
+          "status": "ok",
+          "duration_ms": 0,
+          "detail": "Fused 1 layer(s) with 2 deduplicated box(es)"
+        },
+        {
+          "stage": "Building Evidence",
+          "status": "ok",
+          "duration_ms": 28,
+          "detail": "Rendered multi-layer grounding overlay with 2 boxes and legend"
+        },
+        {
+          "stage": "Confidence Scoring",
+          "status": "ok",
+          "duration_ms": 0,
+          "detail": "Score: 0.92 (High) | Review: PASSED"
+        },
+        {
+          "stage": "Next-Query Recommendation",
+          "status": "ok",
+          "duration_ms": 0,
+          "detail": "Generated 2 grounded follow-up suggestion(s)"
+        },
+        {
+          "stage": "Report Generation",
+          "status": "ok",
+          "duration_ms": 115,
+          "detail": "Report saved: e840754f768e4d4c"
+        }
+      ],
+      "total_duration_ms": 143
+    },
+    {
+      "query_id": "e42b8eacad644ecd",
+      "timestamp": "2026-09-24T15:45:11.412470+00:00",
+      "query": {
+        "text": "Detect all bi-temporal change deltas between baseline and monitoring dates.",
+        "images": [
+          "baseline.png",
+          "monitoring_identical.png"
+        ]
+      },
+      "compatibility": {
+        "valid": true,
+        "reason": null,
+        "detected_intent": "change_detection",
+        "gsd_metadata": [
+          {
+            "detected_gsd_m": 10.0,
+            "sensor_family": "Standard Optical Scene (Estimated ~10m GSD)",
+            "crs": "EPSG:4326 (WGS84)",
+            "width": 400,
+            "height": 300,
+            "is_geotiff": false,
+            "scale_factor_to_canonical": 1.0,
+            "normalization_applied": "identity"
+          },
+          {
+            "detected_gsd_m": 10.0,
+            "sensor_family": "Standard Optical Scene (Estimated ~10m GSD)",
+            "crs": "EPSG:4326 (WGS84)",
+            "width": 400,
+            "height": 300,
+            "is_geotiff": false,
+            "scale_factor_to_canonical": 1.0,
+            "normalization_applied": "identity"
+          }
+        ],
+        "gsd_ratio": 1.0,
+        "gsd_warning": null
+      },
+      "routing": {
+        "intent": "change_detection",
+        "specialist": "Change Detection"
+      },
+      "specialist": {
+        "model": "Bi-Temporal Stability Engine (Zero Alteration Confirmed - Mean Diff: 0.00 DN)",
+        "confidence": 0.98,
+        "evidence_type": "none"
+      },
+      "annotation_set": [],
+      "suggestion_log": {
+        "suggestions_offered": [
+          {
+            "text": "Show me where the zero spatial change are located.",
+            "task_type": "ground_region"
+          },
+          {
+            "text": "Describe the surrounding land cover and landscape context.",
+            "task_type": "caption_scene"
+          },
+          {
+            "text": "Has this zero spatial change sector changed compared to baseline imagery?",
+            "task_type": "bi_temporal_change"
+          }
+        ],
+        "clicked_at": null,
+        "clicked_suggestion": null
+      },
+      "verification_outcome": {
+        "evidence_sufficient": true,
+        "human_review": false,
+        "verification_status": "verified"
+      },
+      "trace": [
+        {
+          "stage": "Compatibility Check",
+          "status": "ok",
+          "duration_ms": 0,
+          "detail": "Validated 2 image(s) for intent: change_detection"
+        },
+        {
+          "stage": "Routing",
+          "status": "ok",
+          "duration_ms": 0,
+          "detail": "Intent: change_detection → Selected Specialist: Change Detection"
+        },
+        {
+          "stage": "Analyzing",
+          "status": "ok",
+          "duration_ms": 13,
+          "detail": "Bi-Temporal Stability Engine (Zero Alteration Confirmed - Mean Diff: 0.00 DN)"
+        },
+        {
+          "stage": "Evidence Fusion",
+          "status": "ok",
+          "duration_ms": 0,
+          "detail": "Fused 0 layer(s) with 0 deduplicated box(es)"
+        },
+        {
+          "stage": "Building Evidence",
+          "status": "ok",
+          "duration_ms": 45,
+          "detail": "Rendered bi-temporal comparative panel with DL contours: None"
+        },
+        {
+          "stage": "Confidence Scoring",
+          "status": "ok",
+          "duration_ms": 0,
+          "detail": "Score: 0.98 (High) | Review: PASSED"
+        },
+        {
+          "stage": "Next-Query Recommendation",
+          "status": "ok",
+          "duration_ms": 0,
+          "detail": "Generated 3 grounded follow-up suggestion(s)"
+        },
+        {
+          "stage": "Report Generation",
+          "status": "ok",
+          "duration_ms": 177,
+          "detail": "Report saved: e42b8eacad644ecd"
+        }
+      ],
+      "total_duration_ms": 235
     }
   ],
   "operator_feedback": [
@@ -19799,6 +22148,48 @@
       "rating": "accept",
       "notes": "Operator verified detection",
       "corrected_bbox": null
+    },
+    {
+      "timestamp": "2026-09-24T04:21:11.338474+00:00",
+      "query_id": "b94789e7f7014944",
+      "rating": "accept",
+      "notes": "Operator accepted verification output",
+      "corrected_bbox": null
+    },
+    {
+      "timestamp": "2026-09-24T04:21:15.227048+00:00",
+      "query_id": "b94789e7f7014944",
+      "rating": "accept",
+      "notes": "Operator accepted verification output",
+      "corrected_bbox": null
+    },
+    {
+      "timestamp": "2026-09-24T06:01:18.291040+00:00",
+      "query_id": "11462eeb94b24650",
+      "rating": "accept",
+      "notes": "Operator accepted verification output",
+      "corrected_bbox": null
+    },
+    {
+      "timestamp": "2026-09-24T07:01:36.090133+00:00",
+      "query_id": "4109425dd2e44275",
+      "rating": "accept",
+      "notes": "Operator accepted verification output",
+      "corrected_bbox": null
+    },
+    {
+      "timestamp": "2026-09-24T15:45:04.027590+00:00",
+      "query_id": "test_api_query_456",
+      "rating": "accept",
+      "notes": "Verified bounding coordinates.",
+      "corrected_bbox": null
+    },
+    {
+      "timestamp": "2026-09-24T15:45:09.099491+00:00",
+      "query_id": "test_e2e_query_123",
+      "rating": "accept",
+      "notes": "Operator verified detection",
+      "corrected_bbox": null
     }
   ],
   "suggestion_clicks": [
@@ -20098,6 +22489,42 @@
     },
     {
       "timestamp": "2026-09-23T18:49:18.839384+00:00",
+      "query_id": "test_e2e_query_123",
+      "clicked_suggestion": "Follow up",
+      "task_type": "ground_region"
+    },
+    {
+      "timestamp": "2026-09-24T04:22:52.891482+00:00",
+      "query_id": "b94789e7f7014944",
+      "clicked_suggestion": "Show me where the buildable greenfield terrain are located.",
+      "task_type": "ground_region"
+    },
+    {
+      "timestamp": "2026-09-24T06:00:52.188594+00:00",
+      "query_id": "a778cbc5fe904eaf",
+      "clicked_suggestion": "Describe the surrounding land cover and landscape context.",
+      "task_type": "caption_scene"
+    },
+    {
+      "timestamp": "2026-09-24T06:01:00.323254+00:00",
+      "query_id": "ccd8f0e540ce4e42",
+      "clicked_suggestion": "Show me where the 8 vegetation are located.",
+      "task_type": "ground_region"
+    },
+    {
+      "timestamp": "2026-09-24T06:01:11.813239+00:00",
+      "query_id": "1f203ba37aef4105",
+      "clicked_suggestion": "Describe the surrounding land cover and landscape context.",
+      "task_type": "caption_scene"
+    },
+    {
+      "timestamp": "2026-09-24T15:45:08.599423+00:00",
+      "query_id": "test_api_query_456",
+      "clicked_suggestion": "Show me where the buildings are located.",
+      "task_type": "ground_region"
+    },
+    {
+      "timestamp": "2026-09-24T15:45:09.028025+00:00",
       "query_id": "test_e2e_query_123",
       "clicked_suggestion": "Follow up",
       "task_type": "ground_region"
