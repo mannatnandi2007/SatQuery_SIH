@@ -1,60 +1,130 @@
 /**
- * EarthScene — Full cinematic 3D scene container.
+ * EarthScene — Cinematic 3D space scene container.
  *
- * Camera: slightly above and angled (matches Dribbble reference composition)
- *   - Earth slightly right-of-center, camera angled top-right to bottom-left
- *   - Satellites have natural depth as they pass behind/in front
- *
- * Lighting: single dominant directional "sun" + dim ambient fill
- *
- * Suspense: shows a subtle wireframe loading sphere until textures resolve
+ * Includes:
+ *   - EarthCanvas (photorealistic Earth with dynamic day/night terminator)
+ *   - CelestialSunAndMoon (animated 3D Sun and Moon that rise and set according to theme)
+ *   - SatelliteLayer (satellites orbiting with telemetry callouts)
+ *   - Stars (deep space starfield, fades smoothly in day mode)
+ *   - Dynamic lighting tracking the celestial positions
  */
 
-import React, { Suspense } from 'react';
-import { Canvas } from '@react-three/fiber';
+import React, { Suspense, useRef } from 'react';
+import { Canvas, useFrame } from '@react-three/fiber';
 import { Stars, AdaptiveDpr } from '@react-three/drei';
 import * as THREE from 'three';
 import EarthCanvas from './EarthCanvas';
 import SatelliteLayer from './SatelliteLayer';
+import CelestialSunAndMoon from './CelestialSunAndMoon';
 
-/* ── Lighting ──────────────────────────────────────────────────── */
-function SceneLighting() {
+/* ── Dynamic Scene Lighting ─────────────────────────────────────── */
+function SceneLighting({ isLightMode }) {
+  const ambientRef = useRef();
+  const dirLightRef = useRef();
+  const fillLightRef = useRef();
+  const progressRef = useRef(isLightMode ? 1.0 : 0.0);
+
+  useFrame((state, delta) => {
+    const target = isLightMode ? 1.0 : 0.0;
+    progressRef.current = THREE.MathUtils.damp(progressRef.current, target, 3.0, delta);
+    const p = progressRef.current;
+
+    // Ambient light: soft cosmic fill in night, crisp clean illumination in day
+    if (ambientRef.current) {
+      ambientRef.current.intensity = THREE.MathUtils.lerp(0.12, 1.25, p);
+      ambientRef.current.color.lerpColors(
+        new THREE.Color("#0d1a30"),
+        new THREE.Color("#ffffff"),
+        p
+      );
+    }
+
+    // Directional sunlight: positions dynamically with the sun arc
+    if (dirLightRef.current) {
+      const sunX = THREE.MathUtils.lerp(6.0, 4.5, p);
+      const sunY = THREE.MathUtils.lerp(2.0, 3.2, p);
+      const sunZ = THREE.MathUtils.lerp(4.0, 3.0, p);
+      dirLightRef.current.position.set(sunX, sunY, sunZ);
+      dirLightRef.current.intensity = THREE.MathUtils.lerp(2.6, 4.4, p);
+    }
+
+    // Fill light
+    if (fillLightRef.current) {
+      fillLightRef.current.intensity = THREE.MathUtils.lerp(0.08, 0.45, p);
+    }
+  });
+
   return (
     <>
-      {/* Near-black ambient — only the shader's sun drives surface light */}
-      <ambientLight intensity={0.04} color="#0d1a30" />
-
-      {/* Primary sun — warm-white, from top-right */}
+      <ambientLight ref={ambientRef} intensity={isLightMode ? 1.25 : 0.12} />
       <directionalLight
-        position={[8, 4, 6]}
-        intensity={3.2}
+        ref={dirLightRef}
+        position={[7, 5, 5]}
+        intensity={isLightMode ? 4.4 : 2.6}
         color="#fffaf0"
       />
-
-      {/* Dim earth-shine fill from opposite side */}
       <directionalLight
+        ref={fillLightRef}
         position={[-5, -2, -4]}
-        intensity={0.06}
-        color="#1a3066"
+        intensity={isLightMode ? 0.45 : 0.08}
+        color="#fed7aa"
       />
     </>
   );
 }
 
+/* ── Starfield with Smooth Day/Night Fade ───────────────────────── */
+function Starfield({ isLightMode }) {
+  const starsGroupRef = useRef();
+  const progressRef = useRef(isLightMode ? 1.0 : 0.0);
+
+  useFrame((state, delta) => {
+    const target = isLightMode ? 1.0 : 0.0;
+    progressRef.current = THREE.MathUtils.damp(progressRef.current, target, 3.0, delta);
+    const p = progressRef.current;
+
+    if (starsGroupRef.current) {
+      // Fade stars out in daytime light mode
+      const scale = THREE.MathUtils.lerp(1.0, 0.001, p);
+      starsGroupRef.current.scale.setScalar(scale);
+      starsGroupRef.current.visible = p < 0.95;
+    }
+  });
+
+  return (
+    <group ref={starsGroupRef}>
+      <Stars
+        radius={300}
+        depth={80}
+        count={5500}
+        factor={3.5}
+        saturation={0.15}
+        fade
+        speed={0.2}
+      />
+    </group>
+  );
+}
+
 /* ── Loading placeholder ───────────────────────────────────────── */
-function EarthShell() {
+function EarthShell({ isLightMode }) {
   return (
     <mesh>
       <sphereGeometry args={[2.0, 24, 24]} />
-      <meshBasicMaterial color="#0a1a35" wireframe opacity={0.18} transparent />
+      <meshBasicMaterial
+        color={isLightMode ? "#ea580c" : "#0a1a35"}
+        wireframe
+        opacity={isLightMode ? 0.25 : 0.18}
+        transparent
+      />
     </mesh>
   );
 }
 
-/* ── EarthScene ────────────────────────────────────────────────── */
-export default function EarthScene() {
+/* ── EarthScene Component ───────────────────────────────────────── */
+export default function EarthScene({ isLightMode = false }) {
   return (
-    <div className="earth-scene-container" aria-hidden="true">
+    <div className={`earth-scene-container ${isLightMode ? 'light-earth' : ''}`} aria-hidden="true">
       <Canvas
         camera={{
           position: [1.2, 2.2, 7.8],   // slightly high + right → angled view
@@ -68,34 +138,26 @@ export default function EarthScene() {
           alpha: true,
           powerPreference: 'high-performance',
           toneMapping: THREE.ACESFilmicToneMapping,
-          toneMappingExposure: 1.1,
+          toneMappingExposure: isLightMode ? 1.25 : 1.1,
         }}
         style={{ background: 'transparent' }}
       >
         <AdaptiveDpr pixelated />
 
-        {/* Starfield — deep, subtle */}
-        <Stars
-          radius={300}
-          depth={80}
-          count={5500}
-          factor={3.5}
-          saturation={0.15}
-          fade
-          speed={0.2}
-        />
+        {/* Dynamic Starfield that smoothly fades during day */}
+        <Starfield isLightMode={isLightMode} />
 
-        <SceneLighting />
+        {/* Dynamic lighting */}
+        <SceneLighting isLightMode={isLightMode} />
 
-        <Suspense fallback={<EarthShell />}>
-          <EarthCanvas />
-          <SatelliteLayer />
+        {/* Animated 3D Sun and Moon */}
+        <CelestialSunAndMoon isLightMode={isLightMode} />
+
+        <Suspense fallback={<EarthShell isLightMode={isLightMode} />}>
+          <EarthCanvas isLightMode={isLightMode} />
+          <SatelliteLayer isLightMode={isLightMode} />
         </Suspense>
       </Canvas>
-
-      {/* Soft radial vignette — darkens the extreme edges */}
-      <div className="earth-vignette" />
     </div>
   );
 }
-

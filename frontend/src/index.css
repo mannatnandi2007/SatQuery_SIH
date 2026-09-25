@@ -1152,11 +1152,18 @@ body:has(.landing-layout) {
     top: 0;
     left: 0;
     right: 0;
-    z-index: 20;
+    z-index: 50;
     display: flex;
-    justify-content: flex-end;
+    justify-content: space-between;
+    align-items: flex-start;
     padding: 36px 54px;
-    pointer-events: none; /* Let clicks pass through to 3D scene */
+    pointer-events: none; /* Let clicks pass through to 3D scene except interactive elements */
+}
+
+.lh-header-spacer {
+    pointer-events: auto !important;
+    position: relative;
+    z-index: 60;
 }
 
 .lh-brand {
@@ -2019,4 +2026,565 @@ body:has(.landing-layout) {
     text-transform: uppercase;
     color: #f1f5f9;
 }
+
+/* ═══════════════════════════════════════════════════════════════════
+   LIGHT MODE DESIGN SYSTEM (Orange & White Aerospace Theme)
+   ═══════════════════════════════════════════════════════════════════ */
+
+[data-theme="light"],
+body.light-theme {
+    /* Core paper bands & backgrounds */
+    --color-paper:          #f8fafc;
+    --color-paper-2:        rgba(255, 255, 255, 0.85);
+    --color-paper-3:        rgba(255, 255, 255, 0.95);
+    --color-paper-elevated: #ffffff;
+
+    /* Hairline rules with warm orange/slate tint */
+    --color-rule:           rgba(234, 88, 12, 0.16);
+    --color-rule-subtle:    rgba(203, 213, 225, 0.7);
+    --color-rule-strong:    rgba(234, 88, 12, 0.35);
+    --color-glow:           rgba(234, 88, 12, 0.12);
+
+    /* High-contrast typography */
+    --color-ink:            #0f172a;
+    --color-ink-2:          #334155;
+    --color-muted:          #64748b;
+
+    /* Aerospace Orange Accents */
+    --color-accent:         #ea580c;
+    --color-accent-hover:   #c2410c;
+    --color-accent-active:  #9a3412;
+    --color-accent-ink:     #ffffff;
+    --color-accent-subtle:  rgba(234, 88, 12, 0.12);
+
+    /* Landing page tokens */
+    --land-bg:              #f8fafc;
+    --land-bg-2:            #ffffff;
+    --glass-bg:             rgba(255, 255, 255, 0.88);
+    --glass-border:         rgba(234, 88, 12, 0.22);
+    --glass-shadow:         0 16px 40px -10px rgba(234, 88, 12, 0.12), 0 4px 12px rgba(0, 0, 0, 0.05);
+    --glass-highlight:      rgba(255, 255, 255, 0.9);
+    --land-accent:          #ea580c;
+    --land-accent-hover:    #c2410c;
+    --land-accent-bg:       rgba(234, 88, 12, 0.12);
+    --land-ink:             #0f172a;
+    --land-ink-2:           #334155;
+    --land-muted:           #64748b;
+    --land-rule:            rgba(234, 88, 12, 0.16);
+    --land-rule-strong:     rgba(234, 88, 12, 0.35);
+}
+
+/* Light Mode Overrides for App Shell & Backgrounds */
+[data-theme="light"] body {
+    background-color: #f8fafc;
+    color: #0f172a;
+}
+
+[data-theme="light"] .app-container {
+    background: radial-gradient(ellipse 70% 60% at 70% 40%, rgba(254, 215, 170, 0.35) 0%, transparent 65%),
+                radial-gradient(ellipse 50% 60% at 20% 80%, rgba(255, 237, 213, 0.45) 0%, transparent 65%),
+                #f8fafc;
+}
+
+[data-theme="light"] .top-header {
+    background: rgba(255, 255, 255, 0.9);
+    border-bottom: 1px solid rgba(234, 88, 12, 0.18);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
+}
+
+[data-theme="light"] .landing-layout {
+    background: #f8fafc;
+}
+
+[data-theme="light"] .landing-layout::before {
+    background:
+        radial-gradient(ellipse 75% 65% at 70% 40%, rgba(254, 215, 170, 0.45) 0%, transparent 70%),
+        radial-gradient(ellipse 50% 55% at 20% 80%, rgba(255, 247, 237, 0.7) 0%, transparent 65%),
+        radial-gradient(ellipse 35% 45% at 90% 15%, rgba(253, 186, 116, 0.3) 0%, transparent 60%);
+}
+
+[data-theme="light"] .panel {
+    background: rgba(255, 255, 255, 0.88);
+    border-right: 1px solid rgba(226, 232, 240, 0.9);
+}
+
+[data-theme="light"] .panel.right-panel {
+    background: rgba(255, 255, 255, 0.88);
+    border-left: 1px solid rgba(226, 232, 240, 0.9);
+}
+
+[data-theme="light"] .chat-panel-glass {
+    background: rgba(255, 255, 255, 0.9);
+    border-color: rgba(234, 88, 12, 0.25);
+    box-shadow: 0 20px 50px -12px rgba(234, 88, 12, 0.14), 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+[data-theme="light"] .chat-panel-glass::before {
+    background: linear-gradient(90deg, transparent, rgba(234, 88, 12, 0.35), transparent);
+}
+
+[data-theme="light"] .cp-input-container {
+    background: #ffffff;
+    border: 1px solid rgba(234, 88, 12, 0.22);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+}
+
+[data-theme="light"] .cp-input-container.focused {
+    border-color: #ea580c;
+    box-shadow: 0 0 0 3px rgba(234, 88, 12, 0.15);
+}
+
+[data-theme="light"] .query-textarea {
+    background: #ffffff !important;
+    color: #0f172a !important;
+    border: 1px solid rgba(234, 88, 12, 0.22) !important;
+}
+
+[data-theme="light"] .query-textarea:focus {
+    border-color: #ea580c !important;
+    box-shadow: 0 0 0 3px rgba(234, 88, 12, 0.15) !important;
+}
+
+[data-theme="light"] .uploaded-image-card {
+    background: #ffffff;
+    border: 1px solid rgba(234, 88, 12, 0.2);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+}
+
+[data-theme="light"] .uploaded-card-filename {
+    color: #0f172a;
+}
+
+/* Light mode typography & branding overrides */
+[data-theme="light"] .lh-logo-sat {
+    color: #0f172a !important;
+}
+
+[data-theme="light"] .lh-logo-query {
+    color: #ea580c !important;
+}
+
+[data-theme="light"] .lh-tagline-1 {
+    color: #334155 !important;
+    font-weight: 600;
+}
+
+[data-theme="light"] .lh-tagline-2 {
+    color: #ea580c !important;
+    font-weight: 700;
+}
+
+[data-theme="light"] .lh-right-tagline {
+    color: #0f172a !important;
+}
+
+[data-theme="light"] .lh-right-sub {
+    color: #475569 !important;
+    font-weight: 600;
+}
+
+[data-theme="light"] .uploaded-attach-prompt {
+    background: #ffffff !important;
+    border: 1.5px dashed rgba(234, 88, 12, 0.45) !important;
+    color: #1e293b !important;
+    font-weight: 600;
+}
+
+[data-theme="light"] .uploaded-attach-prompt span {
+    color: #1e293b !important;
+}
+
+[data-theme="light"] .uploaded-attach-prompt:hover {
+    background: rgba(254, 215, 170, 0.25) !important;
+    border-color: #ea580c !important;
+    color: #ea580c !important;
+}
+
+[data-theme="light"] .earth-scene-container {
+    background: transparent !important;
+}
+
+[data-theme="light"] .earth-vignette {
+    display: none !important;
+}
+
+[data-theme="light"] .sat-orbit-tag {
+    background: rgba(255, 255, 255, 0.94);
+    border: 1px solid rgba(234, 88, 12, 0.4);
+    box-shadow: 0 4px 12px rgba(234, 88, 12, 0.12), 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+[data-theme="light"] .sat-orbit-tag-text {
+    color: #0f172a;
+}
+
+/* ── Light Mode Workspace & Inspector Overrides ─────────────────── */
+[data-theme="light"] .brand-sat-text {
+    color: #0f172a !important;
+}
+
+[data-theme="light"] .brand-title {
+    color: #0f172a !important;
+}
+
+[data-theme="light"] .brand-subtitle {
+    color: #475569 !important;
+    font-weight: 500;
+}
+
+[data-theme="light"] .section-title {
+    color: #0f172a !important;
+    font-weight: 700 !important;
+}
+
+[data-theme="light"] .canvas-header-bar {
+    background: #ffffff !important;
+    border: 1px solid rgba(234, 88, 12, 0.22) !important;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.03);
+}
+
+[data-theme="light"] .canvas-header-label {
+    color: #0f172a !important;
+    font-weight: 700 !important;
+}
+
+[data-theme="light"] .view-mode-tabs {
+    background: #f1f5f9 !important;
+    border: 1px solid rgba(203, 213, 225, 0.9) !important;
+}
+
+[data-theme="light"] .mode-tab-btn {
+    color: #475569 !important;
+    font-weight: 600 !important;
+}
+
+[data-theme="light"] .mode-tab-btn:hover {
+    color: #0f172a !important;
+    background: rgba(234, 88, 12, 0.08) !important;
+}
+
+[data-theme="light"] .mode-tab-btn.active {
+    background: #ea580c !important;
+    color: #ffffff !important;
+}
+
+[data-theme="light"] .canvas-hud-strip {
+    background: #ffffff !important;
+    border: 1px solid rgba(234, 88, 12, 0.22) !important;
+    color: #475569 !important;
+}
+
+[data-theme="light"] .hud-val {
+    color: #0f172a !important;
+    font-weight: 700 !important;
+}
+
+[data-theme="light"] .legend-tag-pill {
+    background: #ffffff !important;
+    border: 1px solid rgba(203, 213, 225, 0.9) !important;
+    color: #0f172a !important;
+}
+
+[data-theme="light"] .legend-tag-pill span {
+    color: #0f172a !important;
+}
+
+[data-theme="light"] .uploaded-image-card {
+    background: #ffffff !important;
+    border: 1px solid rgba(234, 88, 12, 0.25) !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04) !important;
+}
+
+[data-theme="light"] .uploaded-card-filename {
+    color: #0f172a !important;
+    font-weight: 700 !important;
+}
+
+[data-theme="light"] .uploaded-card-meta {
+    color: #475569 !important;
+    font-weight: 500 !important;
+}
+
+[data-theme="light"] .uploaded-card-meta span {
+    color: #475569 !important;
+}
+
+[data-theme="light"] .suggestion-chip-btn {
+    background: #ffffff !important;
+    border: 1px solid rgba(203, 213, 225, 0.9) !important;
+    color: #1e293b !important;
+    font-weight: 500 !important;
+}
+
+[data-theme="light"] .suggestion-chip-btn:hover:not(:disabled) {
+    background: rgba(254, 215, 170, 0.3) !important;
+    border-color: #ea580c !important;
+    color: #ea580c !important;
+}
+
+[data-theme="light"] .btn-workbench {
+    background: #ffffff !important;
+    border: 1px solid rgba(203, 213, 225, 0.9) !important;
+    color: #1e293b !important;
+}
+
+[data-theme="light"] .btn-workbench:hover:not(:disabled) {
+    border-color: #ea580c !important;
+    color: #ea580c !important;
+}
+
+[data-theme="light"] .btn-workbench.btn-primary {
+    background: #ea580c !important;
+    color: #ffffff !important;
+    border-color: #ea580c !important;
+}
+
+[data-theme="light"] .summary-answer-text {
+    color: #0f172a !important;
+}
+
+[data-theme="light"] .stage-name {
+    color: #0f172a !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   SUN & MOON CELESTIAL THEME TOGGLE (Sun Going Up & Down)
+   ═══════════════════════════════════════════════════════════════════ */
+
+.theme-toggle-wrapper {
+    display: inline-flex;
+    align-items: center;
+    pointer-events: auto !important;
+    position: relative;
+    z-index: 60;
+}
+
+.theme-toggle-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    height: 32px;
+    padding: 0 10px 0 6px;
+    background: var(--color-paper-elevated);
+    border: 1px solid var(--color-rule);
+    border-radius: 9999px;
+    cursor: pointer !important;
+    pointer-events: auto !important;
+    position: relative;
+    user-select: none;
+    transition: all 250ms cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.theme-toggle-btn * {
+    pointer-events: none;
+}
+
+.theme-toggle-btn:hover {
+    border-color: var(--color-accent);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px var(--color-glow);
+}
+
+.theme-toggle-btn:active {
+    transform: translateY(0);
+}
+
+/* Celestial Stage Horizon Viewport */
+.celestial-stage {
+    position: relative;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(14, 24, 48, 0.6);
+    border: 1px solid var(--color-rule);
+}
+
+[data-theme="light"] .celestial-stage {
+    background: rgba(254, 215, 170, 0.4);
+    border-color: rgba(234, 88, 12, 0.3);
+}
+
+/* Celestial Bodies */
+.celestial-body {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 550ms cubic-bezier(0.34, 1.56, 0.64, 1),
+                opacity 400ms ease,
+                filter 400ms ease;
+}
+
+/* Sun Animation: Goes UP on light mode, sets DOWN on dark mode */
+.sun-orb {
+    color: #f59e0b;
+}
+
+.sun-orb.sun-risen {
+    transform: translateY(0) scale(1) rotate(0deg);
+    opacity: 1;
+    filter: drop-shadow(0 0 6px #f59e0b) drop-shadow(0 0 12px rgba(245, 158, 11, 0.6));
+    animation: sun-pulse 3s ease-in-out infinite alternate;
+}
+
+.sun-orb.sun-set {
+    transform: translateY(26px) scale(0.4) rotate(-60deg);
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* Moon Animation: Sinks DOWN on light mode, rises UP on dark mode */
+.moon-orb {
+    color: #a5b4fc;
+}
+
+.moon-orb.moon-risen {
+    transform: translateY(0) scale(1) rotate(0deg);
+    opacity: 1;
+    filter: drop-shadow(0 0 5px #818cf8);
+    animation: moon-float 4s ease-in-out infinite alternate;
+}
+
+.moon-orb.moon-set {
+    transform: translateY(26px) scale(0.4) rotate(45deg);
+    opacity: 0;
+    pointer-events: none;
+}
+
+.theme-toggle-label {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    color: var(--color-ink);
+}
+
+@keyframes sun-pulse {
+    0%   { filter: drop-shadow(0 0 5px #f59e0b); transform: scale(1) rotate(0deg); }
+    100% { filter: drop-shadow(0 0 10px #f59e0b) drop-shadow(0 0 16px rgba(245, 158, 11, 0.7)); transform: scale(1.08) rotate(15deg); }
+}
+
+@keyframes moon-float {
+    0%   { transform: translateY(0px) rotate(0deg); }
+    100% { transform: translateY(-1px) rotate(-6deg); }
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   DRAG AND DROP STATES FOR LANDING & WORKSPACE
+   ═══════════════════════════════════════════════════════════════════ */
+
+.drag-drop-zone {
+    position: relative;
+    transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.drag-drop-zone.drag-active {
+    border: 2px dashed var(--color-accent) !important;
+    background: rgba(234, 88, 12, 0.12) !important;
+    box-shadow: 0 0 20px rgba(234, 88, 12, 0.25) inset, 0 4px 20px rgba(234, 88, 12, 0.2) !important;
+    transform: scale(1.01);
+}
+
+.drag-overlay-banner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 16px;
+    background: rgba(234, 88, 12, 0.15);
+    border: 2px dashed var(--color-accent);
+    border-radius: var(--radius-md);
+    color: var(--color-accent);
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-weight: 700;
+    text-align: center;
+    pointer-events: none !important;
+    user-select: none;
+    animation: pulse-drop-glow 1.5s ease-in-out infinite alternate;
+}
+
+.drag-overlay-banner * {
+    pointer-events: none !important;
+}
+
+@keyframes pulse-drop-glow {
+    0%   { box-shadow: 0 0 10px rgba(234, 88, 12, 0.2) inset; }
+    100% { box-shadow: 0 0 25px rgba(234, 88, 12, 0.45) inset; }
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   CINEMATIC GRAIN FADE SHUTTER (Workspace & Landing Theme Transition)
+   ═══════════════════════════════════════════════════════════════════ */
+
+.theme-grain-shutter {
+    position: fixed;
+    inset: 0;
+    z-index: 99999;
+    pointer-events: none !important;
+    user-select: none;
+    /* High-density film grain SVG noise filter */
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.42'/%3E%3C/svg%3E");
+    background-repeat: repeat;
+    animation: grain-fade-shutter 650ms cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+
+.theme-grain-shutter.to-light {
+    background-color: rgba(254, 215, 170, 0.28);
+    mix-blend-mode: hard-light;
+}
+
+.theme-grain-shutter.to-dark {
+    background-color: rgba(10, 18, 36, 0.4);
+    mix-blend-mode: overlay;
+}
+
+@keyframes grain-fade-shutter {
+    0% {
+        opacity: 0;
+        transform: scale(1) translate(0, 0);
+        backdrop-filter: blur(0px);
+    }
+    18% {
+        opacity: 1;
+        transform: scale(1.025) translate(-3px, 2px);
+        backdrop-filter: blur(2px);
+    }
+    40% {
+        opacity: 0.82;
+        transform: scale(1.012) translate(2px, -2px);
+        backdrop-filter: blur(1.5px);
+    }
+    68% {
+        opacity: 0.45;
+        transform: scale(1.004) translate(-1px, 1px);
+        backdrop-filter: blur(0.5px);
+    }
+    100% {
+        opacity: 0;
+        transform: scale(1) translate(0, 0);
+        backdrop-filter: blur(0px);
+    }
+}
+
+/* Smooth ambient transition on core workspace panels */
+.app-container,
+.panel,
+.top-header,
+.chat-panel-glass,
+.landing-layout,
+.canvas-header-bar,
+.canvas-hud-strip {
+    transition: background-color 450ms cubic-bezier(0.4, 0, 0.2, 1),
+                border-color 400ms ease,
+                box-shadow 400ms ease,
+                color 350ms ease;
+}
+
 

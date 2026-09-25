@@ -24,9 +24,9 @@ export default function ExecutiveSummary({ resultData }) {
       {/* 1. ANALYSIS */}
       <div>
         <div className="summary-header-row" style={{ borderBottom: '1px solid var(--color-rule-subtle)', paddingBottom: '8px', marginBottom: '12px' }}>
-          <span className="section-title" style={{ color: '#fff', letterSpacing: '0.1em' }}>ANALYSIS</span>
+          <span className="section-title" style={{ color: 'var(--color-ink)', letterSpacing: '0.1em' }}>ANALYSIS</span>
         </div>
-        <div className="summary-answer-text" style={{ color: '#fff', fontSize: '14px', lineHeight: '1.6', fontFamily: 'var(--font-land-display)' }}>
+        <div className="summary-answer-text" style={{ color: 'var(--color-ink)', fontSize: '14px', lineHeight: '1.6', fontFamily: 'var(--font-land-display)' }}>
           {resultData.answer || 'Analysis completed.'}
         </div>
       </div>
@@ -36,7 +36,7 @@ export default function ExecutiveSummary({ resultData }) {
         <div className="summary-header-row" style={{ borderBottom: '1px solid var(--color-rule-subtle)', paddingBottom: '8px', marginBottom: '12px' }}>
           <span className="section-title" style={{ color: 'var(--color-muted)', letterSpacing: '0.1em' }}>CONFIDENCE</span>
         </div>
-        <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '6px 12px', background: 'rgba(255, 136, 34, 0.1)', border: '1px solid var(--color-accent)', borderRadius: '4px', color: 'var(--color-accent)', fontSize: '13px', fontWeight: '600', fontFamily: 'var(--font-mono)' }}>
+        <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '6px 12px', background: 'rgba(234, 88, 12, 0.1)', border: '1px solid var(--color-accent)', borderRadius: '4px', color: 'var(--color-accent)', fontSize: '13px', fontWeight: '600', fontFamily: 'var(--font-mono)' }}>
           {isHighConf ? <CheckCircle2 size={14} /> : <AlertTriangle size={14} />}
           <span>{scorePct}% {confidence.label || 'Confidence'}</span>
         </div>
@@ -50,12 +50,12 @@ export default function ExecutiveSummary({ resultData }) {
           </div>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
             {Array.isArray(objects) ? objects.map((obj, i) => (
-              <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '4px 8px', background: 'transparent', border: '1px solid var(--color-rule)', borderRadius: '2px', fontSize: '12px', color: '#fff', fontFamily: 'var(--font-mono)' }}>
-                <Target size={12} style={{ color: '#508CFF' }} />
+              <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '6px 10px', background: 'var(--color-paper-elevated)', border: '1px solid var(--color-rule)', borderRadius: '4px', fontSize: '12px', color: 'var(--color-ink)', fontWeight: 500, fontFamily: 'var(--font-mono)', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
+                <Target size={12} style={{ color: 'var(--color-accent)' }} />
                 <span>{typeof obj === 'string' ? obj : obj.label || 'Object'}</span>
               </div>
             )) : (
-              <div style={{ fontSize: '13px', color: '#fff' }}>{String(objects)}</div>
+              <div style={{ fontSize: '13px', color: 'var(--color-ink)' }}>{String(objects)}</div>
             )}
           </div>
         </div>
@@ -67,33 +67,33 @@ export default function ExecutiveSummary({ resultData }) {
           <div className="summary-header-row" style={{ borderBottom: '1px solid var(--color-rule-subtle)', paddingBottom: '8px', marginBottom: '12px' }}>
             <span className="section-title" style={{ color: 'var(--color-muted)', letterSpacing: '0.1em' }}>EVIDENCE</span>
           </div>
-          <div style={{ background: 'transparent', borderLeft: '2px solid #508CFF', padding: '0 0 0 12px', fontSize: '13px', color: 'var(--color-ink-2)', lineHeight: '1.5' }}>
+          <div style={{ background: 'transparent', borderLeft: '3px solid var(--color-accent)', padding: '0 0 0 12px', fontSize: '13px', color: 'var(--color-ink-2)', lineHeight: '1.5' }}>
             {detailed ? (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                 {detailed.land_cover && (
                   <div>
-                    <div style={{ fontWeight: 600, color: '#508CFF', marginBottom: '2px', fontFamily: 'var(--font-mono)', fontSize: '12px' }}>Land Cover Classification:</div>
-                    <div style={{ color: '#e2e8f0', fontSize: '12px' }}>{detailed.land_cover}</div>
+                    <div style={{ fontWeight: 700, color: 'var(--color-accent)', marginBottom: '3px', fontFamily: 'var(--font-mono)', fontSize: '12px' }}>Land Cover Classification:</div>
+                    <div style={{ color: 'var(--color-ink)', fontSize: '12px', fontWeight: 500 }}>{detailed.land_cover}</div>
                   </div>
                 )}
                 {Array.isArray(detailed.key_objects) && detailed.key_objects.length > 0 && (
                   <div>
-                    <div style={{ fontWeight: 600, color: '#508CFF', marginBottom: '4px', fontFamily: 'var(--font-mono)', fontSize: '12px' }}>Ground Observations:</div>
-                    <ul style={{ margin: 0, paddingLeft: '16px', color: '#cbd5e1', fontSize: '12px', lineHeight: '1.5' }}>
+                    <div style={{ fontWeight: 700, color: 'var(--color-accent)', marginBottom: '4px', fontFamily: 'var(--font-mono)', fontSize: '12px' }}>Ground Observations:</div>
+                    <ul style={{ margin: 0, paddingLeft: '16px', color: 'var(--color-ink-2)', fontSize: '12px', lineHeight: '1.6' }}>
                       {detailed.key_objects.map((ko, idx) => (
-                        <li key={idx} style={{ marginBottom: '2px' }}>{ko}</li>
+                        <li key={idx} style={{ marginBottom: '3px' }}>{ko}</li>
                       ))}
                     </ul>
                   </div>
                 )}
                 {detailed.spatial_patterns && (
                   <div style={{ color: 'var(--color-muted)', fontSize: '11px', fontFamily: 'var(--font-mono)' }}>
-                    <span>Pattern: </span>{detailed.spatial_patterns}
+                    <span style={{ fontWeight: 600, color: 'var(--color-ink)' }}>Pattern: </span>{detailed.spatial_patterns}
                   </div>
                 )}
               </div>
             ) : (
-              <div style={{ color: '#fff' }}>{String(resultData.evidence)}</div>
+              <div style={{ color: 'var(--color-ink)' }}>{String(resultData.evidence)}</div>
             )}
           </div>
         </div>

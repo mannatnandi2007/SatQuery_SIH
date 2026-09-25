@@ -8,8 +8,9 @@
 import React from 'react';
 import ChatPanel from './ChatPanel';
 import EarthScene from './EarthScene';
+import ThemeToggle from './ThemeToggle';
 
-export default function LandingPage({ onEnter, errorMessage }) {
+export default function LandingPage({ onEnter, errorMessage, theme = 'dark', onToggleTheme }) {
   const handleSubmit = ({ queryText, files }) => {
     onEnter({ queryText, files });
   };
@@ -18,8 +19,10 @@ export default function LandingPage({ onEnter, errorMessage }) {
     <div className="landing-layout">
       {/* Top Header Layer */}
       <header className="landing-header" aria-label="Landing Branding">
-        {/* The left branding has been moved down to the chat panel wrapper */}
-        <div className="lh-header-spacer" />
+        {/* Left top slot: Theme Toggle */}
+        <div className="lh-header-spacer" style={{ display: 'flex', alignItems: 'center', paddingLeft: '24px', pointerEvents: 'auto', zIndex: 100 }}>
+          <ThemeToggle theme={theme} onToggle={onToggleTheme} />
+        </div>
 
         <div className="lh-right-tagline">
           <div>FROM</div>
@@ -50,7 +53,7 @@ export default function LandingPage({ onEnter, errorMessage }) {
 
         {/* Right: 3D Earth Scene */}
         <div className="landing-right">
-          <EarthScene />
+          <EarthScene isLightMode={theme === 'light'} />
         </div>
       </div>
     </div>

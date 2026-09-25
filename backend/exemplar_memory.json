@@ -50,8 +50,19 @@
       "category": "general"
     },
     {
+      "id": "ex_unknown_4c3d3906",
+      "timestamp": "2026-09-25T19:43:40.580227+00:00",
+      "image_hash": "unknown",
+      "query": "detect change in the two images",
+      "rating": "accept",
+      "notes": "Operator accepted verification output",
+      "corrected_bbox": null,
+      "original_answer": "",
+      "category": "general"
+    },
+    {
       "id": "ex_unknown_86643eb1",
-      "timestamp": "2026-09-24T15:45:04.102238+00:00",
+      "timestamp": "2026-09-25T20:06:07.823915+00:00",
       "image_hash": "unknown",
       "query": "test_api_query_456",
       "rating": "accept",

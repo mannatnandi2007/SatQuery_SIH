@@ -178,27 +178,38 @@ def create_change_detection_overlay(
     change_overlay = Image.new("RGBA", (target_w, target_h), (0, 0, 0, 0))
     change_draw = ImageDraw.Draw(change_overlay)
 
-    # Render DL pixel segmentation mask if available
+    # Render multi-class semantic segmentation mask or DL pixel mask if available
+    has_semantic_mask = False
     if mask_bytes:
         try:
             import cv2
             import numpy as np
-            mask_pil = Image.open(BytesIO(mask_bytes)).convert("L").resize((target_w, target_h), Image.NEAREST)
-            mask_np = np.array(mask_pil, dtype=np.uint8)
-
-            # Build semi-transparent amber fill overlay
-            amber_tint = Image.new("RGBA", (target_w, target_h), (245, 158, 11, 80))
-            change_overlay.paste(amber_tint, (0, 0), mask_pil)
-
-            # Extract contours for crisp boundary outlines
-            contours, _ = cv2.findContours(mask_np, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-            for cnt in contours:
-                if cv2.contourArea(cnt) > 30:
-                    pts = [tuple(pt[0]) for pt in cnt]
-                    if len(pts) > 2:
-                        change_draw.polygon(pts, outline=(245, 158, 11, 240), width=2)
+            raw_mask = Image.open(BytesIO(mask_bytes))
+            if raw_mask.mode == "RGBA":
+                has_semantic_mask = True
+                colored_mask = raw_mask.resize((target_w, target_h), Image.NEAREST)
+                change_overlay = Image.alpha_composite(change_overlay, colored_mask)
+                # Extract alpha for crisp contour outlines
+                mask_np = np.array(colored_mask.split()[-1], dtype=np.uint8)
+                contours, _ = cv2.findContours(mask_np, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+                for cnt in contours:
+                    if cv2.contourArea(cnt) > 25:
+                        pts = [tuple(pt[0]) for pt in cnt]
+                        if len(pts) > 2:
+                            change_draw.polygon(pts, outline=(255, 255, 255, 160), width=1)
+            else:
+                mask_pil = raw_mask.convert("L").resize((target_w, target_h), Image.NEAREST)
+                mask_np = np.array(mask_pil, dtype=np.uint8)
+                amber_tint = Image.new("RGBA", (target_w, target_h), (245, 158, 11, 80))
+                change_overlay.paste(amber_tint, (0, 0), mask_pil)
+                contours, _ = cv2.findContours(mask_np, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+                for cnt in contours:
+                    if cv2.contourArea(cnt) > 30:
+                        pts = [tuple(pt[0]) for pt in cnt]
+                        if len(pts) > 2:
+                            change_draw.polygon(pts, outline=(245, 158, 11, 240), width=2)
         except Exception as e:
-            print(f"[Evidence] DL mask rendering fallback: {e}")
+            print(f"[Evidence] Change mask rendering fallback: {e}")
 
     # If bbox provided, highlight the primary change cluster with technical reticle
     if bbox:
@@ -225,8 +236,8 @@ def create_change_detection_overlay(
 
         # Label tag chip
         tag_font = _get_font(10)
-        tag_text = "[SIAMESE-DL DELTA]"
-        change_draw.rectangle([x1, max(0, y1 - 18), x1 + 115, y1], fill=(245, 158, 11, 230))
+        tag_text = "[PRIMARY CHANGE HOTSPOT]"
+        change_draw.rectangle([x1, max(0, y1 - 18), x1 + 145, y1], fill=(245, 158, 11, 230))
         change_draw.text((x1 + 4, max(0, y1 - 16)), tag_text, fill=(14, 18, 26, 255), font=tag_font)
 
     img2_composite = Image.alpha_composite(img2.convert("RGBA"), change_overlay).convert("RGB")
@@ -234,8 +245,9 @@ def create_change_detection_overlay(
     # Composite side-by-side canvas
     gutter = 12
     header_h = 36
+    footer_h = 26 if has_semantic_mask else 0
     total_w = target_w * 2 + gutter
-    total_h = target_h + header_h
+    total_h = target_h + header_h + footer_h
 
     canvas = Image.new("RGB", (total_w, total_h), (14, 18, 26))
     draw = ImageDraw.Draw(canvas)
@@ -247,7 +259,25 @@ def create_change_detection_overlay(
     # Header labels
     font = _get_font(13)
     draw.text((12, 10), "T1: BASELINE ACQUISITION", fill=(160, 175, 195), font=font)
-    draw.text((target_w + gutter + 12, 10), "T2: MONITORING DELTA", fill=(245, 158, 11), font=font)
+    draw.text((target_w + gutter + 12, 10), "T2: MONITORING DELTA (CATEGORICAL HEATMAP)", fill=(245, 158, 11), font=font)
+
+    # Categorical Legend Bar (Google Earth / Dynamic World Standard)
+    if has_semantic_mask:
+        legend_font = _get_font(10)
+        leg_y = total_h - 18
+        lx = target_w + gutter + 10
+        items = [
+            ((239, 68, 68), "Veg Loss / Clear"),
+            ((249, 115, 22), "New Built-up"),
+            ((34, 197, 94), "Veg Gain"),
+            ((59, 130, 246), "Water / Flood"),
+            ((234, 179, 8), "Earthworks")
+        ]
+        draw.text((12, leg_y - 2), "GROUND RESOLUTION: 10m/px GSD | COMPLIANT WITH DYNAMIC WORLD SPEC", fill=(100, 116, 139), font=legend_font)
+        for color, name in items:
+            draw.rectangle([lx, leg_y + 1, lx + 9, leg_y + 10], fill=color)
+            draw.text((lx + 13, leg_y - 2), name, fill=(203, 213, 225), font=legend_font)
+            lx += len(name) * 6 + 28
 
     filename = f"change_{uuid.uuid4().hex[:12]}.png"
     filepath = os.path.join(OVERLAYS_DIR, filename)

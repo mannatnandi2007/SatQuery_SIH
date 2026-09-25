@@ -87,12 +87,60 @@ export default function IngestionPanel({
     }
   };
 
+  const [isDraggingOver, setIsDraggingOver] = useState(false);
+  const dragCounter = useRef(0);
+
   const handleFileChange = (e) => {
     if (e.target.files) {
       const selected = Array.from(e.target.files);
       setFiles((prev) => [...prev, ...selected].slice(0, 2));
     }
     e.target.value = '';
+  };
+
+  const handleDragEnter = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    dragCounter.current += 1;
+    if (e.dataTransfer && e.dataTransfer.items && e.dataTransfer.items.length > 0) {
+      setIsDraggingOver(true);
+    }
+  };
+
+  const handleDragOver = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (e.dataTransfer) {
+      e.dataTransfer.dropEffect = 'copy';
+    }
+    if (!isDraggingOver) {
+      setIsDraggingOver(true);
+    }
+  };
+
+  const handleDragLeave = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    dragCounter.current -= 1;
+    if (dragCounter.current <= 0) {
+      dragCounter.current = 0;
+      setIsDraggingOver(false);
+    }
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    dragCounter.current = 0;
+    setIsDraggingOver(false);
+    if (e.dataTransfer && e.dataTransfer.files) {
+      const dropped = Array.from(e.dataTransfer.files).filter(
+        f => f.type.startsWith('image/') || f.name.endsWith('.tif') || f.name.endsWith('.tiff')
+      );
+      if (dropped.length > 0) {
+        setFiles((prev) => [...prev, ...dropped].slice(0, 2));
+      }
+    }
   };
 
   const handleRemoveFile = (index) => {
@@ -109,7 +157,14 @@ export default function IngestionPanel({
   };
 
   return (
-    <div className="panel" style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+    <div
+      className={`panel ${isDraggingOver ? 'drag-active' : ''}`}
+      style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}
+      onDragOver={handleDragOver}
+      onDragEnter={handleDragEnter}
+      onDragLeave={handleDragLeave}
+      onDrop={handleDrop}
+    >
       {/* Hidden File Input for Adding Images */}
       <input
         type="file"
@@ -128,6 +183,14 @@ export default function IngestionPanel({
             {files.length} / 2 LOADED
           </span>
         </div>
+
+        {/* Dragging Active Overlay Banner */}
+        {isDraggingOver && (
+          <div className="drag-overlay-banner" style={{ marginBottom: '10px' }}>
+            <UploadCloud size={20} />
+            <span>Drop image to add to workspace (T1 Baseline / T2 Monitoring)</span>
+          </div>
+        )}
 
         {files.length > 0 ? (
           <div className="uploaded-imagery-preview" style={{ marginBottom: '8px' }}>
@@ -175,17 +238,17 @@ export default function IngestionPanel({
                 onClick={() => fileInputRef.current?.click()}
               >
                 <Plus size={14} style={{ color: 'var(--color-accent)' }} />
-                <span>Add Second Image (T2 for Bi-Temporal Change Detection)</span>
+                <span>Drag & Drop or Click to add Second Image (T2)</span>
               </button>
             )}
           </div>
         ) : (
           <div
-            className="uploaded-attach-prompt"
+            className={`uploaded-attach-prompt ${isDraggingOver ? 'drag-active' : ''}`}
             onClick={() => fileInputRef.current?.click()}
           >
             <UploadCloud size={18} style={{ color: 'var(--color-accent)' }} />
-            <span>Click to upload satellite imagery (Sentinel-2, JPG, PNG)</span>
+            <span>Click or Drag & Drop satellite imagery here (Sentinel-2, JPG, PNG)</span>
           </div>
         )}
       </div>

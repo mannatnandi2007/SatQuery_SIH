@@ -102,12 +102,60 @@ export default function ChatPanel({ onSubmit, errorMessage }) {
     };
   }, [files]);
 
+  const [isDraggingOver, setIsDraggingOver] = useState(false);
+  const dragCounter = useRef(0);
+
   const handleFileChange = (e) => {
     if (e.target.files) {
       const selected = Array.from(e.target.files);
       setFiles(prev => [...prev, ...selected].slice(0, 2));
     }
     e.target.value = '';
+  };
+
+  const handleDragEnter = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    dragCounter.current += 1;
+    if (e.dataTransfer && e.dataTransfer.items && e.dataTransfer.items.length > 0) {
+      setIsDraggingOver(true);
+    }
+  };
+
+  const handleDragOver = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (e.dataTransfer) {
+      e.dataTransfer.dropEffect = 'copy';
+    }
+    if (!isDraggingOver) {
+      setIsDraggingOver(true);
+    }
+  };
+
+  const handleDragLeave = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    dragCounter.current -= 1;
+    if (dragCounter.current <= 0) {
+      dragCounter.current = 0;
+      setIsDraggingOver(false);
+    }
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    dragCounter.current = 0;
+    setIsDraggingOver(false);
+    if (e.dataTransfer && e.dataTransfer.files) {
+      const dropped = Array.from(e.dataTransfer.files).filter(
+        f => f.type.startsWith('image/') || f.name.endsWith('.tif') || f.name.endsWith('.tiff')
+      );
+      if (dropped.length > 0) {
+        setFiles(prev => [...prev, ...dropped].slice(0, 2));
+      }
+    }
   };
 
   const handleRemoveFile = (index) => {
@@ -130,7 +178,15 @@ export default function ChatPanel({ onSubmit, errorMessage }) {
   const canSubmit = query.trim().length > 0;
 
   return (
-    <aside className="chat-panel-glass" role="complementary" aria-label="SAT Query chat panel">
+    <aside
+      className={`chat-panel-glass ${isDraggingOver ? 'drag-active' : ''}`}
+      role="complementary"
+      aria-label="SAT Query chat panel"
+      onDragOver={handleDragOver}
+      onDragEnter={handleDragEnter}
+      onDragLeave={handleDragLeave}
+      onDrop={handleDrop}
+    >
 
       {/* ── Brand header ─────────────────────────────────────── */}
       <div className="cp-brand">
@@ -151,6 +207,14 @@ export default function ChatPanel({ onSubmit, errorMessage }) {
           Upload satellite imagery and ask anything about earth observation, infrastructure, or change analysis.
         </p>
       </div>
+
+      {/* Drag & drop overlay indicator */}
+      {isDraggingOver && (
+        <div className="drag-overlay-banner">
+          <UploadCloud size={24} />
+          <span>Release to attach satellite imagery (T1 Baseline / T2 Monitoring)</span>
+        </div>
+      )}
 
       {/* ── Uploaded Imagery Preview (Shows what has been uploaded) ── */}
       {files.length > 0 ? (
@@ -202,11 +266,11 @@ export default function ChatPanel({ onSubmit, errorMessage }) {
         </div>
       ) : (
         <div
-          className="uploaded-attach-prompt"
+          className={`uploaded-attach-prompt ${isDraggingOver ? 'drag-active' : ''}`}
           onClick={() => fileInputRef.current?.click()}
         >
           <UploadCloud size={16} style={{ color: 'var(--color-accent)' }} />
-          <span>Click to attach satellite imagery (Sentinel-2, JPG, PNG)</span>
+          <span>Click or Drag & Drop satellite imagery here (Sentinel-2, JPG, PNG)</span>
         </div>
       )}
 
